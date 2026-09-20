@@ -2,7 +2,7 @@
    화면 파일은 인터넷이 되면 항상 새 버전을 먼저 받고, 안 되면 저장해 둔 것을 씁니다. */
 const CACHE = "eng-app-v1";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./sync.js", "./firebase-config.js",
-  "./icons/icon-192.png", "./icons/icon-512.png"];
+  "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
 });

@@ -95,6 +95,6 @@
     }
   });
 
-  if (btn){ btn.textContent = "…"; btn.disabled = true; }
+  if (btn){ btn.hidden = false; btn.textContent = "…"; btn.disabled = true; }
   load(0);
 })();

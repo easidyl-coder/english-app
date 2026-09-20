@@ -1,0 +1,2785 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2A2FA8">
+<title>서인의 영어 연습장</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gothic+A1:wght@400;600;800&display=swap">
+<style>
+  :root{
+    color-scheme:light;
+    --ground:#F0F1F8; --raise:#FFFFFF; --raise-2:#F7F7FC;
+    --ink:#16183A; --ink-2:#4A4C68; --ink-3:#62647F;
+    --line:#E2E3EF; --line-2:#ECEDF5;
+    --accent:#2A2FA8; --accent-fill:#2A2FA8; --accent-soft:#E6E7F7;
+    --ok:#1E7A55; --ok-soft:#D3EADF; --bad:#B4432C; --bad-soft:#F3DCD5; --warn:#8A5A00;
+    --honey:#EDBE4E; --honey-dark:#C99A2E; --mint:#D3EADF; --pink:#F3DCD5; --tint:#D8DAF5;
+    --shadow:0 3px 0 #D5D7EC;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--ground);color:var(--ink);
+    font-family:"Gothic A1","Apple SD Gothic Neo",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:15px;line-height:1.65;padding-block:0 80px;-webkit-font-smoothing:antialiased;
+  }
+  .shell{max-width:640px;margin:0 auto;padding-inline:18px}
+
+  header{padding-block:32px 16px}
+  .eyebrow{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
+  h1{font-family:"Gothic A1",sans-serif;font-weight:600;font-size:32px;line-height:1.2;margin:0;letter-spacing:-.015em}
+
+  .stats{display:flex;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:20px}
+  .stat{flex:1 1 0;padding:12px 0}
+  .stat .n{font-family:"Gothic A1",sans-serif;font-size:24px;font-weight:600;line-height:1.1;display:block;font-variant-numeric:tabular-nums}
+  .stat .l{font-size:11.5px;color:var(--ink-3);letter-spacing:.03em}
+
+  nav{position:sticky;top:0;z-index:30;background:var(--ground);border-bottom:1px solid var(--line);margin-bottom:4px}
+  .navIn{display:flex;gap:2px}
+  nav button{
+    flex:1 1 0;font:inherit;font-size:14px;font-weight:500;cursor:pointer;
+    background:none;border:0;border-bottom:2px solid transparent;color:var(--ink-3);
+    padding:13px 4px;
+  }
+  nav button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+
+  button{font-family:inherit}
+  .btn{
+    font:inherit;font-size:14px;font-weight:500;cursor:pointer;color:var(--ink);
+    background:var(--raise);border:1px solid var(--line);border-radius:9px;padding:9px 14px;
+    box-shadow:var(--shadow);
+  }
+  .btn:hover{border-color:var(--ink-3)}
+  .btn.go{background:var(--accent-fill);border-color:var(--accent-fill);color:#fff}
+  .btn.go:hover{filter:brightness(1.08)}
+  .btn:disabled{opacity:.4;cursor:default}
+  .btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .panel{display:none}
+  .panel.on{display:block}
+  .lead{color:var(--ink-2);margin:18px 0 0;font-size:14.5px}
+
+  /* ── 문장 조립 ── */
+  .gTop{display:flex;align-items:center;gap:12px;margin:22px 0 18px}
+  .gProg{flex:1;height:2px;background:var(--line);border-radius:2px;overflow:hidden}
+  .gProg i{display:block;height:100%;background:var(--accent-fill);width:0;transition:width .25s}
+  .gMeta{font-size:12.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  .prompt{
+    background:var(--raise);border:1px solid var(--line);border-radius:12px;
+    padding:20px 18px;text-align:center;margin-bottom:16px;box-shadow:var(--shadow);
+  }
+  .prompt .day{font-size:11.5px;color:var(--ink-3);letter-spacing:.05em;margin:0 0 7px}
+  .prompt .ko{font-size:19px;font-weight:500;margin:0;line-height:1.5;text-wrap:balance}
+
+  .slot{
+    min-height:64px;border:1px dashed var(--line);border-radius:11px;
+    padding:11px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start;
+  }
+  .slot.right{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+  .slot.wrong{border-style:solid;border-color:var(--bad);background:var(--bad-soft);animation:shake .32s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .slot .hint{color:var(--ink-3);font-size:13.5px;margin:auto;align-self:center}
+
+  .bank{display:flex;flex-wrap:wrap;gap:7px;min-height:40px}
+  .chip{
+    font-family:"Gothic A1",sans-serif;font-size:19px;font-weight:600;
+    background:var(--raise);color:var(--ink);border:1px solid var(--line);
+    border-radius:9px;padding:8px 13px;cursor:pointer;box-shadow:var(--shadow);
+    line-height:1.2;
+  }
+  .chip:hover{border-color:var(--accent)}
+  .chip.used{visibility:hidden}
+  .slot .chip{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+  .slot.right .chip{background:transparent;border-color:transparent;color:var(--ok)}
+  .slot.wrong .chip{background:transparent;border-color:transparent;color:var(--bad)}
+
+  .gBtns{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+  .gBtns .btn{flex:1 1 auto}
+  .answer{margin:15px 0 0;font-size:15px}
+  .answer .lab{color:var(--ink-3);font-size:12.5px;display:block;margin-bottom:2px}
+  .answer .en{font-family:"Gothic A1",sans-serif;font-size:20px;font-weight:600}
+
+  .done{text-align:center;padding-block:44px}
+  .done .score{font-family:"Gothic A1",sans-serif;font-size:54px;font-weight:600;margin:0;line-height:1}
+  .done .lab{color:var(--ink-2);margin:6px 0 24px}
+  .missed{text-align:left;border-top:1px solid var(--line);padding-top:16px;margin-bottom:24px}
+  .missed .row{padding:9px 0;border-bottom:1px solid var(--line-2)}
+  .missed .row .en{font-family:"Gothic A1",sans-serif;font-size:18px;font-weight:600;display:block}
+  .missed .row .ko{font-size:13.5px;color:var(--ink-2)}
+
+  /* ── 단어 ── */
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:18px 0 6px}
+  input[type="search"]{
+    flex:1 1 170px;min-width:0;font:inherit;font-size:14px;color:var(--ink);
+    background:var(--raise);border:1px solid var(--line);border-radius:9px;padding:9px 12px;box-shadow:var(--shadow);
+  }
+  input[type="search"]::placeholder{color:var(--ink-3)}
+  .day{padding-block:22px 4px;border-top:1px solid var(--line-2)}
+  .day:first-of-type{border-top:0}
+  .dayHead{display:flex;align-items:baseline;gap:9px;margin:0 0 12px}
+  .dayHead h2{font-size:13.5px;font-weight:600;margin:0}
+  .dayHead .topic{font-size:12.5px;color:var(--ink-3);margin:0}
+  .dayHead .cnt{margin-left:auto;font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .rows{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0 28px}
+  .wrow{display:grid;grid-template-columns:1fr auto auto;align-items:baseline;gap:3px 9px;
+    padding:9px 0;border-bottom:1px solid var(--line-2);cursor:pointer}
+  .wrow .w{font-family:"Gothic A1",sans-serif;font-size:18px;font-weight:600}
+  .wrow .p{font-size:11px;color:var(--ink-3);justify-self:end;white-space:nowrap}
+  .wrow .k{font-size:13.5px;color:var(--ink-2);grid-column:1/-1;margin-top:-3px}
+  .wrow .ex{grid-column:1/-1;font-size:12.5px;color:var(--ink-3);margin-top:3px;display:none}
+  .wrow .ex i{font-family:"Gothic A1",sans-serif;font-style:italic;font-size:13.5px}
+  .wrow.open .ex{display:block}
+  body.hide .wrow .k{visibility:hidden}
+  body.hide .wrow.open .k{visibility:visible}
+  .empty{padding:36px 0;color:var(--ink-2)}
+
+  .quiz{display:none;position:fixed;inset:0;z-index:50;background:var(--ground);padding-block:24px;overflow-y:auto}
+  body.quizOn .quiz{display:block}
+  body.quizOn{overflow:hidden}
+  .qWord{font-family:"Gothic A1",sans-serif;font-size:44px;font-weight:600;line-height:1.15;margin:24px 0 0;text-align:center;letter-spacing:-.02em}
+  .qPron{font-size:13px;color:var(--ink-3);margin:7px 0 0;text-align:center}
+  .qAns{margin:22px 0 0;min-height:72px;text-align:center}
+  .qAns .qWord{font-size:34px;margin:0}
+  .qAns .qPron{margin:5px 0 0}
+  .qAns .k{font-size:21px;font-weight:500;margin:0}
+  .qAns .ex{font-size:13.5px;color:var(--ink-2);margin:8px 0 0}
+  .qAns .ex i{font-family:"Gothic A1",sans-serif;font-style:italic;font-size:15px}
+  .qAns.veiled{filter:blur(9px);user-select:none;pointer-events:none}
+  .qPrompt{font-size:13px;color:var(--ink-3);text-align:center;margin:26px 0 0;letter-spacing:.04em}
+  .qMean{font-size:24px;font-weight:500;text-align:center;margin:5px 0 0;line-height:1.4;text-wrap:balance}
+  .qCloze{font-family:"Gothic A1",sans-serif;font-size:26px;font-weight:600;text-align:center;
+    margin:26px 0 0;line-height:1.45;letter-spacing:-.01em;text-wrap:balance}
+  .qCloze u{text-decoration:none;border-bottom:2px solid var(--accent);padding:0 22px;
+    color:var(--accent);font-weight:600}
+  .qClozeKo{font-size:14px;color:var(--ink-2);text-align:center;margin:8px 0 0}
+  .qType{display:flex;gap:8px;margin:22px auto 0;max-width:400px}
+  .qType input{flex:1 1 auto;min-width:0;font:inherit;font-size:16px;color:var(--ink);
+    background:var(--raise);border:1px solid var(--line);border-radius:10px;
+    padding:11px 13px;box-shadow:var(--shadow)}
+  .qType input::placeholder{color:var(--ink-3)}
+  .qType .btn{flex:0 0 auto}
+  .qJudge{text-align:center;margin:14px 0 0;font-size:14px;min-height:21px}
+  .qJudge .good{color:var(--ok);font-weight:600}
+  .qJudge .miss{color:var(--warn)}
+  .qJudge .typed{color:var(--ink-2)}
+  .qBtns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+
+  /* ── 듣기 ── */
+  .lrow{border-top:1px solid var(--line-2);padding-block:16px}
+  .lrow:first-of-type{border-top:0}
+  .lrow .en{font-family:"Gothic A1",sans-serif;font-size:21px;font-weight:600;margin:0 0 2px;line-height:1.35}
+  .lrow .en span{padding:1px 2px;border-radius:3px}
+  .lrow .en span.hit{background:var(--ok-soft);color:var(--ok)}
+  .lrow .en span.mis{background:var(--bad-soft);color:var(--bad)}
+  .lrow .ko{font-size:13.5px;color:var(--ink-2);margin:0 0 11px}
+  .lbtns{display:flex;gap:7px;flex-wrap:wrap}
+  .lbtns .btn{font-size:13.5px;padding:8px 12px}
+  .btn.mic{border-color:var(--accent);color:var(--accent)}
+  .btn.mic.on{background:var(--bad);border-color:var(--bad);color:#fff}
+  .heard{margin:10px 0 0;font-size:13.5px;color:var(--ink-2);min-height:20px}
+  .heard b{color:var(--ink);font-weight:500}
+  .heard .sc{font-weight:600;margin-right:7px}
+  .heard .err{color:var(--warn)}
+  .note{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin:18px 0 4px;font-size:13.5px;color:var(--ink-2)}
+
+
+  /* ── 3단계 단어장 ── */
+  .today{background:var(--raise);border:1px solid var(--line);border-radius:12px;
+    padding:16px 16px 14px;margin:18px 0 16px;box-shadow:var(--shadow)}
+  .tHead{display:flex;align-items:center;gap:12px}
+  .tLab{font-size:11.5px;color:var(--ink-3);letter-spacing:.06em;margin:0 0 3px}
+  .tNum{font-family:"Gothic A1",sans-serif;font-size:30px;font-weight:600;margin:0;
+    line-height:1;font-variant-numeric:tabular-nums}
+  .tNum em{font-family:"Gothic A1",sans-serif;font-style:normal;font-size:13px;
+    font-weight:400;color:var(--ink-3);margin-left:5px}
+  .tHead .btn{margin-left:auto;flex:0 0 auto}
+  .tSub{font-size:12.5px;color:var(--ink-3);margin:10px 0 0}
+  .boxes{display:flex;gap:7px;margin-top:13px}
+  .boxchip{flex:1 1 0;min-width:0;border:1px solid var(--line-2);border-radius:9px;
+    padding:8px 10px;background:var(--ground)}
+  .boxchip b{display:block;font-family:"Gothic A1",sans-serif;font-size:19px;
+    font-weight:600;line-height:1.15;font-variant-numeric:tabular-nums}
+  .boxchip span{font-size:11px;color:var(--ink-3)}
+  .boxchip.b2 b{color:var(--accent)} .boxchip.b3 b{color:var(--ok)}
+
+  .filters{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 2px}
+  .filters button{font:inherit;font-size:12.5px;padding:6px 11px;border-radius:20px;
+    border:1px solid var(--line);background:var(--raise);color:var(--ink-2);cursor:pointer}
+  .filters button[aria-pressed="true"]{background:var(--accent-fill);border-color:var(--accent-fill);color:#fff}
+
+  .bx{font:inherit;font-size:10.5px;font-weight:600;line-height:1;border-radius:20px;
+    padding:4px 0;width:34px;text-align:center;border:1px solid var(--line);
+    background:var(--raise);color:var(--ink-3);cursor:pointer;justify-self:end}
+  .bx[data-b="1"]{border-color:var(--warn);color:var(--warn)}
+  .bx[data-b="2"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .bx[data-b="3"]{border-color:var(--ok);background:var(--ok);color:#fff}
+  .bx.due{box-shadow:0 0 0 2px var(--accent-soft)}
+
+  .backup{margin-top:30px;border-top:1px solid var(--line-2);padding-top:14px}
+  .backup summary{font-size:13px;color:var(--ink-3);cursor:pointer}
+  .backup textarea{width:100%;min-height:76px;margin-top:11px;font:inherit;font-size:12px;
+    border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--raise);
+    color:var(--ink);resize:vertical}
+  .backup .lbtns{margin-top:9px}
+  .bmsg{font-size:12.5px;color:var(--ink-2);margin:9px 0 0;min-height:18px}
+
+
+  /* ── 레벨 ── */
+  /* 레벨 히어로 */
+  .lvHero{position:relative;overflow:hidden;background:var(--raise);border:1px solid var(--line);
+    border-radius:20px;padding:24px 20px 20px;margin:18px 0 0;box-shadow:var(--shadow)}
+  .lvHero::after{content:"";position:absolute;right:-70px;top:-70px;width:200px;height:200px;
+    border-radius:50%;background:var(--accent-fill);opacity:.13;pointer-events:none}
+  .lvHero .kick{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;margin:0}
+  .lvTop{display:flex;align-items:center;gap:16px;margin-top:12px}
+  .lvRing{flex:0 0 auto;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;
+    background:conic-gradient(var(--accent-fill) var(--p,0deg), var(--line) 0);position:relative}
+  .lvRing::before{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--raise)}
+  .lvRing b{position:relative;font-family:"Gothic A1",sans-serif;font-size:32px;font-weight:600;
+    line-height:1;color:var(--accent)}
+  .lvHero .t{flex:1 1 auto;min-width:0}
+  .lvHero .t b{display:block;font-size:19px;font-weight:600;line-height:1.3}
+  .lvHero .t span{display:block;font-size:13px;color:var(--ink-2);margin-top:3px}
+  .lvHero .btn{width:100%;margin-top:18px;padding-block:13px;font-size:15px;font-weight:600;
+    border-radius:13px}
+
+  /* 카테고리 카드 */
+  .catWrap{margin:26px 0 0}
+  .catHead{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 11px}
+  .catHead h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);
+    font-weight:600;margin:0}
+  .catHead .re{font:inherit;font-size:12.5px;color:var(--accent);background:none;border:0;
+    cursor:pointer;padding:2px 0}
+  .catGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .catGrid .cAll{grid-column:1/-1}
+  .catCard{position:relative;text-align:left;font:inherit;cursor:pointer;background:var(--raise);
+    border:1px solid var(--line);border-radius:15px;padding:14px 14px 13px;color:var(--ink);
+    box-shadow:var(--shadow);transition:border-color .15s,transform .1s}
+  .catCard:hover{border-color:var(--accent)}
+  .catCard:active{transform:scale(.985)}
+  .catCard .nm{display:block;font-size:14.5px;font-weight:600;line-height:1.3}
+  .catCard .num{display:block;font-size:12px;color:var(--ink-3);margin-top:3px;
+    font-variant-numeric:tabular-nums}
+  .catCard .pbar{display:block;height:4px;border-radius:3px;background:var(--line);margin-top:10px;
+    overflow:hidden}
+  .catCard .pbar i{display:block;height:100%;background:var(--accent-fill);border-radius:3px;
+    transition:width .3s}
+  .catCard[aria-pressed="true"]{border-color:var(--accent-fill);background:var(--accent-soft)}
+  .catCard[aria-pressed="true"] .num{color:var(--accent)}
+  .catCard .dot{position:absolute;right:13px;top:14px;width:7px;height:7px;border-radius:50%;
+    background:var(--accent-fill);opacity:0}
+  .catCard[aria-pressed="true"] .dot{opacity:1}
+
+  .wlv{font-size:10px;color:var(--ink-3);border:1px solid var(--line-2);border-radius:4px;
+    padding:1px 4px;margin-left:6px;vertical-align:2px;letter-spacing:.02em}
+
+  .tHead2{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .tHead2 .gMeta{white-space:nowrap}
+  .opts{display:grid;gap:9px;max-width:420px;margin:26px auto 0}
+  .opt{font:inherit;font-size:15px;text-align:left;background:var(--raise);color:var(--ink);
+    border:1px solid var(--line);border-radius:10px;padding:13px 15px;cursor:pointer;
+    box-shadow:var(--shadow)}
+  .opt:hover{border-color:var(--accent)}
+  .opt.right{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+  .opt:disabled{cursor:default}
+  .opt.sent{font-family:"Gothic A1",sans-serif;font-size:17px;line-height:1.4}
+  .clock{font-family:"Gothic A1",sans-serif;font-size:17px;font-weight:600;
+    font-variant-numeric:tabular-nums;color:var(--ink-3);min-width:46px;text-align:right}
+  .clock.warn{color:var(--bad)}
+  .qOut{text-align:center;margin:14px 0 0;min-height:20px;font-size:13.5px;color:var(--bad)}
+  .idk{display:block;margin:14px auto 0;font:inherit;font-size:13px;color:var(--ink-3);
+    background:none;border:0;border-bottom:1px solid var(--line);padding:3px 2px;cursor:pointer}
+  .idk:hover{color:var(--ink)}
+  .lvResult{text-align:center;padding-block:34px}
+  .lvResult .big{font-family:"Gothic A1",sans-serif;font-size:64px;font-weight:600;
+    margin:0;line-height:1;color:var(--accent)}
+  .lvResult .nm{font-size:19px;font-weight:500;margin:8px 0 0}
+  .lvResult .ds{color:var(--ink-2);margin:12px auto 0;max-width:340px;font-size:14px}
+
+  .an{max-width:460px;margin:30px auto 0;text-align:left}
+  .an h3{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);
+    font-weight:600;margin:26px 0 10px}
+  .an .verdict{background:var(--raise);border:1px solid var(--line);border-radius:12px;
+    padding:16px 17px;font-size:14.5px;line-height:1.6;box-shadow:var(--shadow)}
+  .an .verdict b{color:var(--accent)}
+  .score2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
+  .score2 div{background:var(--raise);border:1px solid var(--line);border-radius:12px;
+    padding:13px 14px;box-shadow:var(--shadow)}
+  .score2 .lab2{font-size:11.5px;color:var(--ink-3)}
+  .score2 .val2{font-family:"Gothic A1",sans-serif;font-size:27px;font-weight:600;line-height:1.2}
+  .anRow{display:flex;align-items:center;gap:9px;padding:9px 2px;border-bottom:1px solid var(--line-2);
+    font-size:14px}
+  .anRow:last-child{border-bottom:0}
+  .anRow .nm2{flex:1}
+  .anRow .cnt2{font-size:12px;color:var(--ink-3)}
+  .anRow .go2{font:inherit;font-size:12px;padding:5px 11px;border-radius:16px;border:1px solid var(--line);
+    background:var(--raise);color:var(--ink-2);cursor:pointer;white-space:nowrap}
+  .anRow .go2:hover{border-color:var(--accent);color:var(--accent)}
+  .plan{display:grid;gap:9px}
+  .plan .step{display:flex;gap:11px;align-items:flex-start;background:var(--raise);
+    border:1px solid var(--line);border-radius:12px;padding:13px 14px;box-shadow:var(--shadow)}
+  .plan .num{flex:0 0 22px;height:22px;border-radius:50%;background:var(--accent-fill);color:#fff;
+    font-size:12px;display:grid;place-items:center;margin-top:1px}
+  .plan .tx{flex:1;font-size:14px;line-height:1.55}
+  .plan .tx small{display:block;color:var(--ink-3);font-size:12.5px;margin-top:3px}
+  .plan .go2{font:inherit;font-size:12px;padding:6px 12px;border-radius:16px;border:1px solid var(--line);
+    background:var(--ground);color:var(--ink-2);cursor:pointer;white-space:nowrap;align-self:center}
+  .plan .go2:hover{border-color:var(--accent);color:var(--accent)}
+  .wrongs{display:grid;gap:7px}
+  .wrongs .wg{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+  .wrongs .en2{font-family:"Gothic A1",sans-serif;font-size:15.5px}
+  .wrongs .en2 u{text-decoration:none;color:var(--accent);font-weight:600}
+  .wrongs .ko2{font-size:12.5px;color:var(--ink-3);margin-top:3px}
+
+  .cats{display:flex;gap:6px;overflow-x:auto;padding:2px 0 4px;margin:10px 0 0;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .cats::-webkit-scrollbar{display:none}
+  .cats button{flex:0 0 auto;font:inherit;font-size:12.5px;padding:6px 12px;border-radius:20px;
+    border:1px solid var(--line);background:var(--raise);color:var(--ink-2);cursor:pointer;
+    white-space:nowrap}
+  .cats button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+  .cats button .n{color:var(--ink-3);margin-left:5px;font-size:11px}
+  .cats button[aria-pressed="true"] .n{color:var(--ground);opacity:.6}
+
+  @media (max-width:480px){
+    h1{font-size:27px}
+    .qWord{font-size:34px}
+    .rows{grid-template-columns:1fr}
+    .chip{font-size:17px;padding:8px 11px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  /* ═══ B+ 디자인 ═══ */
+  body{padding-block:0 108px}
+  .shell{padding-inline:16px}
+  header{background:var(--accent);color:#fff;border-radius:24px;padding:22px 20px 16px;margin-top:16px}
+  .eyebrow{color:var(--tint);letter-spacing:.04em;font-weight:600;text-transform:none;font-size:13px}
+  h1{font-family:"Jua",sans-serif;font-weight:400;font-size:28px;letter-spacing:0}
+  .stats{border-top:1px solid rgba(255,255,255,.18);border-bottom:0;margin-top:16px}
+  .stat .n{font-family:"Jua",sans-serif;font-weight:400;font-size:24px}
+  .stat .l{color:var(--tint)}
+  #sLeft{color:var(--honey)}
+
+  nav{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;border:0;background:#fff;
+    border-radius:22px 22px 0 0;box-shadow:0 -2px 12px rgba(22,24,58,.06);
+    padding-bottom:env(safe-area-inset-bottom,0px)}
+  .navIn{gap:0}
+  nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    min-height:68px;padding:8px 4px;border:0;font-size:11.5px;font-weight:600;color:var(--ink-3)}
+  nav button svg{width:22px;height:22px}
+  nav button[aria-selected="true"]{color:var(--accent);font-weight:800;border:0}
+
+  .btn{border-radius:14px;min-height:44px;font-weight:700;padding:10px 16px}
+  .btn.go{background:var(--honey);border-color:var(--honey);color:var(--ink);box-shadow:0 3px 0 var(--honey-dark)}
+  .btn.go:hover{filter:brightness(1.03)}
+  .btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  .gTop{margin:20px 0 16px}
+  .gProg{height:10px;border-radius:5px;background:#D5D7EC}
+  .gMeta{font-weight:700;color:var(--ink-2)}
+  .prompt{border-radius:20px;padding:22px 18px}
+  .prompt .day{color:var(--accent);font-weight:700}
+  .prompt .ko{font-size:21px;font-weight:800}
+  .slot{min-height:76px;border-radius:18px;border:2px dashed #D5D7EC;background:rgba(255,255,255,.55);padding:12px}
+  .slot .hint{font-weight:600}
+  .bank{gap:9px;justify-content:center}
+  .chip{font-weight:800;font-size:18px;border-radius:14px;padding:11px 16px;min-height:48px}
+  .chip:hover{border-color:var(--accent)}
+  .slot .chip{background:var(--accent-soft);color:var(--accent);box-shadow:none}
+  .gBtns .btn{min-height:54px;font-size:16px;border-radius:18px}
+  .answer .en{font-weight:800}
+  .done .score,.lvResult .big,.qWord,.tNum,.boxchip b,.lvRing b,.score2 .val2{font-family:"Jua",sans-serif;font-weight:400}
+  .done .score{color:var(--accent)}
+
+  .lvHero{background:var(--accent);border:0;color:#fff;border-radius:24px}
+  .lvHero::after{display:none}
+  .lvHero .kick{color:var(--tint);letter-spacing:.04em;text-transform:none;font-size:13px}
+  .lvRing{background:conic-gradient(var(--honey) var(--p,0deg), rgba(255,255,255,.2) 0)}
+  .lvRing::before{background:var(--accent)}
+  .lvRing b{color:var(--honey)}
+  .lvHero .t span{color:var(--tint)}
+  .lvHero .btn{border-radius:16px;min-height:52px}
+
+  .catHead h2{text-transform:none;letter-spacing:0;font-size:16px;color:var(--ink);font-weight:800}
+  .catCard{border-radius:18px}
+  .catCard .pbar{height:6px;background:#E2E3EF}
+  .catCard[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+
+  .today{border-radius:22px;padding:18px}
+  .tLab{color:var(--ink-2);font-weight:700;letter-spacing:0;font-size:13px}
+  .tNum{font-size:34px}
+  .boxchip{border:0;border-radius:14px;padding:10px 12px;background:var(--ground)}
+  .boxchip.b2{background:var(--mint)} .boxchip.b2 b{color:#1E5A45}
+  .boxchip.b3{background:var(--accent)} .boxchip.b3 b{color:var(--honey)} .boxchip.b3 span{color:var(--tint)}
+  input[type="search"]{border-radius:14px;min-height:44px}
+  .filters button{min-height:36px;font-weight:600}
+  .day{border-top:0;padding-top:18px}
+  .dayHead h2{font-size:15px;font-weight:800;color:var(--accent)}
+  .rows{gap:8px 16px}
+  .wrow{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}
+  .wrow .w{font-size:18px;font-weight:800}
+  .wrow .ex i{font-style:normal;font-weight:600;color:var(--ink-2)}
+  .backup{border-top:0}
+
+  .quiz{padding-block:16px}
+  .quiz .gTop .btn{min-width:64px}
+  .qPrompt{color:var(--accent);font-weight:700;letter-spacing:0;font-size:15px}
+  .qMean{font-weight:800}
+  .qCloze{font-weight:800}
+  .qCloze u{border-bottom-width:3px}
+  .qType input{border:2px solid #D5D7EC;border-radius:16px;min-height:54px;font-weight:700;box-shadow:none}
+  .qType input:focus{outline:none;border-color:var(--accent)}
+  .qType .btn{min-height:54px}
+  .qJudge .good{color:var(--ok)}
+  .opt{border-radius:16px;padding:15px 16px;font-weight:700;min-height:54px}
+  .opt.right{background:var(--mint);border-color:#A9CDBB;color:#1E5A45}
+  .opt.wrong{background:var(--pink);border-color:#E3B9AC;color:#8A3B2A}
+  .an .verdict,.score2 div,.plan .step,.wrongs .wg{border-radius:16px}
+  .an h3{text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink);font-weight:800}
+
+  .note{border-radius:16px;background:var(--pink);border:0;color:#5A4A45}
+  .lrow{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:12px;box-shadow:var(--shadow)}
+  .lrow:first-of-type{border-top:1px solid var(--line)}
+  .lrow .en{font-weight:800;font-size:20px}
+  .lbtns .btn{border-radius:12px}
+  .btn.mic{border-color:var(--honey);background:var(--honey);color:var(--ink);box-shadow:0 3px 0 var(--honey-dark)}
+  .btn.mic.on{background:var(--bad);border-color:var(--bad);color:#fff;box-shadow:none}
+  @media (max-width:480px){ h1{font-size:25px} .qWord{font-size:36px} }
+  /* ═══ 홈 ═══ */
+  header{display:none}
+  .hTop{display:flex;justify-content:space-between;align-items:center;padding-top:22px}
+  .hLogo{font-family:"Jua",sans-serif;font-size:24px}
+  .hChips{display:flex;gap:8px}
+  .hChip{display:flex;align-items:center;height:36px;padding:0 12px;border-radius:18px;font:inherit;
+    font-size:13px;font-weight:800;border:1px solid var(--line);background:#fff;color:var(--ink)}
+  button.hChip{cursor:pointer;background:var(--honey);border-color:var(--honey)}
+  button.hChip.acct{background:#fff;border-color:var(--line);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hChips{flex-wrap:wrap;justify-content:flex-end}
+  .hHero{background:var(--accent);color:#fff;border-radius:22px;padding:20px;margin-top:18px;display:flex;flex-direction:column;gap:12px}
+  .hHero .sub{font-size:13px;font-weight:600;color:var(--tint)}
+  .hHero .big{font-family:"Jua",sans-serif;font-size:28px;line-height:1.2}
+  .hBarRow{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:800}
+  .hBar{flex:1;height:12px;border-radius:6px;background:rgba(255,255,255,.22);overflow:hidden}
+  .hBar i{display:block;height:100%;background:var(--honey);border-radius:6px}
+  .hFoot{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600}
+  .hOpen{display:flex;align-items:center;height:48px;padding:0 22px;background:#fff;color:var(--ink);
+    border-radius:16px;font-weight:800;font-size:15px;text-decoration:none;box-shadow:0 3px 0 rgba(0,0,0,.22)}
+  .hGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+  .hTile{display:flex;flex-direction:column;gap:10px;padding:16px;background:#fff;border:1px solid var(--line);
+    border-radius:20px;box-shadow:var(--shadow);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+  .hTile.wide{grid-column:span 2;flex-direction:row;align-items:center;gap:14px}
+  .hIcon{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;flex:0 0 auto}
+  .hTile.wide .hIcon{width:52px;height:52px;border-radius:16px}
+  .hIcon svg{width:22px;height:22px}
+  .hTile .nm{font-family:"Jua",sans-serif;font-size:19px;line-height:1.2}
+  .hTile .ds{font-size:12.5px;color:var(--ink-2)}
+  .hTile .tx{flex:1;display:flex;flex-direction:column;gap:2px}
+  .hLvUp{background:#fff;border-radius:20px;padding:16px;margin-top:18px;display:flex;flex-direction:column;gap:12px}
+  .hLvUp h2{font-family:"Jua",sans-serif;font-weight:400;font-size:17px;margin:0}
+  .hBars{display:flex;align-items:flex-end;gap:8px}
+  .hBars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .hBars b{font-size:18px;font-weight:800}
+  .hBars i{display:block;width:100%;border-radius:8px}
+  .hBars span{font-size:12px;color:var(--ink-2)}
+</style>
+
+<div class="shell">
+  <header>
+    <p class="eyebrow">칸쿤 · LA 여행 영어</p>
+    <h1>서인의 영어 연습장</h1>
+    <div class="stats">
+      <div class="stat"><span class="n" id="sTotal">0</span><span class="l">누적 단어</span></div>
+      <div class="stat"><span class="n" id="sSent">0</span><span class="l">문장</span></div>
+      <div class="stat"><span class="n" id="sBest">0</span><span class="l">최고 연속</span></div>
+      <div class="stat"><span class="n" id="sLeft">—</span><span class="l">출발까지</span></div>
+    </div>
+  </header>
+</div>
+
+<nav>
+  <div class="shell navIn">
+    <button id="t3" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"></path></svg>홈</button>
+    <button id="t0" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="8" height="7" rx="1.5"></rect><rect x="13" y="4" width="8" height="7" rx="1.5"></rect><rect x="3" y="14" width="18" height="6" rx="1.5"></rect></svg>문장 조립</button>
+    <button id="t1" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"></path><path d="M5 18a2 2 0 0 1 2-2h12"></path></svg>단어</button>
+    <button id="t2" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 17v-4a8 8 0 0 1 16 0v4"></path><rect x="3" y="14" width="4" height="7" rx="1.5"></rect><rect x="17" y="14" width="4" height="7" rx="1.5"></rect></svg>듣기·말하기</button>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- 홈 -->
+  <section class="panel on" id="p3">
+    <div class="hTop">
+      <div class="hLogo">영어 연습장</div>
+      <div class="hChips"><button class="hChip acct" id="hAcct" hidden>로그인</button><span class="hChip" id="hDayN">1일째</span><button class="hChip" id="hLv">Lv.?</button></div>
+    </div>
+    <div class="hHero">
+      <div class="sub" id="hStage">Day 1</div>
+      <div class="big">오늘의 레슨 시작!</div>
+      <div class="hBarRow"><div class="hBar"><i id="hProg" style="width:0"></i></div><span id="hProgN">0/140</span></div>
+      <div class="hFoot"><span id="hLeft">칸쿤까지</span>
+        <a class="hOpen" href="https://claude.ai/artifact/Gvrmtv2HiUDKZtusNrQw5F" target="_blank" rel="noopener">열기</a></div>
+    </div>
+    <div class="hGrid">
+      <button class="hTile wide" data-go="0">
+        <span class="hIcon" style="background:var(--honey)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="8" height="7" rx="1.5"></rect><rect x="13" y="4" width="8" height="7" rx="1.5"></rect><rect x="3" y="14" width="18" height="6" rx="1.5"></rect></svg></span>
+        <span class="tx"><span class="nm">문장 조립 게임</span><span class="ds" id="hSent">오늘 10문장</span></span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
+      </button>
+      <button class="hTile" data-go="1">
+        <span class="hIcon" style="background:var(--mint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"></path><path d="M5 18a2 2 0 0 1 2-2h12"></path></svg></span>
+        <span class="nm">단어</span><span class="ds" id="hWord">오늘 볼 단어</span>
+      </button>
+      <button class="hTile" data-go="2">
+        <span class="hIcon" style="background:var(--pink)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 17v-4a8 8 0 0 1 16 0v4"></path><rect x="3" y="14" width="4" height="7" rx="1.5"></rect><rect x="17" y="14" width="4" height="7" rx="1.5"></rect></svg></span>
+        <span class="nm">듣기·말하기</span><span class="ds">듣고 따라 말하기</span>
+      </button>
+    </div>
+    <div class="hLvUp">
+      <h2>단어 레벨업</h2>
+      <div class="hBars">
+        <div><b id="hb1">0</b><i id="hi1" style="height:22px;background:#D5D7EC"></i><span>외우는 중</span></div>
+        <div><b id="hb2">0</b><i id="hi2" style="height:22px;background:#9296D6"></i><span>외운</span></div>
+        <div><b id="hb3">0</b><i id="hi3" style="height:22px;background:var(--accent)"></i><span>외외운</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 문장 조립 -->
+  <section class="panel" id="p0">
+    <div id="gameWrap">
+      <div class="gTop">
+        <span class="gMeta" id="gCount">1 / 10</span>
+        <div class="gProg"><i id="gBar"></i></div>
+        <span class="gMeta" id="gStreak">연속 0</span>
+      </div>
+      <div class="prompt">
+        <p class="day" id="gDay"></p>
+        <p class="ko" id="gKo"></p>
+      </div>
+      <div class="slot" id="gSlot"><span class="hint">아래 단어를 순서대로 누르세요</span></div>
+      <div class="bank" id="gBank"></div>
+      <div class="gBtns">
+        <button class="btn" id="gClear">지우기</button>
+        <button class="btn go" id="gCheck">확인</button>
+      </div>
+      <div class="answer" id="gAns"></div>
+    </div>
+    <div id="gameDone" hidden></div>
+  </section>
+
+  <!-- 단어 -->
+  <section class="panel" id="p1">
+    <div class="lvHero" id="lvCard">
+      <p class="kick">내 레벨</p>
+      <div class="lvTop">
+        <div class="lvRing" id="lvRing"><b id="lvNum">?</b></div>
+        <div class="t"><b id="lvName">레벨을 아직 모릅니다</b>
+          <span id="lvDesc">단어와 문장을 함께 보는 테스트입니다</span></div>
+      </div>
+      <button class="btn go" id="lvGo">레벨 테스트</button>
+    </div>
+
+    <div class="catWrap">
+      <div class="catHead"><h2>분야별로 보기</h2>
+        <button class="re" id="catReset" hidden>전체 보기</button></div>
+      <div class="catGrid" id="cats"></div>
+    </div>
+
+    <div class="today">
+      <div class="tHead">
+        <div>
+          <p class="tLab">오늘 볼 단어</p>
+          <p class="tNum"><span id="tCnt">0</span><em>개</em></p>
+        </div>
+        <button class="btn go" id="goToday">시작하기</button>
+      </div>
+      <div class="boxes">
+        <div class="boxchip"><b id="bc1">0</b><span>외우는 중</span></div>
+        <div class="boxchip b2"><b id="bc2">0</b><span>외운 단어</span></div>
+        <div class="boxchip b3"><b id="bc3">0</b><span>외외운 단어</span></div>
+      </div>
+      <p class="tSub" id="tSub"></p>
+    </div>
+
+    <div class="bar">
+      <input type="search" id="q" placeholder="단어나 뜻으로 찾기" autocomplete="off">
+      <button class="btn" id="tHide" aria-pressed="false">뜻 가리기</button>
+      <button class="btn" id="goQuiz">이 목록 퀴즈</button>
+    </div>
+    <div class="filters" id="filters">
+      <button data-f="all" aria-pressed="true">전체</button>
+      <button data-f="today" aria-pressed="false">오늘</button>
+      <button data-f="0" aria-pressed="false">새 단어</button>
+      <button data-f="1" aria-pressed="false">외우는 중</button>
+      <button data-f="2" aria-pressed="false">외운</button>
+      <button data-f="3" aria-pressed="false">외외운</button>
+    </div>
+    <p class="lead">줄을 누르면 예문이 펼쳐집니다. 오른쪽 단계 배지를 누르면 단계를 직접 바꿀 수 있습니다.</p>
+    <div id="list"></div>
+
+    <details class="backup">
+      <summary>진도 백업 · 복원</summary>
+      <p class="lead" style="margin-top:8px">아래 글자를 통째로 복사해 메모장에 보관해 두세요. 기기를 바꾸거나 기록이 지워졌을 때 여기에 붙여넣고 복원하면 단계가 되살아납니다.</p>
+      <textarea id="bkText" spellcheck="false"></textarea>
+      <div class="lbtns">
+        <button class="btn" id="bkCopy">복사</button>
+        <button class="btn" id="bkLoad">붙여넣은 내용으로 복원</button>
+      </div>
+      <p class="bmsg" id="bkMsg"></p>
+    </details>
+  </section>
+
+  <!-- 듣기·말하기 -->
+  <section class="panel" id="p2">
+    <div class="note" id="capNote"></div>
+    <p class="lead">문장을 눌러 원어민 발음으로 듣고, 따라 말하면 맞은 단어가 초록색으로 표시됩니다.</p>
+    <div id="listen"></div>
+  </section>
+
+</div>
+
+<div class="quiz" id="quiz">
+  <div class="shell">
+    <div class="gTop">
+      <button class="btn" id="qX">닫기</button>
+      <div class="gProg"><i id="qBar"></i></div>
+      <span class="clock" id="qClock" hidden>10.0</span>
+      <span class="gMeta" id="qCount"></span>
+    </div>
+    <div id="qBody"></div>
+  </div>
+</div>
+
+<script>
+/* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
+const DAYS = {
+  1: "나는 ~이다 (I am)",
+  2: "너는 ~이다 (You are)",
+  3: "그는·그녀는 ~이다 (He/She is)",
+  4: "이것·저것·그것 (This/That/It is)",
+  5: "우리는·그들은 ~이다 (We/They are)",
+  6: "~인가요? 묻기 (Are you~? / Is it~?)",
+  8: "나는 ~한다 (I go / eat / work)",
+  9: "원하는 것 말하기 (I like / want / need)",
+  10: "그 사람 이야기하기 (He works / She likes)",
+  101: "카페에서 주문하기",
+  102: "식당에서 주문하기",
+  103: "호텔에서 요청하기",
+  104: "택시 타고 이동하기",
+  105: "쇼핑하고 계산하기",
+  106: "촬영 현장에서",
+  107: "클라이언트와 미팅하기",
+  108: "카페 주인으로 손님 응대",
+  109: "아플 때와 급할 때",
+  110: "처음 만난 사람과 스몰토크"
+};
+const WORDS = [
+  {d:1,lv:1,c:"사람·관계",w:"name",k:"이름",p:"네임",ex:"My name is Seoin.",exk:"제 이름은 서인이에요."},
+  {d:1,lv:1,c:"말·표현",w:"from",k:"~에서 온",p:"프롬",ex:"I'm from Korea.",exk:"저는 한국에서 왔어요."},
+  {d:1,lv:1,c:"여행·교통",w:"Korea",k:"한국",p:"코리아",ex:"I'm from Korea.",exk:"저는 한국에서 왔어요."},
+  {d:1,lv:3,c:"사람·관계",w:"director",k:"감독",p:"디렉터",ex:"I'm a video director.",exk:"저는 영상 감독이에요."},
+  {d:1,lv:1,c:"사람·관계",w:"teacher",k:"선생님",p:"티처",ex:"I'm a teacher.",exk:"저는 선생님이에요."},
+  {d:1,lv:1,c:"사람·관계",w:"student",k:"학생",p:"스튜던트",ex:"I'm a student.",exk:"저는 학생이에요."},
+  {d:1,lv:1,c:"감정·상태",w:"hungry",k:"배고픈",p:"헝그리",ex:"I'm hungry.",exk:"저 배고파요."},
+  {d:1,lv:1,c:"감정·상태",w:"tired",k:"피곤한",p:"타이어드",ex:"I'm tired.",exk:"저 피곤해요."},
+  {d:1,lv:2,c:"감정·상태",w:"ready",k:"준비된",p:"레디",ex:"I'm ready.",exk:"저 준비됐어요."},
+  {d:1,lv:1,c:"감정·상태",w:"busy",k:"바쁜",p:"비지",ex:"I'm not busy.",exk:"저 안 바빠요."},
+  {d:1,lv:1,c:"시간·숫자",w:"late",k:"늦은",p:"레이트",ex:"I'm late.",exk:"저 늦었어요."},
+  {d:1,lv:1,c:"감정·상태",w:"okay",k:"괜찮은",p:"오케이",ex:"I'm okay.",exk:"저 괜찮아요."},
+  {d:1,lv:2,c:"감정·상태",w:"sure",k:"확실한",p:"슈어",ex:"I'm not sure.",exk:"잘 모르겠어요."},
+  {d:1,lv:3,c:"감정·상태",w:"nervous",k:"긴장한",p:"너버스",ex:"I'm nervous.",exk:"저 긴장돼요."},
+  {d:1,lv:1,c:"감정·상태",w:"happy",k:"행복한",p:"해피",ex:"I'm happy.",exk:"저 행복해요."},
+  {d:2,lv:1,c:"말·표현",w:"you",k:"당신, 너",p:"유",ex:"You're kind.",exk:"친절하시네요."},
+  {d:2,lv:1,c:"말·표현",w:"my",k:"나의",p:"마이",ex:"You're my teacher.",exk:"당신은 제 선생님이에요."},
+  {d:2,lv:2,c:"감정·상태",w:"kind",k:"친절한",p:"카인드",ex:"You're so kind.",exk:"정말 친절하시네요."},
+  {d:2,lv:1,c:"감정·상태",w:"nice",k:"좋은, 괜찮은",p:"나이스",ex:"You're very nice.",exk:"참 좋은 분이시네요."},
+  {d:2,lv:2,c:"감정·상태",w:"funny",k:"웃긴",p:"퍼니",ex:"You're funny.",exk:"웃기시네요."},
+  {d:2,lv:2,c:"성질·정도",w:"right",k:"맞는, 옳은",p:"라이트",ex:"You're right.",exk:"맞아요."},
+  {d:2,lv:2,c:"성질·정도",w:"wrong",k:"틀린",p:"렁",ex:"You're not wrong.",exk:"틀린 말은 아니에요."},
+  {d:2,lv:2,c:"사람·관계",w:"welcome",k:"환영받는",p:"웰컴",ex:"You're welcome.",exk:"천만에요."},
+  {d:2,lv:2,c:"시간·숫자",w:"early",k:"이른, 일찍",p:"얼리",ex:"You're early.",exk:"일찍 오셨네요."},
+  {d:2,lv:1,c:"말·표현",w:"here",k:"여기에",p:"히어",ex:"You're here.",exk:"오셨군요."},
+  {d:2,lv:2,c:"감정·상태",w:"lucky",k:"운이 좋은",p:"럭키",ex:"You're so lucky.",exk:"정말 운이 좋으시네요."},
+  {d:2,lv:2,c:"사람·관계",w:"wife",k:"아내",p:"와이프",ex:"You're my wife.",exk:"당신은 내 아내예요."},
+  {d:2,lv:2,c:"사람·관계",w:"husband",k:"남편",p:"허즈번드",ex:"You're my husband.",exk:"당신은 내 남편이에요."},
+  {d:2,lv:1,c:"성질·정도",w:"so",k:"정말, 너무",p:"쏘",ex:"You're so funny.",exk:"정말 웃기시네요."},
+  {d:2,lv:1,c:"성질·정도",w:"very",k:"아주, 매우",p:"베리",ex:"You're very kind.",exk:"아주 친절하시네요."},
+  {d:3,lv:1,c:"말·표현",w:"he",k:"그(남자)",p:"히",ex:"He's my husband.",exk:"그는 제 남편이에요."},
+  {d:3,lv:1,c:"말·표현",w:"she",k:"그녀(여자)",p:"쉬",ex:"She's my friend.",exk:"그녀는 제 친구예요."},
+  {d:3,lv:1,c:"말·표현",w:"his",k:"그의",p:"히즈",ex:"His name is Dylan.",exk:"그의 이름은 딜런이에요."},
+  {d:3,lv:1,c:"말·표현",w:"her",k:"그녀의",p:"허",ex:"Her name is Seoin.",exk:"그녀의 이름은 서인이에요."},
+  {d:3,lv:1,c:"사람·관계",w:"friend",k:"친구",p:"프렌드",ex:"He's my friend.",exk:"그는 제 친구예요."},
+  {d:3,lv:1,c:"사람·관계",w:"brother",k:"형·오빠·남동생",p:"브라더",ex:"He's my brother.",exk:"그는 제 동생이에요."},
+  {d:3,lv:1,c:"사람·관계",w:"sister",k:"누나·언니·여동생",p:"시스터",ex:"She's my sister.",exk:"그녀는 제 동생이에요."},
+  {d:3,lv:1,c:"사람·관계",w:"mom",k:"엄마",p:"맘",ex:"She's my mom.",exk:"그녀는 제 엄마예요."},
+  {d:3,lv:1,c:"사람·관계",w:"dad",k:"아빠",p:"대드",ex:"He's my dad.",exk:"그는 제 아빠예요."},
+  {d:3,lv:2,c:"일·업무",w:"boss",k:"상사, 사장",p:"보스",ex:"She's my boss.",exk:"그녀는 제 상사예요."},
+  {d:3,lv:1,c:"몸·건강",w:"tall",k:"키가 큰",p:"톨",ex:"He's very tall.",exk:"그는 키가 아주 커요."},
+  {d:3,lv:2,c:"감정·상태",w:"smart",k:"똑똑한",p:"스마트",ex:"She's so smart.",exk:"그녀는 정말 똑똑해요."},
+  {d:3,lv:1,c:"성질·정도",w:"young",k:"어린, 젊은",p:"영",ex:"He's young.",exk:"그는 젊어요."},
+  {d:3,lv:2,c:"성질·정도",w:"beautiful",k:"아름다운",p:"뷰티풀",ex:"She's beautiful.",exk:"그녀는 아름다워요."},
+  {d:3,lv:3,c:"사람·관계",w:"married",k:"결혼한",p:"매리드",ex:"She's married.",exk:"그녀는 결혼했어요."},
+  {d:4,lv:1,c:"말·표현",w:"this",k:"이것, 이",p:"디스",ex:"This is my bag.",exk:"이건 제 가방이에요."},
+  {d:4,lv:1,c:"말·표현",w:"that",k:"저것, 저",p:"댓",ex:"That's my seat.",exk:"저기 제 자리예요."},
+  {d:4,lv:1,c:"말·표현",w:"it",k:"그것",p:"잇",ex:"It's very good.",exk:"아주 좋아요."},
+  {d:4,lv:2,c:"말·표현",w:"mine",k:"내 것",p:"마인",ex:"This is mine.",exk:"이건 제 거예요."},
+  {d:4,lv:1,c:"말·표현",w:"bag",k:"가방, 짐",p:"백",ex:"That's not my bag.",exk:"저건 제 가방이 아니에요."},
+  {d:4,lv:2,c:"여행·교통",w:"seat",k:"자리, 좌석",p:"씨트",ex:"This is my seat.",exk:"여기 제 자리예요."},
+  {d:4,lv:1,c:"숙소·생활",w:"room",k:"방, 객실",p:"룸",ex:"This is my room.",exk:"여기 제 방이에요."},
+  {d:4,lv:1,c:"음식·식당",w:"coffee",k:"커피",p:"커피",ex:"This is my coffee.",exk:"이건 제 커피예요."},
+  {d:4,lv:1,c:"음식·식당",w:"water",k:"물",p:"워터",ex:"This water is free.",exk:"이 물은 무료예요."},
+  {d:4,lv:1,c:"성질·정도",w:"hot",k:"뜨거운, 더운",p:"핫",ex:"It's very hot.",exk:"아주 뜨거워요."},
+  {d:4,lv:1,c:"성질·정도",w:"cold",k:"차가운, 추운",p:"콜드",ex:"It's cold.",exk:"차가워요."},
+  {d:4,lv:1,c:"성질·정도",w:"good",k:"좋은",p:"굿",ex:"It's not good.",exk:"별로예요."},
+  {d:4,lv:2,c:"음식·식당",w:"delicious",k:"맛있는",p:"딜리셔스",ex:"It's delicious.",exk:"맛있어요."},
+  {d:4,lv:2,c:"쇼핑·돈",w:"free",k:"무료의, 공짜의",p:"프리",ex:"It's not free.",exk:"무료가 아니에요."},
+  {d:4,lv:3,c:"쇼핑·돈",w:"expensive",k:"비싼",p:"익스펜시브",ex:"It's expensive.",exk:"비싸네요."},
+  {d:5,lv:1,c:"말·표현",w:"we",k:"우리",p:"위",ex:"We're together.",exk:"저희 같이 왔어요."},
+  {d:5,lv:1,c:"말·표현",w:"they",k:"그들",p:"데이",ex:"They're my friends.",exk:"제 친구들이에요."},
+  {d:5,lv:1,c:"말·표현",w:"our",k:"우리의",p:"아워",ex:"We're on our honeymoon.",exk:"저희 신혼여행 중이에요."},
+  {d:5,lv:1,c:"말·표현",w:"their",k:"그들의",p:"데어",ex:"They're on their trip.",exk:"저분들 여행 중이에요."},
+  {d:5,lv:2,c:"말·표현",w:"together",k:"함께, 같이",p:"투게더",ex:"We're together.",exk:"저희 일행이에요."},
+  {d:5,lv:2,c:"시간·숫자",w:"both",k:"둘 다",p:"보쓰",ex:"We're both tired.",exk:"저희 둘 다 피곤해요."},
+  {d:5,lv:4,c:"여행·교통",w:"honeymoon",k:"신혼여행",p:"허니문",ex:"We're on our honeymoon.",exk:"저희 신혼여행 중이에요."},
+  {d:5,lv:3,c:"여행·교통",w:"tourist",k:"관광객",p:"투어리스트",ex:"We're tourists.",exk:"저희 관광객이에요."},
+  {d:5,lv:3,c:"숙소·생활",w:"guest",k:"손님, 투숙객",p:"게스트",ex:"We're guests here.",exk:"저희 여기 투숙객이에요."},
+  {d:5,lv:1,c:"사람·관계",w:"people",k:"사람들",p:"피플",ex:"They're nice people.",exk:"좋은 분들이에요."},
+  {d:5,lv:1,c:"사람·관계",w:"family",k:"가족",p:"패밀리",ex:"They're my family.",exk:"제 가족이에요."},
+  {d:5,lv:2,c:"성질·정도",w:"open",k:"열려 있는",p:"오픈",ex:"They're not open yet.",exk:"아직 안 열었어요."},
+  {d:5,lv:2,c:"성질·정도",w:"closed",k:"닫힌",p:"클로즈드",ex:"They're closed today.",exk:"오늘 문 닫았어요."},
+  {d:5,lv:2,c:"음식·식당",w:"full",k:"가득 찬, 배부른",p:"풀",ex:"We're full, thank you.",exk:"저희 배불러요, 감사합니다."},
+  {d:5,lv:3,c:"시간·숫자",w:"yet",k:"아직",p:"옛",ex:"We're not ready yet.",exk:"저희 아직 준비 안 됐어요."},
+  {d:6,lv:1,c:"말·표현",w:"yes",k:"네",p:"예스",ex:"Yes, I am.",exk:"네, 그래요."},
+  {d:6,lv:1,c:"말·표현",w:"no",k:"아니요",p:"노우",ex:"No, it's not.",exk:"아니요, 아니에요."},
+  {d:6,lv:1,c:"감정·상태",w:"sorry",k:"미안한",p:"쏘리",ex:"Sorry, are you okay?",exk:"죄송해요, 괜찮으세요?"},
+  {d:6,lv:2,c:"감정·상태",w:"thirsty",k:"목마른",p:"써스티",ex:"Are you thirsty?",exk:"목마르세요?"},
+  {d:6,lv:2,c:"감정·상태",w:"sleepy",k:"졸린",p:"슬리피",ex:"Are you sleepy?",exk:"졸리세요?"},
+  {d:6,lv:3,c:"감정·상태",w:"alone",k:"혼자인",p:"얼론",ex:"Are you alone?",exk:"혼자세요?"},
+  {d:6,lv:3,c:"여행·교통",w:"lost",k:"길을 잃은",p:"로스트",ex:"Are you lost?",exk:"길 잃으셨어요?"},
+  {d:6,lv:3,c:"성질·정도",w:"safe",k:"안전한",p:"세이프",ex:"Is it safe here?",exk:"여기 안전해요?"},
+  {d:6,lv:2,c:"여행·교통",w:"far",k:"먼",p:"파",ex:"Is it far?",exk:"멀어요?"},
+  {d:6,lv:2,c:"음식·식당",w:"spicy",k:"매운",p:"스파이시",ex:"Is it spicy?",exk:"매워요?"},
+  {d:6,lv:2,c:"숙소·생활",w:"clean",k:"깨끗한",p:"클린",ex:"Is the room clean?",exk:"객실 깨끗해요?"},
+  {d:6,lv:4,c:"성질·정도",w:"crowded",k:"붐비는",p:"크라우디드",ex:"Is it crowded?",exk:"사람 많아요?"},
+  {d:6,lv:2,c:"음식·식당",w:"breakfast",k:"아침식사",p:"브렉퍼스트",ex:"Is breakfast free?",exk:"아침식사 무료인가요?"},
+  {d:6,lv:4,c:"쇼핑·돈",w:"included",k:"포함된",p:"인클루디드",ex:"Is breakfast included?",exk:"아침식사 포함인가요?"},
+  {d:6,lv:2,c:"여행·교통",w:"American",k:"미국인인",p:"어메리칸",ex:"Are you American?",exk:"미국분이세요?"},
+  {d:101,lv:3,c:"음식·식당",w:"order",k:"주문하다, 주문",p:"오더",ex:"Can I order now?",exk:"지금 주문할 수 있어요?"},
+  {d:101,lv:2,c:"음식·식당",w:"latte",k:"라떼",p:"라테이",ex:"One latte, please.",exk:"라떼 하나 주세요."},
+  {d:101,lv:3,c:"음식·식당",w:"iced",k:"차갑게 한, 아이스",p:"아이스트",ex:"I want it iced.",exk:"차갑게 주세요."},
+  {d:101,lv:2,c:"음식·식당",w:"size",k:"크기, 사이즈",p:"사이즈",ex:"What sizes do you have?",exk:"사이즈 뭐가 있어요?"},
+  {d:101,lv:3,c:"음식·식당",w:"medium",k:"중간 크기",p:"미디엄",ex:"A medium one, please.",exk:"중간 사이즈로 주세요."},
+  {d:101,lv:2,c:"음식·식당",w:"large",k:"큰, 라지",p:"라알지",ex:"Make it large, please.",exk:"큰 사이즈로 해주세요."},
+  {d:101,lv:1,c:"음식·식당",w:"milk",k:"우유",p:"밀크",ex:"Add more milk, please.",exk:"우유 더 넣어주세요."},
+  {d:101,lv:2,c:"음식·식당",w:"sugar",k:"설탕",p:"슈거",ex:"No sugar, please.",exk:"설탕은 넣지 마세요."},
+  {d:101,lv:3,c:"음식·식당",w:"straw",k:"빨대",p:"스트로",ex:"Can I get a straw?",exk:"빨대 하나 주세요."},
+  {d:101,lv:4,c:"음식·식당",w:"lid",k:"컵 뚜껑",p:"리드",ex:"The lid is loose.",exk:"뚜껑이 느슨해요."},
+  {d:101,lv:1,c:"음식·식당",w:"cup",k:"컵",p:"컵",ex:"Can I get a cup?",exk:"컵 하나 주세요."},
+  {d:101,lv:1,c:"음식·식당",w:"tea",k:"차",p:"티이",ex:"I want iced tea.",exk:"아이스 티 주세요."},
+  {d:101,lv:4,c:"음식·식당",w:"pastry",k:"페이스트리, 빵",p:"페이스트리",ex:"Is this pastry fresh?",exk:"이 빵 신선해요?"},
+  {d:101,lv:3,c:"쇼핑·돈",w:"tip",k:"팁",p:"팁",ex:"Can I leave a tip?",exk:"팁 남길 수 있어요?"},
+  {d:101,lv:3,c:"쇼핑·돈",w:"cash",k:"현금",p:"캐쉬",ex:"Can I pay cash?",exk:"현금으로 낼 수 있어요?"},
+  {d:101,lv:2,c:"쇼핑·돈",w:"card",k:"카드",p:"카알드",ex:"I will use my card.",exk:"카드로 할게요."},
+  {d:101,lv:4,c:"쇼핑·돈",w:"receipt",k:"영수증",p:"리시잇",ex:"I need the receipt.",exk:"영수증 주세요."},
+  {d:101,lv:4,c:"음식·식당",w:"refill",k:"리필, 다시 채우다",p:"리필",ex:"Is refill free?",exk:"리필은 무료예요?"},
+  {d:101,lv:3,c:"음식·식당",w:"to-go",k:"포장, 테이크아웃",p:"투고우",ex:"Make it to-go, please.",exk:"포장해 주세요."},
+  {d:101,lv:2,c:"숙소·생활",w:"wifi",k:"와이파이",p:"와이파이",ex:"What is the wifi password?",exk:"와이파이 비번 뭐예요?"},
+  {d:102,lv:1,c:"음식·식당",w:"table",k:"테이블, 자리",p:"테이블",ex:"A table for two, please.",exk:"두 명 자리 주세요."},
+  {d:102,lv:2,c:"음식·식당",w:"menu",k:"메뉴",p:"메뉴",ex:"Can I see the menu?",exk:"메뉴 좀 볼게요."},
+  {d:102,lv:3,c:"음식·식당",w:"waiter",k:"웨이터, 종업원",p:"웨이터",ex:"Call the waiter, please.",exk:"종업원 좀 불러주세요."},
+  {d:102,lv:5,c:"음식·식당",w:"appetizer",k:"전채, 에피타이저",p:"애피타이저",ex:"We want one appetizer.",exk:"전채 하나 주세요."},
+  {d:102,lv:3,c:"음식·식당",w:"dessert",k:"디저트, 후식",p:"디저얼트",ex:"What is for dessert?",exk:"후식은 뭐가 있어요?"},
+  {d:102,lv:2,c:"음식·식당",w:"salad",k:"샐러드",p:"샐러드",ex:"I want a small salad.",exk:"작은 샐러드 주세요."},
+  {d:102,lv:2,c:"음식·식당",w:"steak",k:"스테이크",p:"스테익",ex:"One steak, medium please.",exk:"스테이크 미디엄으로요."},
+  {d:102,lv:2,c:"음식·식당",w:"fork",k:"포크",p:"포올크",ex:"Can I get a fork?",exk:"포크 하나 주세요."},
+  {d:102,lv:2,c:"음식·식당",w:"knife",k:"나이프, 칼",p:"나이프",ex:"This knife is dirty.",exk:"이 칼 더러워요."},
+  {d:102,lv:3,c:"음식·식당",w:"napkin",k:"냅킨",p:"냅킨",ex:"More napkins, please.",exk:"냅킨 더 주세요."},
+  {d:102,lv:3,c:"음식·식당",w:"plate",k:"접시",p:"플레잇",ex:"Can I get one plate?",exk:"접시 하나 주세요."},
+  {d:102,lv:2,c:"음식·식당",w:"sauce",k:"소스",p:"소올스",ex:"Sauce on the side, please.",exk:"소스는 따로 주세요."},
+  {d:102,lv:3,c:"음식·식당",w:"taste",k:"맛, 맛이 나다",p:"테이스트",ex:"This tastes great.",exk:"이거 맛있어요."},
+  {d:102,lv:3,c:"쇼핑·돈",w:"check",k:"계산서",p:"첵",ex:"Can we get the check?",exk:"계산서 주세요."},
+  {d:102,lv:4,c:"쇼핑·돈",w:"split",k:"나누다, 따로 내다",p:"스플릿",ex:"Can we split the check?",exk:"따로 계산할 수 있어요?"},
+  {d:102,lv:4,c:"쇼핑·돈",w:"tax",k:"세금",p:"택스",ex:"Is tax in this price?",exk:"세금 포함이에요?"},
+  {d:102,lv:3,c:"음식·식당",w:"dish",k:"요리, 접시",p:"디쉬",ex:"What is your best dish?",exk:"제일 맛있는 요리 뭐예요?"},
+  {d:102,lv:1,c:"음식·식당",w:"rice",k:"밥, 쌀",p:"라이스",ex:"Can I get more rice?",exk:"밥 더 주세요."},
+  {d:102,lv:2,c:"음식·식당",w:"drink",k:"음료, 마시다",p:"드링크",ex:"What drinks do you have?",exk:"음료 뭐가 있어요?"},
+  {d:102,lv:3,c:"쇼핑·돈",w:"bill",k:"청구서, 계산서",p:"빌",ex:"The bill, please.",exk:"계산서 주세요."},
+  {d:103,lv:3,c:"숙소·생활",w:"front desk",k:"프런트 데스크",p:"프런 데스크",ex:"Call the front desk.",exk:"프런트에 전화해요."},
+  {d:103,lv:3,c:"숙소·생활",w:"check-in",k:"체크인",p:"체키인",ex:"What time is check-in?",exk:"체크인 몇 시예요?"},
+  {d:103,lv:3,c:"숙소·생활",w:"check-out",k:"체크아웃",p:"체카웃",ex:"Late check-out, please.",exk:"늦은 체크아웃 부탁해요."},
+  {d:103,lv:2,c:"숙소·생활",w:"key",k:"열쇠, 키",p:"키이",ex:"I need one more key.",exk:"키 하나 더 주세요."},
+  {d:103,lv:3,c:"숙소·생활",w:"towel",k:"수건, 타월",p:"타월",ex:"Can I get more towels?",exk:"수건 좀 더 주세요."},
+  {d:103,lv:3,c:"숙소·생활",w:"pillow",k:"베개",p:"필로우",ex:"This pillow is too soft.",exk:"베개가 너무 푹신해요."},
+  {d:103,lv:3,c:"숙소·생활",w:"blanket",k:"담요, 이불",p:"블랭킷",ex:"I need a blanket.",exk:"담요 하나 필요해요."},
+  {d:103,lv:2,c:"숙소·생활",w:"pool",k:"수영장",p:"푸울",ex:"Where is the pool?",exk:"수영장 어디예요?"},
+  {d:103,lv:2,c:"여행·교통",w:"beach",k:"해변, 바닷가",p:"비이치",ex:"The beach is very close.",exk:"해변이 아주 가까워요."},
+  {d:103,lv:3,c:"숙소·생활",w:"elevator",k:"엘리베이터",p:"엘러베이러",ex:"The elevator is not working.",exk:"엘리베이터 고장났어요."},
+  {d:103,lv:4,c:"여행·교통",w:"luggage",k:"짐, 수하물",p:"러기지",ex:"Can you keep my luggage?",exk:"짐 좀 맡아주실래요?"},
+  {d:103,lv:4,c:"숙소·생활",w:"wake-up call",k:"모닝콜",p:"웨이컵 콜",ex:"I want a wake-up call.",exk:"모닝콜 부탁해요."},
+  {d:103,lv:5,c:"숙소·생활",w:"housekeeping",k:"객실 청소",p:"하우스키핑",ex:"Call housekeeping, please.",exk:"객실 청소 불러주세요."},
+  {d:103,lv:3,c:"숙소·생활",w:"AC",k:"에어컨",p:"에이씨",ex:"The AC is too strong.",exk:"에어컨이 너무 세요."},
+  {d:103,lv:3,c:"숙소·생활",w:"view",k:"전망, 경치",p:"뷰우",ex:"I want an ocean view.",exk:"오션뷰 주세요."},
+  {d:103,lv:2,c:"숙소·생활",w:"floor",k:"층, 바닥",p:"플로어",ex:"What floor is it?",exk:"몇 층이에요?"},
+  {d:103,lv:3,c:"숙소·생활",w:"noisy",k:"시끄러운",p:"노이지",ex:"My room is too noisy.",exk:"방이 너무 시끄러워요."},
+  {d:103,lv:3,c:"숙소·생활",w:"broken",k:"고장난, 부서진",p:"브로우큰",ex:"The shower is broken.",exk:"샤워기가 고장났어요."},
+  {d:103,lv:3,c:"쇼핑·돈",w:"extra",k:"추가의, 여분의",p:"엑스트라",ex:"Is there an extra charge?",exk:"추가 요금 있어요?"},
+  {d:103,lv:4,c:"여행·교통",w:"shuttle",k:"셔틀버스",p:"셔를",ex:"Is the shuttle free?",exk:"셔틀 무료예요?"},
+  {d:104,lv:2,c:"여행·교통",w:"taxi",k:"택시",p:"택시",ex:"I need a taxi now.",exk:"지금 택시 필요해요."},
+  {d:104,lv:2,c:"여행·교통",w:"Uber",k:"우버",p:"우버",ex:"I will call an Uber.",exk:"우버 부를게요."},
+  {d:104,lv:3,c:"여행·교통",w:"ride",k:"타고 가기, 태워주기",p:"라이드",ex:"Thanks for the ride.",exk:"태워주셔서 감사해요."},
+  {d:104,lv:2,c:"여행·교통",w:"driver",k:"운전기사",p:"드라이버",ex:"The driver is outside.",exk:"기사님이 밖에 있어요."},
+  {d:104,lv:2,c:"여행·교통",w:"airport",k:"공항",p:"에어포올트",ex:"Please go to the airport.",exk:"공항으로 가주세요."},
+  {d:104,lv:3,c:"여행·교통",w:"address",k:"주소",p:"어드레스",ex:"This is the address.",exk:"여기가 주소예요."},
+  {d:104,lv:3,c:"여행·교통",w:"pick up",k:"태우다, 픽업하다",p:"피컵",ex:"Pick me up outside.",exk:"밖에서 태워주세요."},
+  {d:104,lv:4,c:"여행·교통",w:"drop off",k:"내려주다",p:"드랍오프",ex:"Drop me off now.",exk:"지금 내려주세요."},
+  {d:104,lv:3,c:"여행·교통",w:"traffic",k:"교통, 차 막힘",p:"트래픽",ex:"The traffic is bad.",exk:"차가 많이 막혀요."},
+  {d:104,lv:2,c:"시간·숫자",w:"minute",k:"분",p:"미닛",ex:"It takes ten minutes.",exk:"10분 걸려요."},
+  {d:104,lv:4,c:"여행·교통",w:"seatbelt",k:"안전벨트",p:"씻벨트",ex:"Wear your seatbelt.",exk:"안전벨트 매세요."},
+  {d:104,lv:4,c:"여행·교통",w:"trunk",k:"트렁크",p:"트렁크",ex:"Open the trunk, please.",exk:"트렁크 열어주세요."},
+  {d:104,lv:5,c:"여행·교통",w:"fare",k:"요금",p:"페어",ex:"How much is the fare?",exk:"요금이 얼마예요?"},
+  {d:104,lv:3,c:"동작·행동",w:"cancel",k:"취소하다",p:"캔슬",ex:"I want to cancel.",exk:"취소하고 싶어요."},
+  {d:104,lv:2,c:"동작·행동",w:"wait",k:"기다리다",p:"웨잇",ex:"Please wait one minute.",exk:"잠깐만 기다려주세요."},
+  {d:104,lv:2,c:"여행·교통",w:"turn",k:"돌다, 회전",p:"터언",ex:"Turn left, please.",exk:"왼쪽으로 가주세요."},
+  {d:104,lv:1,c:"여행·교통",w:"stop",k:"멈추다, 정류장",p:"스탑",ex:"Stop at the light.",exk:"신호등에서 멈춰주세요."},
+  {d:104,lv:3,c:"여행·교통",w:"corner",k:"모퉁이, 코너",p:"코오너",ex:"The cafe is on the corner.",exk:"카페는 코너에 있어요."},
+  {d:104,lv:3,c:"여행·교통",w:"arrive",k:"도착하다",p:"어라이브",ex:"When do we arrive?",exk:"언제 도착해요?"},
+  {d:104,lv:4,c:"여행·교통",w:"downtown",k:"시내, 다운타운",p:"다운타운",ex:"Take me downtown, please.",exk:"시내로 가주세요."},
+  {d:105,lv:1,c:"쇼핑·돈",w:"buy",k:"사다",p:"바이",ex:"I want to buy this.",exk:"이거 사고 싶어요."},
+  {d:105,lv:2,c:"쇼핑·돈",w:"pay",k:"결제하다, 내다",p:"페이",ex:"Can I pay here?",exk:"여기서 결제할 수 있어요?"},
+  {d:105,lv:2,c:"쇼핑·돈",w:"price",k:"가격",p:"프라이스",ex:"What is the price?",exk:"가격이 얼마예요?"},
+  {d:105,lv:2,c:"쇼핑·돈",w:"cheap",k:"싼, 저렴한",p:"칩",ex:"This one is cheap.",exk:"이건 싸네요."},
+  {d:105,lv:3,c:"쇼핑·돈",w:"fit",k:"맞다",p:"핏",ex:"Does this fit?",exk:"이거 맞나요?"},
+  {d:105,lv:1,c:"성질·정도",w:"small",k:"작은, 작은 것",p:"스몰",ex:"I need a small one.",exk:"작은 거 필요해요."},
+  {d:105,lv:2,c:"쇼핑·돈",w:"try",k:"입어보다, 해보다",p:"트라이",ex:"Can I try this on?",exk:"이거 입어봐도 돼요?"},
+  {d:105,lv:3,c:"쇼핑·돈",w:"return",k:"반품하다",p:"리턴",ex:"I want to return this.",exk:"이거 반품할게요."},
+  {d:105,lv:4,c:"쇼핑·돈",w:"discount",k:"할인",p:"디스카운트",ex:"Is there a discount?",exk:"할인 되나요?"},
+  {d:105,lv:3,c:"쇼핑·돈",w:"sale",k:"세일, 할인",p:"세일",ex:"Is this on sale?",exk:"이거 세일 중이에요?"},
+  {d:105,lv:4,c:"쇼핑·돈",w:"total",k:"합계, 총액",p:"토탈",ex:"What's the total?",exk:"총 얼마예요?"},
+  {d:105,lv:3,c:"쇼핑·돈",w:"tag",k:"가격표, 태그",p:"태그",ex:"Where is the tag?",exk:"가격표가 어디 있죠?"},
+  {d:105,lv:1,c:"말·표현",w:"color",k:"색깔",p:"컬러",ex:"Any other colors?",exk:"다른 색 있어요?"},
+  {d:105,lv:4,c:"쇼핑·돈",w:"wrap",k:"포장하다",p:"랩",ex:"Can you wrap it?",exk:"포장해 주실래요?"},
+  {d:105,lv:3,c:"쇼핑·돈",w:"change",k:"잔돈, 거스름돈",p:"체인지",ex:"Here is your change.",exk:"잔돈 여기 있어요."},
+  {d:105,lv:2,c:"쇼핑·돈",w:"gift",k:"선물",p:"기프트",ex:"It's a gift.",exk:"선물이에요."},
+  {d:105,lv:3,c:"쇼핑·돈",w:"wallet",k:"지갑",p:"월렛",ex:"I left my wallet.",exk:"지갑을 두고 왔어요."},
+  {d:105,lv:3,c:"쇼핑·돈",w:"cart",k:"카트, 장바구니",p:"카트",ex:"Where are the carts?",exk:"카트 어디 있어요?"},
+  {d:105,lv:3,c:"쇼핑·돈",w:"line",k:"줄",p:"라인",ex:"The line is long.",exk:"줄이 길어요."},
+  {d:105,lv:3,c:"쇼핑·돈",w:"coupon",k:"쿠폰",p:"쿠폰",ex:"Can I use this coupon?",exk:"이 쿠폰 쓸 수 있어요?"},
+  {d:106,lv:2,c:"촬영·영상",w:"light",k:"조명, 불",p:"라잇",ex:"Can you move the light?",exk:"조명 옮겨 주세요."},
+  {d:106,lv:2,c:"촬영·영상",w:"camera",k:"카메라",p:"캐머러",ex:"Look at the camera.",exk:"카메라 봐 주세요."},
+  {d:106,lv:2,c:"촬영·영상",w:"sound",k:"소리, 음향",p:"사운드",ex:"The sound is too low.",exk:"소리가 너무 작아요."},
+  {d:106,lv:4,c:"촬영·영상",w:"shoot",k:"촬영하다",p:"슛",ex:"We shoot at nine.",exk:"9시에 촬영해요."},
+  {d:106,lv:4,c:"촬영·영상",w:"take",k:"테이크, 한 번 촬영",p:"테익",ex:"Let's do one more take.",exk:"한 테이크 더 갈게요."},
+  {d:106,lv:2,c:"시간·숫자",w:"again",k:"다시, 한 번 더",p:"어겐",ex:"Let's try it again.",exk:"다시 한번 해볼게요."},
+  {d:106,lv:2,c:"촬영·영상",w:"stand",k:"서다",p:"스탠드",ex:"Please stand over there.",exk:"저기 서주세요."},
+  {d:106,lv:2,c:"촬영·영상",w:"move",k:"움직이다, 옮기다",p:"무브",ex:"Move a little please.",exk:"조금만 움직여 주세요."},
+  {d:106,lv:2,c:"촬영·영상",w:"quiet",k:"조용한",p:"콰이엇",ex:"Quiet on set, please.",exk:"현장 조용히 해주세요."},
+  {d:106,lv:1,c:"동작·행동",w:"start",k:"시작하다",p:"스타트",ex:"We start in ten minutes.",exk:"10분 후에 시작해요."},
+  {d:106,lv:3,c:"촬영·영상",w:"lower",k:"낮추다, 더 낮은",p:"로워",ex:"Can you lower it?",exk:"조금 낮춰 주세요."},
+  {d:106,lv:3,c:"촬영·영상",w:"louder",k:"더 크게",p:"라우더",ex:"A little louder please.",exk:"조금 더 크게요."},
+  {d:106,lv:2,c:"성질·정도",w:"slow",k:"느린, 천천히",p:"슬로우",ex:"Walk slow, please.",exk:"천천히 걸어 주세요."},
+  {d:106,lv:3,c:"촬영·영상",w:"closer",k:"더 가까이",p:"클로우서",ex:"Come closer, please.",exk:"더 가까이 와주세요."},
+  {d:106,lv:2,c:"말·표현",w:"left",k:"왼쪽",p:"레프트",ex:"Turn to your left.",exk:"왼쪽으로 돌아 주세요."},
+  {d:106,lv:2,c:"말·표현",w:"behind",k:"뒤에",p:"비하인드",ex:"Stand behind the chair.",exk:"의자 뒤에 서주세요."},
+  {d:106,lv:2,c:"말·표현",w:"front",k:"앞, 앞쪽",p:"프런트",ex:"Sit in the front.",exk:"앞에 앉아 주세요."},
+  {d:106,lv:2,c:"촬영·영상",w:"smile",k:"웃다, 미소",p:"스마일",ex:"Smile a little more.",exk:"조금 더 웃어 주세요."},
+  {d:106,lv:4,c:"촬영·영상",w:"angle",k:"각도, 앵글",p:"앵글",ex:"Let's try another angle.",exk:"다른 앵글로 가볼게요."},
+  {d:106,lv:3,c:"촬영·영상",w:"hold",k:"잠깐 멈추다",p:"홀드",ex:"Hold it right there.",exk:"거기서 멈춰주세요."},
+  {d:107,lv:3,c:"일·업무",w:"meeting",k:"회의, 미팅",p:"미링",ex:"The meeting is at two.",exk:"회의는 2시예요."},
+  {d:107,lv:5,c:"일·업무",w:"client",k:"클라이언트, 고객",p:"클라이언트",ex:"My client will come.",exk:"제 클라이언트가 와요."},
+  {d:107,lv:2,c:"일·업무",w:"idea",k:"생각, 아이디어",p:"아이디어",ex:"I like that idea.",exk:"그 아이디어 좋아요."},
+  {d:107,lv:2,c:"일·업무",w:"plan",k:"계획, 계획하다",p:"플랜",ex:"What is the plan?",exk:"계획이 뭐예요?"},
+  {d:107,lv:5,c:"일·업무",w:"budget",k:"예산",p:"버짓",ex:"Is the budget enough?",exk:"예산이 충분해요?"},
+  {d:107,lv:7,c:"일·업무",w:"deadline",k:"마감일",p:"데드라인",ex:"When is the deadline?",exk:"마감일이 언제예요?"},
+  {d:107,lv:5,c:"일·업무",w:"schedule",k:"일정, 스케줄",p:"스케쥴",ex:"Let me check my schedule.",exk:"일정 확인해 볼게요."},
+  {d:107,lv:4,c:"일·업무",w:"agree",k:"동의하다",p:"어그리",ex:"I agree with you.",exk:"저도 같은 생각이에요."},
+  {d:107,lv:4,c:"일·업무",w:"explain",k:"설명하다",p:"익스플레인",ex:"Can you explain more?",exk:"좀 더 설명해 주세요."},
+  {d:107,lv:2,c:"말·표현",w:"question",k:"질문",p:"퀘스쳔",ex:"I have one question.",exk:"질문 하나 있어요."},
+  {d:107,lv:2,c:"말·표현",w:"answer",k:"대답, 대답하다",p:"앤서",ex:"I need your answer.",exk:"답을 듣고 싶어요."},
+  {d:107,lv:4,c:"일·업무",w:"sample",k:"샘플, 견본",p:"쌤플",ex:"Can I see a sample?",exk:"샘플 볼 수 있어요?"},
+  {d:107,lv:5,c:"일·업무",w:"feedback",k:"피드백, 의견",p:"피드백",ex:"Thank you for the feedback.",exk:"피드백 감사합니다."},
+  {d:107,lv:2,c:"시간·숫자",w:"next",k:"다음",p:"넥스트",ex:"See you next time.",exk:"다음에 봬요."},
+  {d:107,lv:1,c:"시간·숫자",w:"week",k:"주, 일주일",p:"위크",ex:"Can we talk next week?",exk:"다음 주에 얘기할까요?"},
+  {d:107,lv:2,c:"일·업무",w:"send",k:"보내다",p:"센드",ex:"I will send it today.",exk:"오늘 보내 드릴게요."},
+  {d:107,lv:2,c:"동작·행동",w:"call",k:"전화하다, 전화",p:"콜",ex:"Please call me later.",exk:"나중에 전화 주세요."},
+  {d:107,lv:2,c:"말·표현",w:"maybe",k:"어쩌면, 아마",p:"메이비",ex:"Maybe on Friday.",exk:"아마 금요일에요."},
+  {d:107,lv:2,c:"말·표현",w:"problem",k:"문제",p:"프라블럼",ex:"There is no problem.",exk:"문제 없어요."},
+  {d:107,lv:3,c:"말·표현",w:"mean",k:"의미하다, 뜻하다",p:"민",ex:"What do you mean?",exk:"무슨 뜻이에요?"},
+  {d:108,lv:5,c:"음식·식당",w:"dine in",k:"매장에서 먹다",p:"다이닌",ex:"Will you dine in today?",exk:"오늘 매장에서 드시나요?"},
+  {d:108,lv:4,c:"음식·식당",w:"takeout",k:"포장, 테이크아웃",p:"테이카웃",ex:"Is it for takeout?",exk:"포장해 드릴까요?"},
+  {d:108,lv:4,c:"시간·숫자",w:"moment",k:"잠깐, 순간",p:"모먼트",ex:"Just a moment, sir.",exk:"잠시만요, 손님."},
+  {d:108,lv:5,c:"음식·식당",w:"recommend",k:"추천하다",p:"레커멘드",ex:"I recommend this one.",exk:"이거 추천해요."},
+  {d:108,lv:5,c:"음식·식당",w:"decaf",k:"디카페인",p:"디캐프",ex:"Do you want decaf?",exk:"디카페인으로 드릴까요?"},
+  {d:108,lv:4,c:"음식·식당",w:"oat milk",k:"오트 우유",p:"오웃 밀크",ex:"We have oat milk too.",exk:"오트 우유도 있어요."},
+  {d:108,lv:4,c:"음식·식당",w:"syrup",k:"시럽",p:"씨럽",ex:"Extra syrup in it?",exk:"시럽 더 넣어드려요?"},
+  {d:108,lv:4,c:"음식·식당",w:"whipped cream",k:"휘핑크림",p:"윕 크림",ex:"With whipped cream on top?",exk:"위에 휘핑크림 올려요?"},
+  {d:108,lv:4,c:"음식·식당",w:"croissant",k:"크루아상",p:"크뤄쌍",ex:"The croissant is fresh today.",exk:"크루아상 오늘 갓 구웠어요."},
+  {d:108,lv:3,c:"음식·식당",w:"bagel",k:"베이글",p:"베이글",ex:"The bagel comes with jam.",exk:"베이글엔 잼이 나와요."},
+  {d:108,lv:2,c:"성질·정도",w:"warm",k:"따뜻한",p:"웜",ex:"Do you want it warm?",exk:"따뜻하게 해드릴까요?"},
+  {d:108,lv:4,c:"음식·식당",w:"tray",k:"쟁반, 트레이",p:"트레이",ex:"Your tray is ready.",exk:"트레이 나왔습니다."},
+  {d:108,lv:5,c:"음식·식당",w:"stir",k:"젓다",p:"스터",ex:"Please stir it well.",exk:"잘 저어 드세요."},
+  {d:108,lv:3,c:"음식·식당",w:"beans",k:"원두",p:"빈즈",ex:"Our beans are from Kenya.",exk:"저희 원두는 케냐산이에요."},
+  {d:108,lv:2,c:"음식·식당",w:"sweet",k:"달다, 단",p:"스윗",ex:"Is it too sweet?",exk:"너무 달아요?"},
+  {d:108,lv:2,c:"음식·식당",w:"strong",k:"진하다, 센",p:"스트롱",ex:"This one is very strong.",exk:"이건 아주 진해요."},
+  {d:108,lv:4,c:"쇼핑·돈",w:"sold out",k:"다 팔림, 품절",p:"쏠다웃",ex:"The cake is sold out.",exk:"케이크는 다 팔렸어요."},
+  {d:108,lv:2,c:"숙소·생활",w:"Wi-Fi",k:"와이파이",p:"와이파이",ex:"Our Wi-Fi is free.",exk:"저희 와이파이는 무료예요."},
+  {d:108,lv:4,c:"숙소·생활",w:"restroom",k:"화장실",p:"뤠스트룸",ex:"The restroom is that way.",exk:"화장실은 저쪽이에요."},
+  {d:108,lv:4,c:"음식·식당",w:"warm up",k:"데우다",p:"워럼업",ex:"I can warm this up.",exk:"이거 데워드릴 수 있어요."},
+  {d:109,lv:2,c:"몸·건강",w:"sick",k:"아픈, 몸이 안 좋은",p:"씩",ex:"My wife feels sick.",exk:"아내가 몸이 안 좋아요."},
+  {d:109,lv:3,c:"몸·건강",w:"hurt",k:"아프다, 다치다",p:"헐트",ex:"My back hurts.",exk:"허리가 아파요."},
+  {d:109,lv:4,c:"몸·건강",w:"pain",k:"통증, 아픔",p:"페인",ex:"I have chest pain.",exk:"가슴에 통증이 있어요."},
+  {d:109,lv:3,c:"몸·건강",w:"headache",k:"두통",p:"헤데익",ex:"I got a bad headache.",exk:"두통이 심해요."},
+  {d:109,lv:4,c:"몸·건강",w:"stomachache",k:"복통, 배탈",p:"스타머케익",ex:"She has a stomachache.",exk:"그녀는 배가 아파요."},
+  {d:109,lv:4,c:"몸·건강",w:"fever",k:"열",p:"피버",ex:"Do I have a fever?",exk:"저 열 있어요?"},
+  {d:109,lv:4,c:"몸·건강",w:"cough",k:"기침, 기침하다",p:"커프",ex:"I cough at night.",exk:"밤에 기침이 나요."},
+  {d:109,lv:3,c:"몸·건강",w:"medicine",k:"약",p:"메디슨",ex:"Take this medicine twice.",exk:"이 약 두 번 드세요."},
+  {d:109,lv:5,c:"몸·건강",w:"pharmacy",k:"약국",p:"파머씨",ex:"The pharmacy opens at nine.",exk:"약국은 9시에 열어요."},
+  {d:109,lv:4,c:"몸·건강",w:"pill",k:"알약",p:"필",ex:"One pill after dinner.",exk:"저녁 후에 한 알요."},
+  {d:109,lv:1,c:"몸·건강",w:"doctor",k:"의사",p:"닥터",ex:"I need a doctor now.",exk:"지금 의사가 필요해요."},
+  {d:109,lv:2,c:"몸·건강",w:"hospital",k:"병원",p:"하스피털",ex:"Take me to the hospital.",exk:"병원에 데려다주세요."},
+  {d:109,lv:5,c:"몸·건강",w:"emergency",k:"응급, 비상",p:"이멀전씨",ex:"This is an emergency.",exk:"이건 응급 상황이에요."},
+  {d:109,lv:1,c:"동작·행동",w:"help",k:"돕다, 도움",p:"헬프",ex:"I need help fast.",exk:"빨리 도움이 필요해요."},
+  {d:109,lv:2,c:"몸·건강",w:"nurse",k:"간호사",p:"널스",ex:"The nurse is coming.",exk:"간호사가 와요."},
+  {d:109,lv:5,c:"몸·건강",w:"dizzy",k:"어지러운",p:"디지",ex:"I get dizzy sometimes.",exk:"가끔 어지러워요."},
+  {d:109,lv:5,c:"몸·건강",w:"allergic",k:"알레르기가 있는",p:"얼러직",ex:"Are you allergic to milk?",exk:"우유 알레르기 있어요?"},
+  {d:109,lv:4,c:"몸·건강",w:"band-aid",k:"반창고, 밴드",p:"밴데이드",ex:"Do you have band-aids?",exk:"반창고 있어요?"},
+  {d:109,lv:5,c:"몸·건강",w:"ambulance",k:"구급차",p:"앰뷸런스",ex:"The ambulance is outside.",exk:"구급차가 밖에 있어요."},
+  {d:109,lv:6,c:"몸·건강",w:"insurance",k:"보험",p:"인슈어런스",ex:"Here is my insurance card.",exk:"여기 제 보험 카드요."},
+  {d:110,lv:1,c:"사람·관계",w:"meet",k:"만나다",p:"밋",ex:"Good to meet you.",exk:"만나서 좋네요."},
+  {d:110,lv:1,c:"사람·관계",w:"hey",k:"안녕, 저기요",p:"헤이",ex:"Hey, are you Sam?",exk:"안녕, 네가 샘이야?"},
+  {d:110,lv:3,c:"사람·관계",w:"how's it going",k:"잘 지내요?",p:"하우짓고잉",ex:"Tom, how's it going?",exk:"톰, 잘 지내?"},
+  {d:110,lv:2,c:"사람·관계",w:"job",k:"직업, 일자리",p:"잡",ex:"How is your new job?",exk:"새 직업은 어때요?"},
+  {d:110,lv:1,c:"일·업무",w:"work",k:"일하다, 일",p:"월크",ex:"I work in Seoul.",exk:"저는 서울에서 일해요."},
+  {d:110,lv:2,c:"숙소·생활",w:"live",k:"살다",p:"리브",ex:"I live near the park.",exk:"공원 근처에 살아요."},
+  {d:110,lv:2,c:"숙소·생활",w:"weather",k:"날씨",p:"웨더",ex:"The weather is great.",exk:"날씨가 아주 좋아요."},
+  {d:110,lv:2,c:"시간·숫자",w:"weekend",k:"주말",p:"위켄드",ex:"How was your weekend?",exk:"주말 어땠어요?"},
+  {d:110,lv:2,c:"사람·관계",w:"hobby",k:"취미",p:"하비",ex:"What is your hobby?",exk:"취미가 뭐예요?"},
+  {d:110,lv:3,c:"사람·관계",w:"chat",k:"수다 떨다, 대화",p:"챗",ex:"Let's chat over lunch.",exk:"점심 먹으며 얘기해요."},
+  {d:110,lv:2,c:"시간·숫자",w:"first time",k:"처음, 첫 번째",p:"펄스타임",ex:"My first time in LA.",exk:"LA는 처음이에요."},
+  {d:110,lv:1,c:"감정·상태",w:"love",k:"아주 좋아하다",p:"러브",ex:"I love this song.",exk:"이 노래 아주 좋아요."},
+  {d:110,lv:2,c:"감정·상태",w:"cool",k:"멋진, 괜찮은",p:"쿨",ex:"Your shoes are cool.",exk:"신발 멋지네요."},
+  {d:110,lv:3,c:"감정·상태",w:"awesome",k:"최고인, 멋진",p:"어썸",ex:"This place is awesome.",exk:"여기 정말 멋져요."},
+  {d:110,lv:2,c:"성질·정도",w:"really",k:"정말, 진짜",p:"뤼얼리",ex:"I am really glad.",exk:"정말 기뻐요."},
+  {d:110,lv:2,c:"말·표현",w:"too",k:"~도 또한",p:"투",ex:"I like jazz too.",exk:"저도 재즈 좋아해요."},
+  {d:110,lv:2,c:"성질·정도",w:"same",k:"같은, 똑같은",p:"쎄임",ex:"We are the same age.",exk:"우리 동갑이에요."},
+  {d:110,lv:2,c:"여행·교통",w:"town",k:"동네, 도시",p:"타운",ex:"Are you new in town?",exk:"여기 처음이세요?"},
+  {d:110,lv:3,c:"시간·숫자",w:"later",k:"나중에",p:"레이럴",ex:"Let's talk later.",exk:"나중에 얘기해요."},
+  {d:110,lv:2,c:"사람·관계",w:"see you",k:"또 봐요",p:"씨유",ex:"See you next week.",exk:"다음 주에 봐요."},
+  {d:8,lv:1,c:"동작·행동",w:"go",k:"가다",p:"고우",ex:"I go every day.",exk:"저는 매일 가요."},
+  {d:8,lv:1,c:"음식·식당",w:"eat",k:"먹다",p:"이트",ex:"I eat breakfast here.",exk:"저는 여기서 아침을 먹어요."},
+  {d:8,lv:1,c:"일·업무",w:"work",k:"일하다",p:"워크",ex:"I work in Seoul.",exk:"저는 서울에서 일해요."},
+  {d:8,lv:2,c:"숙소·생활",w:"live",k:"살다",p:"리브",ex:"I live in Seoul.",exk:"저는 서울에 살아요."},
+  {d:8,lv:2,c:"말·표현",w:"speak",k:"말하다, (언어를) 하다",p:"스피크",ex:"I speak a little English.",exk:"저는 영어를 조금 해요."},
+  {d:8,lv:2,c:"음식·식당",w:"drink",k:"마시다",p:"드링크",ex:"I drink coffee every day.",exk:"저는 매일 커피를 마셔요."},
+  {d:8,lv:1,c:"동작·행동",w:"study",k:"공부하다",p:"스터디",ex:"I study English every day.",exk:"저는 매일 영어를 공부해요."},
+  {d:8,lv:1,c:"동작·행동",w:"know",k:"알다",p:"노우",ex:"I know his name.",exk:"저는 그의 이름을 알아요."},
+  {d:8,lv:1,c:"말·표현",w:"English",k:"영어",p:"잉글리시",ex:"I study English.",exk:"저는 영어를 공부해요."},
+  {d:8,lv:1,c:"말·표현",w:"Korean",k:"한국어",p:"코리안",ex:"I speak Korean.",exk:"저는 한국어를 해요."},
+  {d:8,lv:1,c:"여행·교통",w:"Seoul",k:"서울",p:"서울",ex:"We live in Seoul.",exk:"저희는 서울에 살아요."},
+  {d:8,lv:1,c:"시간·숫자",w:"every",k:"매~, 모든",p:"에브리",ex:"I eat breakfast every day.",exk:"저는 매일 아침을 먹어요."},
+  {d:8,lv:1,c:"시간·숫자",w:"day",k:"날, 하루",p:"데이",ex:"I study every day.",exk:"저는 매일 공부해요."},
+  {d:8,lv:2,c:"성질·정도",w:"little",k:"조금 (a little)",p:"리틀",ex:"I speak a little Korean.",exk:"저는 한국어를 조금 해요."},
+  {d:8,lv:2,c:"말·표현",w:"too",k:"~도, 또한",p:"투",ex:"I work in Seoul, too.",exk:"저도 서울에서 일해요."},
+  {d:9,lv:1,c:"감정·상태",w:"like",k:"좋아하다",p:"라이크",ex:"I like it.",exk:"저 이거 좋아요."},
+  {d:9,lv:1,c:"감정·상태",w:"want",k:"원하다, ~하고 싶다",p:"원트",ex:"I want a beer.",exk:"맥주 하나 주세요."},
+  {d:9,lv:1,c:"감정·상태",w:"need",k:"필요하다",p:"니드",ex:"I need a towel.",exk:"수건 하나 필요해요."},
+  {d:9,lv:1,c:"성질·정도",w:"more",k:"더, 더 많은",p:"모어",ex:"I want more water.",exk:"물 더 주세요."},
+  {d:9,lv:2,c:"성질·정도",w:"another",k:"하나 더, 다른 것",p:"어나더",ex:"I want another fork.",exk:"포크 하나 더 주세요."},
+  {d:9,lv:3,c:"여행·교통",w:"ticket",k:"표, 티켓",p:"티킷",ex:"We need two tickets.",exk:"표 두 장 필요해요."},
+  {d:9,lv:1,c:"쇼핑·돈",w:"money",k:"돈",p:"머니",ex:"I need money.",exk:"저 돈이 필요해요."},
+  {d:9,lv:1,c:"숙소·생활",w:"hotel",k:"호텔",p:"호우텔",ex:"We like this hotel.",exk:"저희 이 호텔 마음에 들어요."},
+  {d:9,lv:2,c:"음식·식당",w:"taco",k:"타코",p:"타코",ex:"I like tacos.",exk:"저는 타코를 좋아해요."},
+  {d:9,lv:1,c:"음식·식당",w:"chicken",k:"치킨, 닭고기",p:"치킨",ex:"We want chicken tacos.",exk:"치킨 타코 주세요."},
+  {d:9,lv:1,c:"음식·식당",w:"fish",k:"생선, 물고기",p:"피시",ex:"I like fish.",exk:"저는 생선을 좋아해요."},
+  {d:9,lv:2,c:"음식·식당",w:"juice",k:"주스",p:"주스",ex:"We want more juice.",exk:"주스 더 주세요."},
+  {d:9,lv:2,c:"음식·식당",w:"beer",k:"맥주",p:"비어",ex:"I want a beer, please.",exk:"맥주 하나 주세요."},
+  {d:9,lv:3,c:"숙소·생활",w:"shower",k:"샤워, 샤워기",p:"샤워",ex:"I need a shower.",exk:"저 샤워해야 해요."},
+  {d:9,lv:1,c:"시간·숫자",w:"now",k:"지금",p:"나우",ex:"I want to go now.",exk:"저 지금 가고 싶어요."},
+  {lv:1,c:"시간·숫자",w:"afternoon",k:"오후",p:"애프터눈",ex:"The afternoon is free.",exk:"오후는 한가해요."},
+  {lv:1,c:"몸·건강",w:"arm",k:"팔",p:"암",ex:"My arm is sore.",exk:"팔이 아파요."},
+  {lv:1,c:"사람·관계",w:"aunt",k:"이모, 고모",p:"앤트",ex:"My aunt is kind.",exk:"이모는 다정해요."},
+  {lv:1,c:"사람·관계",w:"baby",k:"아기",p:"베이비",ex:"The baby is sleeping.",exk:"아기가 자고 있어요."},
+  {lv:1,c:"성질·정도",w:"big",k:"큰",p:"빅",ex:"Their house is big.",exk:"그들의 집은 커요."},
+  {lv:1,c:"성질·정도",w:"black",k:"검은",p:"블랙",ex:"His shoes are black.",exk:"그의 신발은 검정이에요."},
+  {lv:1,c:"성질·정도",w:"blue",k:"파란",p:"블루",ex:"The sky is blue.",exk:"하늘이 파래요."},
+  {lv:1,c:"성질·정도",w:"brown",k:"갈색의",p:"브라운",ex:"His eyes are brown.",exk:"그는 눈이 갈색이에요."},
+  {lv:1,c:"여행·교통",w:"car",k:"차, 자동차",p:"카",ex:"My car is small.",exk:"제 차는 작아요."},
+  {lv:1,c:"말·표현",w:"cat",k:"고양이",p:"캣",ex:"My cat is white.",exk:"제 고양이는 하얘요."},
+  {lv:1,c:"사람·관계",w:"cousin",k:"사촌",p:"커즌",ex:"My cousin is a nurse.",exk:"사촌은 간호사예요."},
+  {lv:1,c:"성질·정도",w:"dark",k:"어두운",p:"다크",ex:"The room is dark.",exk:"방이 어두워요."},
+  {lv:1,c:"사람·관계",w:"daughter",k:"딸",p:"도러",ex:"Our daughter is here.",exk:"우리 딸이 여기 있어요."},
+  {lv:1,c:"성질·정도",w:"dirty",k:"더러운",p:"더리",ex:"My shoes are dirty.",exk:"신발이 더러워요."},
+  {lv:1,c:"말·표현",w:"dog",k:"개",p:"도그",ex:"Their dog is friendly.",exk:"그들의 개는 순해요."},
+  {lv:1,c:"몸·건강",w:"ear",k:"귀",p:"이어",ex:"My ears are ringing.",exk:"귀가 울려요."},
+  {lv:1,c:"시간·숫자",w:"evening",k:"저녁",p:"이브닝",ex:"The evening is cool.",exk:"저녁은 선선해요."},
+  {lv:1,c:"몸·건강",w:"eye",k:"눈",p:"아이",ex:"She has pretty eyes.",exk:"그녀는 눈이 예뻐요."},
+  {lv:1,c:"몸·건강",w:"face",k:"얼굴",p:"페이스",ex:"Your face looks tired.",exk:"얼굴이 피곤해 보여요."},
+  {lv:1,c:"몸·건강",w:"finger",k:"손가락",p:"핑거",ex:"I cut my finger.",exk:"손가락을 베였어요."},
+  {lv:1,c:"시간·숫자",w:"five",k:"다섯, 오",p:"파이브",ex:"We need five more chairs.",exk:"의자가 다섯 개 더 필요해요."},
+  {lv:1,c:"몸·건강",w:"foot",k:"발",p:"풋",ex:"My foot is asleep.",exk:"발이 저려요."},
+  {lv:1,c:"사람·관계",w:"grandma",k:"할머니",p:"그랜마",ex:"Grandma is eighty years old.",exk:"할머니는 여든이세요."},
+  {lv:1,c:"성질·정도",w:"green",k:"초록의",p:"그린",ex:"My shirt is green.",exk:"제 셔츠는 초록색이에요."},
+  {lv:1,c:"몸·건강",w:"hair",k:"머리카락",p:"헤어",ex:"Her hair is long.",exk:"그녀는 머리가 길어요."},
+  {lv:1,c:"몸·건강",w:"hand",k:"손",p:"핸드",ex:"His hands are warm.",exk:"그의 손은 따뜻해요."},
+  {lv:1,c:"몸·건강",w:"head",k:"머리",p:"헤드",ex:"My head really hurts.",exk:"머리가 정말 아파요."},
+  {lv:1,c:"성질·정도",w:"heavy",k:"무거운",p:"헤비",ex:"This box is heavy.",exk:"이 상자는 무거워요."},
+  {lv:1,c:"시간·숫자",w:"hour",k:"시간",p:"아워",ex:"An hour is enough.",exk:"한 시간이면 충분해요."},
+  {lv:1,c:"숙소·생활",w:"house",k:"집",p:"하우스",ex:"Their house is white.",exk:"그들의 집은 하얘요."},
+  {lv:1,c:"몸·건강",w:"leg",k:"다리",p:"레그",ex:"My legs feel heavy.",exk:"다리가 무거워요."},
+  {lv:1,c:"성질·정도",w:"long",k:"긴",p:"롱",ex:"The line is long.",exk:"줄이 길어요."},
+  {lv:1,c:"시간·숫자",w:"month",k:"달, 월",p:"먼쓰",ex:"This month is busy.",exk:"이번 달은 바빠요."},
+  {lv:1,c:"시간·숫자",w:"morning",k:"아침",p:"모닝",ex:"The morning is quiet.",exk:"아침은 조용해요."},
+  {lv:1,c:"몸·건강",w:"mouth",k:"입",p:"마우쓰",ex:"Open your mouth wide.",exk:"입을 크게 벌리세요."},
+  {lv:1,c:"성질·정도",w:"new",k:"새로운",p:"뉴",ex:"My phone is new.",exk:"제 휴대폰은 새것이에요."},
+  {lv:1,c:"시간·숫자",w:"night",k:"밤",p:"나이트",ex:"Last night was long.",exk:"어젯밤은 길었어요."},
+  {lv:1,c:"몸·건강",w:"nose",k:"코",p:"노즈",ex:"My nose is cold.",exk:"코가 시려요."},
+  {lv:1,c:"성질·정도",w:"old",k:"낡은, 나이든",p:"올드",ex:"This car is old.",exk:"이 차는 오래됐어요."},
+  {lv:1,c:"시간·숫자",w:"one",k:"하나, 한 개",p:"원",ex:"I need one more.",exk:"하나만 더 주세요."},
+  {lv:1,c:"말·표현",w:"pen",k:"펜",p:"펜",ex:"This pen is mine.",exk:"이 펜은 제 거예요."},
+  {lv:1,c:"말·표현",w:"phone",k:"전화, 휴대폰",p:"폰",ex:"My phone is dead.",exk:"휴대폰 배터리가 없어요."},
+  {lv:1,c:"성질·정도",w:"pink",k:"분홍의",p:"핑크",ex:"She loves pink flowers.",exk:"그녀는 분홍 꽃을 좋아해요."},
+  {lv:1,c:"성질·정도",w:"red",k:"빨간",p:"레드",ex:"Her bag is red.",exk:"그녀의 가방은 빨개요."},
+  {lv:1,c:"말·표현",w:"school",k:"학교",p:"스쿨",ex:"The school is close by.",exk:"학교는 가까워요."},
+  {lv:1,c:"성질·정도",w:"short",k:"짧은, 키가 작은",p:"숏",ex:"My hair is short.",exk:"제 머리는 짧아요."},
+  {lv:1,c:"성질·정도",w:"soft",k:"부드러운",p:"소프트",ex:"The bed is soft.",exk:"침대가 푹신해요."},
+  {lv:1,c:"사람·관계",w:"son",k:"아들",p:"썬",ex:"My son is ten.",exk:"제 아들은 열 살이에요."},
+  {lv:1,c:"시간·숫자",w:"ten",k:"열, 십",p:"텐",ex:"It costs ten dollars.",exk:"십 달러예요."},
+  {lv:1,c:"시간·숫자",w:"three",k:"셋, 세 개",p:"쓰리",ex:"Three people are waiting.",exk:"세 명이 기다려요."},
+  {lv:1,c:"시간·숫자",w:"today",k:"오늘",p:"투데이",ex:"Today is my birthday.",exk:"오늘은 제 생일이에요."},
+  {lv:1,c:"시간·숫자",w:"tomorrow",k:"내일",p:"터마로우",ex:"See you tomorrow morning.",exk:"내일 아침에 봐요."},
+  {lv:1,c:"몸·건강",w:"tooth",k:"이, 치아",p:"투쓰",ex:"My tooth hurts today.",exk:"오늘 이가 아파요."},
+  {lv:1,c:"시간·숫자",w:"two",k:"둘, 두 개",p:"투",ex:"We have two kids.",exk:"저희는 아이가 둘이에요."},
+  {lv:1,c:"사람·관계",w:"uncle",k:"삼촌",p:"엉클",ex:"My uncle lives nearby.",exk:"삼촌은 근처에 살아요."},
+  {lv:1,c:"성질·정도",w:"wet",k:"젖은",p:"웻",ex:"The floor is wet.",exk:"바닥이 젖었어요."},
+  {lv:1,c:"성질·정도",w:"white",k:"흰, 하얀",p:"와이트",ex:"The walls are white.",exk:"벽이 하얀색이에요."},
+  {lv:1,c:"시간·숫자",w:"year",k:"년, 해",p:"이어",ex:"This year is special.",exk:"올해는 특별해요."},
+  {lv:1,c:"성질·정도",w:"yellow",k:"노란",p:"옐로우",ex:"That taxi is yellow.",exk:"저 택시는 노란색이에요."},
+  {lv:1,c:"시간·숫자",w:"yesterday",k:"어제",p:"예스터데이",ex:"It rained hard yesterday.",exk:"어제 비가 많이 왔어요."},
+  {lv:2,c:"말·표현",w:"about",k:"~에 대해",p:"어바웃",ex:"Tell me about your trip.",exk:"여행 이야기 좀 해 주세요."},
+  {lv:2,c:"말·표현",w:"above",k:"~보다 위에",p:"어버브",ex:"The clock is above the door.",exk:"시계가 문 위에 있어요."},
+  {lv:2,c:"말·표현",w:"across",k:"~건너편에",p:"어크로스",ex:"The store is across the street.",exk:"가게는 길 건너에 있어요."},
+  {lv:2,c:"감정·상태",w:"angry",k:"화난",p:"앵그리",ex:"He looks angry today.",exk:"그는 오늘 화나 보여요."},
+  {lv:2,c:"말·표현",w:"around",k:"~주위에, 대략",p:"어라운드",ex:"We walked around the lake.",exk:"우리는 호수 주위를 걸었어요."},
+  {lv:2,c:"말·표현",w:"at",k:"~에",p:"앳",ex:"We meet at six.",exk:"여섯 시에 만나요."},
+  {lv:2,c:"말·표현",w:"between",k:"~사이에",p:"비트윈",ex:"Sit between us please.",exk:"우리 사이에 앉으세요."},
+  {lv:2,c:"감정·상태",w:"boring",k:"지루한",p:"보링",ex:"The movie was boring.",exk:"그 영화는 지루했어요."},
+  {lv:2,c:"동작·행동",w:"borrow",k:"빌리다",p:"바로우",ex:"Can I borrow your pen?",exk:"펜 좀 빌릴 수 있을까요?"},
+  {lv:2,c:"성질·정도",w:"bright",k:"밝은",p:"브라이트",ex:"This room is bright.",exk:"이 방은 밝아요."},
+  {lv:2,c:"동작·행동",w:"bring",k:"가져오다",p:"브링",ex:"Bring your passport tomorrow.",exk:"내일 여권을 가져오세요."},
+  {lv:2,c:"감정·상태",w:"careful",k:"조심하는",p:"케어풀",ex:"Please be careful here.",exk:"여기서 조심하세요."},
+  {lv:2,c:"동작·행동",w:"carry",k:"나르다, 들다",p:"캐리",ex:"Can you carry this?",exk:"이것 좀 들어 줄래요?"},
+  {lv:2,c:"동작·행동",w:"catch",k:"잡다",p:"캐치",ex:"Catch the last bus.",exk:"막차를 타세요."},
+  {lv:2,c:"말·표현",w:"choose",k:"고르다",p:"츄즈",ex:"Choose one of these.",exk:"이 중에 하나 고르세요."},
+  {lv:2,c:"동작·행동",w:"come",k:"오다",p:"컴",ex:"Please come here now.",exk:"지금 여기로 오세요."},
+  {lv:2,c:"감정·상태",w:"comfortable",k:"편안한",p:"컴포터블",ex:"This chair is comfortable.",exk:"이 의자는 편해요."},
+  {lv:2,c:"음식·식당",w:"cook",k:"요리하다",p:"쿡",ex:"He cooks really well.",exk:"그는 요리를 정말 잘해요."},
+  {lv:2,c:"동작·행동",w:"cut",k:"자르다",p:"컷",ex:"Cut it in half.",exk:"반으로 잘라 주세요."},
+  {lv:2,c:"성질·정도",w:"dangerous",k:"위험한",p:"데인저러스",ex:"That road is dangerous.",exk:"저 길은 위험해요."},
+  {lv:2,c:"성질·정도",w:"deep",k:"깊은",p:"딥",ex:"The pool is deep.",exk:"수영장이 깊어요."},
+  {lv:2,c:"성질·정도",w:"different",k:"다른",p:"디퍼런트",ex:"This one is different.",exk:"이건 달라요."},
+  {lv:2,c:"성질·정도",w:"difficult",k:"어려운",p:"디피컬트",ex:"The question is difficult.",exk:"그 질문은 어려워요."},
+  {lv:2,c:"여행·교통",w:"drive",k:"운전하다",p:"드라이브",ex:"I drive to work.",exk:"저는 차로 출근해요."},
+  {lv:2,c:"성질·정도",w:"easy",k:"쉬운",p:"이지",ex:"This test was easy.",exk:"이 시험은 쉬웠어요."},
+  {lv:2,c:"음식·식당",w:"eat",k:"먹다",p:"잇",ex:"Let's eat something light.",exk:"가벼운 걸로 먹어요."},
+  {lv:2,c:"성질·정도",w:"empty",k:"빈",p:"엠티",ex:"My cup is empty.",exk:"제 컵이 비었어요."},
+  {lv:2,c:"동작·행동",w:"enter",k:"들어가다",p:"엔터",ex:"Please enter through here.",exk:"여기로 들어오세요."},
+  {lv:2,c:"성질·정도",w:"fast",k:"빠른",p:"패스트",ex:"That car is fast.",exk:"저 차는 빨라요."},
+  {lv:2,c:"동작·행동",w:"find",k:"찾다",p:"파인드",ex:"I can't find my keys.",exk:"열쇠를 못 찾겠어요."},
+  {lv:2,c:"여행·교통",w:"fly",k:"날다, 비행하다",p:"플라이",ex:"We fly to Cancun.",exk:"우리는 칸쿤으로 날아가요."},
+  {lv:2,c:"동작·행동",w:"follow",k:"따라가다",p:"팔로우",ex:"Follow me this way.",exk:"이쪽으로 따라오세요."},
+  {lv:2,c:"말·표현",w:"forget",k:"잊다",p:"포겟",ex:"Don't forget your bag.",exk:"가방 잊지 마세요."},
+  {lv:2,c:"성질·정도",w:"fresh",k:"신선한",p:"프레쉬",ex:"These beans are fresh.",exk:"이 원두는 신선해요."},
+  {lv:2,c:"동작·행동",w:"get",k:"받다, 얻다",p:"겟",ex:"I get emails every day.",exk:"저는 매일 메일을 받아요."},
+  {lv:2,c:"동작·행동",w:"give",k:"주다",p:"기브",ex:"Give me one more.",exk:"하나 더 주세요."},
+  {lv:2,c:"동작·행동",w:"go",k:"가다",p:"고우",ex:"I go to work early.",exk:"저는 일찍 출근해요."},
+  {lv:2,c:"성질·정도",w:"important",k:"중요한",p:"임포턴트",ex:"This meeting is important.",exk:"이 회의는 중요해요."},
+  {lv:2,c:"말·표현",w:"inside",k:"~안에, 안쪽",p:"인사이드",ex:"Let's wait inside the store.",exk:"가게 안에서 기다려요."},
+  {lv:2,c:"감정·상태",w:"interesting",k:"흥미로운",p:"인터레스팅",ex:"Your job sounds interesting.",exk:"일이 흥미로워 보여요."},
+  {lv:2,c:"말·표현",w:"into",k:"~안으로",p:"인투",ex:"Put it into the bag.",exk:"그걸 가방에 넣으세요."},
+  {lv:2,c:"동작·행동",w:"jump",k:"뛰다, 점프하다",p:"점프",ex:"The kids jump on beds.",exk:"아이들이 침대에서 뛰어요."},
+  {lv:2,c:"동작·행동",w:"keep",k:"유지하다, 계속하다",p:"킵",ex:"Keep the receipt please.",exk:"영수증 보관해 주세요."},
+  {lv:2,c:"동작·행동",w:"learn",k:"배우다",p:"런",ex:"I learn English daily.",exk:"저는 매일 영어를 배워요."},
+  {lv:2,c:"동작·행동",w:"leave",k:"떠나다, 남기다",p:"리브",ex:"We leave at noon.",exk:"우리는 정오에 떠나요."},
+  {lv:2,c:"동작·행동",w:"listen",k:"듣다",p:"리슨",ex:"Listen to this song.",exk:"이 노래 들어 보세요."},
+  {lv:2,c:"동작·행동",w:"look",k:"보다",p:"룩",ex:"Look at that building.",exk:"저 건물 좀 보세요."},
+  {lv:2,c:"동작·행동",w:"lose",k:"잃다, 지다",p:"루즈",ex:"Don't lose your ticket.",exk:"표를 잃어버리지 마세요."},
+  {lv:2,c:"성질·정도",w:"loud",k:"시끄러운",p:"라우드",ex:"The music is loud.",exk:"음악이 시끄러워요."},
+  {lv:2,c:"동작·행동",w:"make",k:"만들다",p:"메이크",ex:"I make coffee every morning.",exk:"매일 아침 커피를 만들어요."},
+  {lv:2,c:"말·표현",w:"near",k:"가까운, 근처에",p:"니어",ex:"Is there a bank near here?",exk:"근처에 은행 있나요?"},
+  {lv:2,c:"말·표현",w:"on",k:"~위에",p:"온",ex:"The cup is on it.",exk:"컵이 그 위에 있어요."},
+  {lv:2,c:"말·표현",w:"over",k:"~위로, 넘어",p:"오버",ex:"The plane flew over us.",exk:"비행기가 우리 위로 지나갔어요."},
+  {lv:2,c:"동작·행동",w:"pull",k:"당기다",p:"풀",ex:"Pull the handle down.",exk:"손잡이를 아래로 당기세요."},
+  {lv:2,c:"동작·행동",w:"push",k:"밀다",p:"푸쉬",ex:"Push the door hard.",exk:"문을 세게 미세요."},
+  {lv:2,c:"동작·행동",w:"put",k:"놓다, 두다",p:"풋",ex:"Put it on the table.",exk:"탁자 위에 놓으세요."},
+  {lv:2,c:"동작·행동",w:"read",k:"읽다",p:"리드",ex:"She reads before bed.",exk:"그녀는 자기 전에 읽어요."},
+  {lv:2,c:"말·표현",w:"remember",k:"기억하다",p:"리멤버",ex:"I remember your face.",exk:"당신 얼굴이 기억나요."},
+  {lv:2,c:"동작·행동",w:"run",k:"달리다",p:"런",ex:"He runs every morning.",exk:"그는 매일 아침 달려요."},
+  {lv:2,c:"감정·상태",w:"sad",k:"슬픈",p:"새드",ex:"The ending was sad.",exk:"결말이 슬펐어요."},
+  {lv:2,c:"감정·상태",w:"scared",k:"무서운, 겁먹은",p:"스케어드",ex:"I'm scared of dogs.",exk:"저는 개가 무서워요."},
+  {lv:2,c:"동작·행동",w:"show",k:"보여주다",p:"쇼우",ex:"Show me your ticket.",exk:"표를 보여 주세요."},
+  {lv:2,c:"동작·행동",w:"sit",k:"앉다",p:"씻",ex:"Please sit over there.",exk:"저쪽에 앉으세요."},
+  {lv:2,c:"동작·행동",w:"sleep",k:"자다",p:"슬립",ex:"I sleep eight hours.",exk:"저는 여덟 시간 자요."},
+  {lv:2,c:"말·표현",w:"speak",k:"말하다",p:"스픽",ex:"Do you speak English?",exk:"영어 하세요?"},
+  {lv:2,c:"동작·행동",w:"swim",k:"수영하다",p:"스윔",ex:"Let's swim before lunch.",exk:"점심 전에 수영해요."},
+  {lv:2,c:"동작·행동",w:"teach",k:"가르치다",p:"티치",ex:"She teaches young kids.",exk:"그녀는 어린이를 가르쳐요."},
+  {lv:2,c:"말·표현",w:"through",k:"~통과하여",p:"쓰루",ex:"Walk through this door.",exk:"이 문을 통과해서 가세요."},
+  {lv:2,c:"동작·행동",w:"throw",k:"던지다",p:"쓰로우",ex:"Throw me the ball.",exk:"공을 저에게 던져요."},
+  {lv:2,c:"말·표현",w:"under",k:"~아래에",p:"언더",ex:"Your shoes are under the bed.",exk:"신발이 침대 밑에 있어요."},
+  {lv:2,c:"말·표현",w:"understand",k:"이해하다",p:"언더스탠드",ex:"I understand your point.",exk:"무슨 말인지 알겠어요."},
+  {lv:2,c:"동작·행동",w:"use",k:"사용하다",p:"유즈",ex:"Can I use this?",exk:"이거 써도 될까요?"},
+  {lv:2,c:"성질·정도",w:"useful",k:"유용한",p:"유스풀",ex:"This app is useful.",exk:"이 앱은 유용해요."},
+  {lv:2,c:"동작·행동",w:"walk",k:"걷다",p:"워크",ex:"We walk to the park.",exk:"우리는 공원까지 걸어가요."},
+  {lv:2,c:"숙소·생활",w:"wash",k:"씻다",p:"워쉬",ex:"I wash the dishes daily.",exk:"제가 매일 설거지해요."},
+  {lv:2,c:"동작·행동",w:"watch",k:"보다, 지켜보다",p:"와치",ex:"We watch movies together.",exk:"우리는 같이 영화를 봐요."},
+  {lv:2,c:"성질·정도",w:"wide",k:"넓은",p:"와이드",ex:"The road is wide.",exk:"길이 넓어요."},
+  {lv:2,c:"말·표현",w:"with",k:"~와 함께",p:"위드",ex:"Come with me now.",exk:"지금 저와 같이 가요."},
+  {lv:2,c:"말·표현",w:"without",k:"~없이",p:"위다웃",ex:"Coffee without sugar please.",exk:"설탕 없는 커피로 주세요."},
+  {lv:2,c:"동작·행동",w:"write",k:"쓰다",p:"라이트",ex:"Write your name here.",exk:"여기에 이름을 쓰세요."},
+  {lv:3,c:"여행·교통",w:"aisle",k:"통로",p:"아일",ex:"I want an aisle seat.",exk:"통로 쪽 자리 주세요."},
+  {lv:3,c:"여행·교통",w:"arrival",k:"도착",p:"어라이벌",ex:"The arrival gate changed.",exk:"도착 게이트가 바뀌었어요."},
+  {lv:3,c:"여행·교통",w:"backpack",k:"배낭",p:"백팩",ex:"Bring a small backpack.",exk:"작은 배낭 하나 가져와요."},
+  {lv:3,c:"음식·식당",w:"bakery",k:"빵집",p:"베이커리",ex:"There is a bakery nearby.",exk:"근처에 빵집이 있어요."},
+  {lv:3,c:"쇼핑·돈",w:"basket",k:"바구니",p:"배스킷",ex:"Take a basket, please.",exk:"바구니 하나 가져가세요."},
+  {lv:3,c:"여행·교통",w:"block",k:"블록, 구역",p:"블락",ex:"It is one block away.",exk:"한 블록 떨어져 있어요."},
+  {lv:3,c:"여행·교통",w:"board",k:"탑승하다",p:"보드",ex:"We board in ten minutes.",exk:"우리 10분 뒤에 탑승해요."},
+  {lv:3,c:"여행·교통",w:"boarding pass",k:"탑승권",p:"보딩패스",ex:"Here is my boarding pass.",exk:"여기 제 탑승권이요."},
+  {lv:3,c:"숙소·생활",w:"book",k:"예약하다",p:"북",ex:"I want to book a room.",exk:"방 하나 예약하고 싶어요."},
+  {lv:3,c:"여행·교통",w:"bridge",k:"다리",p:"브릿지",ex:"The bridge is very long.",exk:"그 다리는 아주 길어요."},
+  {lv:3,c:"여행·교통",w:"carry-on",k:"기내용 가방",p:"캐리온",ex:"Is this a carry-on bag?",exk:"이거 기내용 가방인가요?"},
+  {lv:3,c:"쇼핑·돈",w:"cashier",k:"계산원",p:"캐쉬어",ex:"Pay the cashier over there.",exk:"저기 계산원에게 내세요."},
+  {lv:3,c:"동작·행동",w:"charge",k:"충전하다",p:"차지",ex:"I need to charge my phone.",exk:"휴대폰 충전해야 해요."},
+  {lv:3,c:"말·표현",w:"charger",k:"충전기",p:"차저",ex:"Did you bring a charger?",exk:"충전기 가져왔어요?"},
+  {lv:3,c:"동작·행동",w:"come back",k:"돌아오다",p:"컴백",ex:"I will come back tomorrow.",exk:"내일 다시 올게요."},
+  {lv:3,c:"쇼핑·돈",w:"convenience store",k:"편의점",p:"컨비니언스 스토어",ex:"A convenience store is open.",exk:"편의점이 문을 열었어요."},
+  {lv:3,c:"여행·교통",w:"cross",k:"건너다",p:"크로스",ex:"Cross the street here.",exk:"여기서 길을 건너세요."},
+  {lv:3,c:"여행·교통",w:"customs",k:"세관",p:"커스텀즈",ex:"We passed customs quickly.",exk:"우리는 세관을 빨리 통과했어요."},
+  {lv:3,c:"여행·교통",w:"delay",k:"지연, 지연되다",p:"딜레이",ex:"The flight had a delay.",exk:"항공편이 지연됐어요."},
+  {lv:3,c:"여행·교통",w:"departure",k:"출발",p:"디파쳐",ex:"Check the departure time.",exk:"출발 시간을 확인하세요."},
+  {lv:3,c:"쇼핑·돈",w:"deposit",k:"보증금",p:"디파짓",ex:"Is there a deposit?",exk:"보증금이 있나요?"},
+  {lv:3,c:"쇼핑·돈",w:"exchange",k:"교환하다",p:"익스체인지",ex:"I want to exchange this.",exk:"이거 교환하고 싶어요."},
+  {lv:3,c:"동작·행동",w:"fill out",k:"작성하다",p:"필아웃",ex:"Please fill out this form.",exk:"이 양식을 작성해 주세요."},
+  {lv:3,c:"말·표현",w:"find out",k:"알아내다",p:"파인다웃",ex:"Let me find out for you.",exk:"제가 알아봐 드릴게요."},
+  {lv:3,c:"쇼핑·돈",w:"fitting room",k:"탈의실",p:"피팅룸",ex:"Where is the fitting room?",exk:"탈의실이 어디예요?"},
+  {lv:3,c:"여행·교통",w:"flight",k:"항공편, 비행",p:"플라잇",ex:"My flight leaves at six.",exk:"제 항공편은 6시 출발이에요."},
+  {lv:3,c:"여행·교통",w:"gas station",k:"주유소",p:"개스테이션",ex:"Stop at the gas station.",exk:"주유소에 세워 주세요."},
+  {lv:3,c:"여행·교통",w:"gate",k:"탑승구",p:"게잇",ex:"Our gate is number twelve.",exk:"우리 탑승구는 12번이에요."},
+  {lv:3,c:"여행·교통",w:"get off",k:"내리다",p:"게로프",ex:"I get off at the next stop.",exk:"다음 정류장에서 내려요."},
+  {lv:3,c:"여행·교통",w:"get on",k:"타다",p:"게론",ex:"Let's get on the bus.",exk:"버스에 타자."},
+  {lv:3,c:"여행·교통",w:"go back",k:"돌아가다",p:"고백",ex:"Let's go back to the hotel.",exk:"호텔로 돌아가자."},
+  {lv:3,c:"쇼핑·돈",w:"grocery store",k:"식료품점, 마트",p:"그로서리 스토어",ex:"The grocery store closes at ten.",exk:"그 마트는 10시에 닫아요."},
+  {lv:3,c:"숙소·생활",w:"hair dryer",k:"헤어드라이어",p:"헤어드라이어",ex:"Do you have a hair dryer?",exk:"헤어드라이어 있나요?"},
+  {lv:3,c:"숙소·생활",w:"hallway",k:"복도",p:"홀웨이",ex:"The hallway is dark.",exk:"복도가 어두워요."},
+  {lv:3,c:"동작·행동",w:"hurry up",k:"서두르다",p:"허리업",ex:"Hurry up, we are late!",exk:"서둘러요, 우리 늦었어요!"},
+  {lv:3,c:"여행·교통",w:"land",k:"착륙하다",p:"랜드",ex:"The plane will land soon.",exk:"비행기가 곧 착륙해요."},
+  {lv:3,c:"숙소·생활",w:"laundry",k:"빨래, 세탁",p:"런드리",ex:"Where is the laundry room?",exk:"세탁실이 어디예요?"},
+  {lv:3,c:"쇼핑·돈",w:"lend",k:"빌려주다",p:"렌드",ex:"Can you lend me ten dollars?",exk:"10달러만 빌려줄래요?"},
+  {lv:3,c:"숙소·생활",w:"lobby",k:"로비",p:"라비",ex:"Meet me in the lobby.",exk:"로비에서 만나요."},
+  {lv:3,c:"동작·행동",w:"look for",k:"찾다",p:"룩포",ex:"Look for the blue sign.",exk:"파란 표지판을 찾으세요."},
+  {lv:3,c:"여행·교통",w:"map",k:"지도",p:"맵",ex:"Can I see the map?",exk:"지도 좀 볼 수 있을까요?"},
+  {lv:3,c:"여행·교통",w:"museum",k:"박물관",p:"뮤지엄",ex:"The museum opens at nine.",exk:"박물관은 9시에 열어요."},
+  {lv:3,c:"여행·교통",w:"ocean",k:"바다",p:"오션",ex:"The ocean is so warm.",exk:"바다가 정말 따뜻해요."},
+  {lv:3,c:"숙소·생활",w:"outlet",k:"콘센트",p:"아웃렛",ex:"Is there an outlet here?",exk:"여기 콘센트 있나요?"},
+  {lv:3,c:"여행·교통",w:"pack",k:"짐을 싸다",p:"팩",ex:"I need to pack tonight.",exk:"오늘 밤 짐 싸야 해요."},
+  {lv:3,c:"여행·교통",w:"park",k:"주차하다, 공원",p:"파크",ex:"Where can I park?",exk:"어디에 주차할 수 있어요?"},
+  {lv:3,c:"여행·교통",w:"passport",k:"여권",p:"패스포트",ex:"Show me your passport, please.",exk:"여권 좀 보여 주세요."},
+  {lv:3,c:"숙소·생활",w:"password",k:"비밀번호",p:"패스워드",ex:"What is the wifi password?",exk:"와이파이 비밀번호가 뭐예요?"},
+  {lv:3,c:"쇼핑·돈",w:"plastic bag",k:"비닐봉지",p:"플라스틱 백",ex:"Can I get a plastic bag?",exk:"비닐봉지 하나 주실래요?"},
+  {lv:3,c:"여행·교통",w:"platform",k:"승강장",p:"플랫폼",ex:"Go to platform three.",exk:"3번 승강장으로 가세요."},
+  {lv:3,c:"여행·교통",w:"postcard",k:"엽서",p:"포스트카드",ex:"Send me a postcard.",exk:"엽서 한 장 보내 줘요."},
+  {lv:3,c:"동작·행동",w:"put on",k:"입다, 쓰다",p:"푸론",ex:"Put on your seatbelt.",exk:"안전벨트 매세요."},
+  {lv:3,c:"쇼핑·돈",w:"refund",k:"환불",p:"리펀드",ex:"Can I get a refund?",exk:"환불 받을 수 있나요?"},
+  {lv:3,c:"여행·교통",w:"rent",k:"빌리다, 대여하다",p:"렌트",ex:"We want to rent a car.",exk:"차를 빌리고 싶어요."},
+  {lv:3,c:"숙소·생활",w:"reservation",k:"예약",p:"레저베이션",ex:"I have a reservation.",exk:"예약이 되어 있어요."},
+  {lv:3,c:"음식·식당",w:"reserve",k:"예약하다",p:"리저브",ex:"I'd like to reserve a table.",exk:"테이블 예약하고 싶어요."},
+  {lv:3,c:"말·표현",w:"screen",k:"화면",p:"스크린",ex:"My screen is too dark.",exk:"제 화면이 너무 어두워요."},
+  {lv:3,c:"여행·교통",w:"security",k:"보안 검색",p:"씨큐리티",ex:"Security takes twenty minutes.",exk:"보안 검색은 20분 걸려요."},
+  {lv:3,c:"숙소·생활",w:"shampoo",k:"샴푸",p:"샴푸",ex:"Is shampoo free here?",exk:"여기 샴푸 무료인가요?"},
+  {lv:3,c:"동작·행동",w:"share",k:"나누다, 공유하다",p:"쉐어",ex:"Can we share this?",exk:"이거 같이 나눌까요?"},
+  {lv:3,c:"숙소·생활",w:"shelf",k:"선반",p:"쉘프",ex:"It is on the top shelf.",exk:"맨 위 선반에 있어요."},
+  {lv:3,c:"동작·행동",w:"show up",k:"나타나다",p:"쇼업",ex:"He did not show up.",exk:"그는 나타나지 않았어요."},
+  {lv:3,c:"여행·교통",w:"sidewalk",k:"인도, 보도",p:"싸이드웍",ex:"Walk on the sidewalk.",exk:"인도로 걸으세요."},
+  {lv:3,c:"동작·행동",w:"sign",k:"서명하다, 표지판",p:"싸인",ex:"Sign here, please.",exk:"여기 서명해 주세요."},
+  {lv:3,c:"동작·행동",w:"sign up",k:"등록하다, 신청하다",p:"싸인업",ex:"I want to sign up.",exk:"등록하고 싶어요."},
+  {lv:3,c:"동작·행동",w:"sit down",k:"앉다",p:"씻다운",ex:"Sit down over here.",exk:"여기 앉으세요."},
+  {lv:3,c:"동작·행동",w:"slow down",k:"속도를 줄이다",p:"슬로우다운",ex:"Please slow down a little.",exk:"조금만 천천히 가 주세요."},
+  {lv:3,c:"숙소·생활",w:"soap",k:"비누",p:"쏘웁",ex:"We need more soap.",exk:"비누가 더 필요해요."},
+  {lv:3,c:"여행·교통",w:"souvenir",k:"기념품",p:"수비니어",ex:"I bought a souvenir.",exk:"기념품을 하나 샀어요."},
+  {lv:3,c:"숙소·생활",w:"stairs",k:"계단",p:"스테어즈",ex:"Use the stairs, please.",exk:"계단을 이용해 주세요."},
+  {lv:3,c:"동작·행동",w:"stand up",k:"일어서다",p:"스탠덥",ex:"Please stand up slowly.",exk:"천천히 일어서세요."},
+  {lv:3,c:"여행·교통",w:"station",k:"역",p:"스테이션",ex:"The station is near here.",exk:"역은 여기서 가까워요."},
+  {lv:3,c:"여행·교통",w:"straight",k:"똑바로, 곧장",p:"스트레잇",ex:"Go straight two blocks.",exk:"두 블록 곧장 가세요."},
+  {lv:3,c:"여행·교통",w:"subway",k:"지하철",p:"썹웨이",ex:"Let's take the subway.",exk:"지하철 타자."},
+  {lv:3,c:"여행·교통",w:"suitcase",k:"여행 가방",p:"숫케이스",ex:"My suitcase is too heavy.",exk:"제 가방이 너무 무거워요."},
+  {lv:3,c:"여행·교통",w:"sunscreen",k:"선크림",p:"썬스크린",ex:"Don't forget your sunscreen.",exk:"선크림 잊지 마세요."},
+  {lv:3,c:"동작·행동",w:"take off",k:"벗다, 이륙하다",p:"테이코프",ex:"Please take off your shoes.",exk:"신발을 벗어 주세요."},
+  {lv:3,c:"동작·행동",w:"text",k:"문자를 보내다",p:"텍스트",ex:"Text me when you land.",exk:"도착하면 문자 주세요."},
+  {lv:3,c:"동작·행동",w:"throw away",k:"버리다",p:"쓰로우어웨이",ex:"Don't throw away the receipt.",exk:"영수증 버리지 마세요."},
+  {lv:3,c:"여행·교통",w:"ticket",k:"표, 티켓",p:"티킷",ex:"Where can I buy a ticket?",exk:"표는 어디서 사요?"},
+  {lv:3,c:"여행·교통",w:"transfer",k:"환승하다",p:"트랜스퍼",ex:"You transfer at the next stop.",exk:"다음 역에서 환승하세요."},
+  {lv:3,c:"여행·교통",w:"trip",k:"여행",p:"트립",ex:"Have a nice trip!",exk:"좋은 여행 되세요!"},
+  {lv:3,c:"쇼핑·돈",w:"try on",k:"입어 보다",p:"트라이온",ex:"Can I try on this shirt?",exk:"이 셔츠 입어 봐도 돼요?"},
+  {lv:3,c:"동작·행동",w:"turn off",k:"끄다",p:"터노프",ex:"Turn off the light, please.",exk:"불 좀 꺼 주세요."},
+  {lv:3,c:"동작·행동",w:"turn on",k:"켜다",p:"터논",ex:"Can you turn on the AC?",exk:"에어컨 좀 켜 줄래요?"},
+  {lv:3,c:"여행·교통",w:"vacation",k:"휴가",p:"베이케이션",ex:"We are on vacation now.",exk:"우리 지금 휴가 중이에요."},
+  {lv:3,c:"동작·행동",w:"write down",k:"적다",p:"롸잇다운",ex:"Write down the address.",exk:"주소를 적어 두세요."},
+  {lv:4,c:"감정·상태",w:"amazing",k:"놀라운, 대단한",p:"어메이징",ex:"Your new video looks amazing.",exk:"새 영상 정말 멋져요."},
+  {lv:4,c:"감정·상태",w:"annoyed",k:"짜증난",p:"어노이드",ex:"He got annoyed at me.",exk:"그가 나한테 짜증냈어요."},
+  {lv:4,c:"감정·상태",w:"annoying",k:"짜증나게 하는",p:"어노잉",ex:"That noise is really annoying.",exk:"저 소음 정말 짜증나요."},
+  {lv:4,c:"사람·관계",w:"apologize",k:"사과하다",p:"어팔러자이즈",ex:"We apologize for the wait.",exk:"기다리게 해서 죄송합니다."},
+  {lv:4,c:"성질·정도",w:"available",k:"시간 되는, 이용 가능한",p:"어베일러블",ex:"Is that table available now?",exk:"저 테이블 지금 되나요?"},
+  {lv:4,c:"감정·상태",w:"awkward",k:"어색한, 서먹한",p:"어쿼드",ex:"The silence felt awkward.",exk:"그 침묵이 어색했어요."},
+  {lv:4,c:"사람·관계",w:"barista",k:"바리스타",p:"버리스타",ex:"My wife trains every barista.",exk:"아내가 바리스타를 교육해요."},
+  {lv:4,c:"음식·식당",w:"bitter",k:"쓴, 씁쓸한",p:"비러",ex:"This coffee tastes bitter.",exk:"이 커피 맛이 써요."},
+  {lv:4,c:"감정·상태",w:"bored",k:"지루한, 심심한",p:"볼드",ex:"The kids look bored.",exk:"애들이 지루해 보여요."},
+  {lv:4,c:"동작·행동",w:"break down",k:"고장 나다",p:"브레익 다운",ex:"My car might break down.",exk:"차가 고장날 수도 있어요."},
+  {lv:4,c:"감정·상태",w:"calm",k:"침착한, 차분한",p:"캄",ex:"Stay calm during the meeting.",exk:"미팅 중에 침착하세요."},
+  {lv:4,c:"사람·관계",w:"catch up",k:"밀린 얘기하다",p:"캐첩",ex:"Let's catch up over coffee.",exk:"커피 마시며 얘기하자."},
+  {lv:4,c:"촬영·영상",w:"clip",k:"영상 클립",p:"클립",ex:"Send me that short clip.",exk:"그 짧은 클립 보내줘요."},
+  {lv:4,c:"말·표현",w:"come up with",k:"생각해 내다",p:"커멉 위드",ex:"Can you come up with ideas?",exk:"아이디어 좀 내볼래요?"},
+  {lv:4,c:"감정·상태",w:"complain",k:"불평하다, 항의하다",p:"컴플레인",ex:"He came to complain again.",exk:"그가 또 항의하러 왔어요."},
+  {lv:4,c:"감정·상태",w:"confident",k:"자신 있는",p:"컨피던트",ex:"She sounds confident today.",exk:"오늘 그녀는 자신 있어 보여요."},
+  {lv:4,c:"일·업무",w:"confirm",k:"확인해 주다",p:"컨펌",ex:"Please confirm the meeting time.",exk:"미팅 시간 확인 부탁해요."},
+  {lv:4,c:"감정·상태",w:"confused",k:"헷갈리는, 혼란스러운",p:"컨퓨즈드",ex:"The client looked confused.",exk:"클라이언트가 헷갈려 했어요."},
+  {lv:4,c:"쇼핑·돈",w:"counter",k:"계산대, 카운터",p:"카운터",ex:"Please pay at the counter.",exk:"계산대에서 결제해 주세요."},
+  {lv:4,c:"음식·식당",w:"crispy",k:"바삭한",p:"크리스피",ex:"I like crispy bacon.",exk:"저는 바삭한 베이컨 좋아해요."},
+  {lv:4,c:"감정·상태",w:"curious",k:"궁금한",p:"큐리어스",ex:"I'm curious about your idea.",exk:"당신 아이디어가 궁금해요."},
+  {lv:4,c:"쇼핑·돈",w:"customer",k:"손님, 고객",p:"커스터머",ex:"A customer left this bag.",exk:"손님이 이 가방을 두고 갔어요."},
+  {lv:4,c:"일·업무",w:"deal with",k:"처리하다, 상대하다",p:"딜 위드",ex:"I'll deal with the client.",exk:"클라이언트는 제가 맡을게요."},
+  {lv:4,c:"촬영·영상",w:"deliver",k:"전달하다, 배달하다",p:"딜리버",ex:"We deliver the final cut.",exk:"최종본을 전달해 드려요."},
+  {lv:4,c:"감정·상태",w:"disappointed",k:"실망한",p:"디서포인팃",ex:"We were disappointed with dinner.",exk:"저녁 식사에 실망했어요."},
+  {lv:4,c:"음식·식당",w:"eat out",k:"외식하다",p:"이라웃",ex:"We eat out on Fridays.",exk:"우리는 금요일에 외식해요."},
+  {lv:4,c:"촬영·영상",w:"edit",k:"편집하다, 수정하다",p:"에딧",ex:"I edit videos every night.",exk:"저는 매일 밤 영상을 편집해요."},
+  {lv:4,c:"감정·상태",w:"embarrassed",k:"창피한, 민망한",p:"임배러스트",ex:"I felt embarrassed on set.",exk:"현장에서 창피했어요."},
+  {lv:4,c:"말·표현",w:"end up",k:"결국 ~하게 되다",p:"엔덥",ex:"We ended up staying late.",exk:"결국 늦게까지 있었어요."},
+  {lv:4,c:"감정·상태",w:"excited",k:"신난, 들뜬",p:"익사이릿",ex:"I'm excited about the shoot.",exk:"촬영 때문에 신나요."},
+  {lv:4,c:"감정·상태",w:"exhausted",k:"완전히 지친",p:"이그조스팃",ex:"I'm exhausted after the edit.",exk:"편집 끝나고 완전 지쳤어요."},
+  {lv:4,c:"말·표현",w:"figure out",k:"알아내다, 파악하다",p:"피겨 아웃",ex:"Let me figure out the angle.",exk:"앵글은 제가 잡아볼게요."},
+  {lv:4,c:"촬영·영상",w:"frame",k:"화면 구도, 틀",p:"프레임",ex:"Keep her inside the frame.",exk:"그녀를 화면 안에 두세요."},
+  {lv:4,c:"감정·상태",w:"frustrated",k:"답답한, 좌절한",p:"프러스트레이릿",ex:"The client sounded frustrated.",exk:"클라이언트가 답답해했어요."},
+  {lv:4,c:"사람·관계",w:"get along",k:"잘 지내다",p:"게럴롱",ex:"They get along really well.",exk:"그들은 정말 잘 지내요."},
+  {lv:4,c:"감정·상태",w:"get over",k:"극복하다",p:"게로버",ex:"You'll get over it soon.",exk:"금방 괜찮아질 거예요."},
+  {lv:4,c:"동작·행동",w:"get rid of",k:"없애다, 버리다",p:"게 리더브",ex:"Let's get rid of the noise.",exk:"그 소음을 없애자."},
+  {lv:4,c:"말·표현",w:"give up",k:"포기하다",p:"기브 업",ex:"Don't give up on it.",exk:"그거 포기하지 마요."},
+  {lv:4,c:"일·업무",w:"go over",k:"검토하다, 살펴보다",p:"고우 오버",ex:"Let's go over the plan.",exk:"계획을 같이 검토해요."},
+  {lv:4,c:"감정·상태",w:"grateful",k:"감사하는, 고마운",p:"그레잇풀",ex:"I'm grateful for your help.",exk:"도와주셔서 감사해요."},
+  {lv:4,c:"음식·식당",w:"greasy",k:"기름진, 느끼한",p:"그리시",ex:"This dish feels too greasy.",exk:"이 음식 너무 느끼해요."},
+  {lv:4,c:"감정·상태",w:"guilty",k:"죄책감 드는, 미안한",p:"길티",ex:"I feel guilty about leaving.",exk:"먼저 가서 미안해요."},
+  {lv:4,c:"사람·관계",w:"hang out",k:"놀다, 어울리다",p:"행아웃",ex:"Let's hang out this weekend.",exk:"이번 주말에 놀자."},
+  {lv:4,c:"동작·행동",w:"head out",k:"출발하다, 나가다",p:"헤다웃",ex:"We head out at six.",exk:"우리는 여섯 시에 나가요."},
+  {lv:4,c:"감정·상태",w:"honest",k:"솔직한, 정직한",p:"아너스트",ex:"Be honest about the price.",exk:"가격은 솔직하게 말해줘요."},
+  {lv:4,c:"감정·상태",w:"impressed",k:"감명받은, 감탄한",p:"임프레스트",ex:"The client was impressed.",exk:"클라이언트가 감탄했어요."},
+  {lv:4,c:"감정·상태",w:"jealous",k:"질투하는, 부러운",p:"젤러스",ex:"Don't be jealous of him.",exk:"그를 부러워하지 마."},
+  {lv:4,c:"음식·식당",w:"leftovers",k:"남은 음식",p:"레프토버스",ex:"Can I box the leftovers?",exk:"남은 음식 싸 주실래요?"},
+  {lv:4,c:"감정·상태",w:"lonely",k:"외로운",p:"론리",ex:"He feels lonely on trips.",exk:"그는 출장에서 외로워해요."},
+  {lv:4,c:"말·표현",w:"look into",k:"알아보다, 조사하다",p:"루킨투",ex:"I'll look into the price.",exk:"가격은 제가 알아볼게요."},
+  {lv:4,c:"말·표현",w:"look up",k:"찾아보다",p:"루컵",ex:"I looked up the address.",exk:"주소를 찾아봤어요."},
+  {lv:4,c:"말·표현",w:"make sure",k:"확실히 하다",p:"메익슈어",ex:"Make sure the mic works.",exk:"마이크 되는지 확인해요."},
+  {lv:4,c:"감정·상태",w:"patient",k:"참을성 있는",p:"페이션트",ex:"Please be patient with us.",exk:"조금만 참아 주세요."},
+  {lv:4,c:"말·표현",w:"point out",k:"지적하다, 짚어주다",p:"포인 아웃",ex:"She pointed out a mistake.",exk:"그녀가 실수를 짚어줬어요."},
+  {lv:4,c:"감정·상태",w:"proud",k:"자랑스러운",p:"프라우드",ex:"I'm proud of your film.",exk:"네 영화가 자랑스러워."},
+  {lv:4,c:"여행·교통",w:"pull over",k:"차를 세우다",p:"풀 오버",ex:"Please pull over right here.",exk:"여기서 차 세워 주세요."},
+  {lv:4,c:"동작·행동",w:"put off",k:"미루다",p:"푸로프",ex:"We put off the shoot.",exk:"우리는 촬영을 미뤘어요."},
+  {lv:4,c:"말·표현",w:"quality",k:"품질, 질",p:"퀄리티",ex:"The sound quality is great.",exk:"음질이 아주 좋아요."},
+  {lv:4,c:"음식·식당",w:"regular",k:"단골, 평소의",p:"레귤러",ex:"He's a regular at our cafe.",exk:"그는 우리 카페 단골이에요."},
+  {lv:4,c:"감정·상태",w:"relaxed",k:"편안한, 느긋한",p:"릴랙스트",ex:"I feel relaxed at home.",exk:"집에서는 편안해요."},
+  {lv:4,c:"감정·상태",w:"relieved",k:"안도한, 마음 놓인",p:"릴리브드",ex:"I'm relieved the shoot ended.",exk:"촬영이 끝나서 마음이 놓여요."},
+  {lv:4,c:"사람·관계",w:"run into",k:"우연히 마주치다",p:"러닌투",ex:"Did you run into him?",exk:"그 사람 마주쳤어?"},
+  {lv:4,c:"동작·행동",w:"run out of",k:"다 떨어지다",p:"런 아우러브",ex:"We might run out of milk.",exk:"우유가 떨어질 수도 있어요."},
+  {lv:4,c:"동작·행동",w:"rush",k:"서두르다, 몰림",p:"러쉬",ex:"Mornings are a big rush.",exk:"아침에는 아주 바빠요."},
+  {lv:4,c:"음식·식당",w:"salty",k:"짠",p:"설티",ex:"The soup is too salty.",exk:"국이 너무 짜요."},
+  {lv:4,c:"감정·상태",w:"satisfied",k:"만족한",p:"새티스파이드",ex:"Are you satisfied with it?",exk:"그거 마음에 드세요?"},
+  {lv:4,c:"감정·상태",w:"serious",k:"심각한, 진지한",p:"시리어스",ex:"Is the problem serious?",exk:"문제가 심각한가요?"},
+  {lv:4,c:"음식·식당",w:"server",k:"종업원, 서빙 직원",p:"서버",ex:"Ask the server for water.",exk:"종업원에게 물 달라고 해요."},
+  {lv:4,c:"촬영·영상",w:"set up",k:"설치하다, 준비하다",p:"세럽",ex:"I set up the camera early.",exk:"카메라를 일찍 설치했어요."},
+  {lv:4,c:"일·업무",w:"shift",k:"근무 시간, 교대",p:"쉬프트",ex:"My shift ends at five.",exk:"제 근무는 다섯 시에 끝나요."},
+  {lv:4,c:"감정·상태",w:"shy",k:"수줍은, 내성적인",p:"샤이",ex:"My son is really shy.",exk:"우리 아들은 정말 수줍어해요."},
+  {lv:4,c:"말·표현",w:"speak up",k:"크게 말하다",p:"스피껍",ex:"Could you speak up please?",exk:"좀 크게 말해 주실래요?"},
+  {lv:4,c:"일·업무",w:"staff",k:"직원",p:"스태프",ex:"Our staff starts at seven.",exk:"저희 직원은 일곱 시에 와요."},
+  {lv:4,c:"쇼핑·돈",w:"stock",k:"재고",p:"스탁",ex:"We have no stock left.",exk:"재고가 하나도 없어요."},
+  {lv:4,c:"감정·상태",w:"stressed",k:"스트레스 받는",p:"스트레스트",ex:"She's stressed about the cafe.",exk:"그녀는 카페 때문에 스트레스받아요."},
+  {lv:4,c:"감정·상태",w:"surprised",k:"놀란",p:"서프라이즈드",ex:"We were surprised by the bill.",exk:"계산서 보고 놀랐어요."},
+  {lv:4,c:"감정·상태",w:"terrible",k:"끔찍한, 형편없는",p:"테러블",ex:"The light was terrible today.",exk:"오늘 조명이 형편없었어요."},
+  {lv:4,c:"감정·상태",w:"uncomfortable",k:"불편한",p:"언컴퍼터블",ex:"The seat felt uncomfortable.",exk:"그 좌석은 불편했어요."},
+  {lv:4,c:"촬영·영상",w:"upload",k:"업로드하다",p:"업로드",ex:"I'll upload the files tonight.",exk:"오늘 밤 파일 올릴게요."},
+  {lv:4,c:"감정·상태",w:"upset",k:"속상한, 화난",p:"업셋",ex:"Don't be upset with me.",exk:"나한테 화내지 마."},
+  {lv:4,c:"감정·상태",w:"weird",k:"이상한, 희한한",p:"위어드",ex:"That sound is weird.",exk:"저 소리 이상해요."},
+  {lv:4,c:"감정·상태",w:"worried",k:"걱정하는",p:"워리드",ex:"I'm worried about the budget.",exk:"예산이 걱정돼요."},
+  {lv:5,c:"말·표현",w:"ability",k:"능력",p:"어빌러티",ex:"He has real ability.",exk:"그는 진짜 능력이 있어요."},
+  {lv:5,c:"일·업무",w:"accept",k:"받아들이다, 수락하다",p:"억셉트",ex:"We accept the offer.",exk:"그 제안 받아들일게요."},
+  {lv:5,c:"말·표현",w:"advice",k:"조언, 충고",p:"어드바이스",ex:"Can I get your advice?",exk:"조언 좀 얻을 수 있을까요?"},
+  {lv:5,c:"일·업무",w:"agreement",k:"합의, 계약",p:"어그리먼트",ex:"We reached an agreement.",exk:"우리는 합의에 이르렀어요."},
+  {lv:5,c:"말·표현",w:"allow",k:"허용하다",p:"얼라우",ex:"Pets are not allowed here.",exk:"여기 반려동물은 안 돼요."},
+  {lv:5,c:"시간·숫자",w:"amount",k:"양, 액수",p:"어마운트",ex:"That's a large amount.",exk:"그건 큰 액수예요."},
+  {lv:5,c:"일·업무",w:"approve",k:"승인하다",p:"어프루브",ex:"The client approved the edit.",exk:"클라이언트가 편집을 승인했어요."},
+  {lv:5,c:"일·업무",w:"arrange",k:"준비하다, 잡다",p:"어레인지",ex:"I'll arrange the client call.",exk:"클라이언트 통화 잡을게요."},
+  {lv:5,c:"말·표현",w:"attention",k:"주의, 관심",p:"어텐션",ex:"Pay attention to the light.",exk:"조명에 주의하세요."},
+  {lv:5,c:"감정·상태",w:"attitude",k:"태도",p:"애티튜드",ex:"She has a great attitude.",exk:"그녀는 태도가 좋아요."},
+  {lv:5,c:"시간·숫자",w:"average",k:"평균; 평균의",p:"애버리지",ex:"The average wait is short.",exk:"평균 대기 시간은 짧아요."},
+  {lv:5,c:"동작·행동",w:"avoid",k:"피하다",p:"어보이드",ex:"Avoid the afternoon sun.",exk:"오후 햇빛은 피하세요."},
+  {lv:5,c:"말·표현",w:"balance",k:"균형; 균형을 잡다",p:"밸런스",ex:"Work and life need balance.",exk:"일과 삶은 균형이 필요해요."},
+  {lv:5,c:"말·표현",w:"benefit",k:"이점, 혜택",p:"베너핏",ex:"The main benefit is speed.",exk:"가장 큰 이점은 속도예요."},
+  {lv:5,c:"쇼핑·돈",w:"brand",k:"브랜드, 상표",p:"브랜드",ex:"We picked a new brand.",exk:"새 브랜드를 골랐어요."},
+  {lv:5,c:"말·표현",w:"chance",k:"기회, 가능성",p:"챈스",ex:"Give me one more chance.",exk:"한 번만 더 기회 주세요."},
+  {lv:5,c:"말·표현",w:"choice",k:"선택",p:"초이스",ex:"That was a good choice.",exk:"좋은 선택이었어요."},
+  {lv:5,c:"말·표현",w:"compare",k:"비교하다",p:"컴페어",ex:"Compare these two cuts.",exk:"이 두 컷을 비교해 보세요."},
+  {lv:5,c:"말·표현",w:"condition",k:"상태, 조건",p:"컨디션",ex:"The lens is in good condition.",exk:"렌즈 상태가 좋아요."},
+  {lv:5,c:"일·업무",w:"contract",k:"계약, 계약서",p:"컨트랙트",ex:"Please read the contract first.",exk:"계약서 먼저 읽어보세요."},
+  {lv:5,c:"쇼핑·돈",w:"cost",k:"비용; 비용이 들다",p:"코스트",ex:"The cost is too high.",exk:"비용이 너무 높아요."},
+  {lv:5,c:"말·표현",w:"data",k:"데이터, 자료",p:"데이터",ex:"Back up the data today.",exk:"오늘 데이터 백업하세요."},
+  {lv:5,c:"일·업무",w:"deal",k:"거래, 합의",p:"딜",ex:"We closed the deal.",exk:"거래를 성사시켰어요."},
+  {lv:5,c:"말·표현",w:"decide",k:"결정하다",p:"디사이드",ex:"Let's decide after the meeting.",exk:"회의 끝나고 정해요."},
+  {lv:5,c:"말·표현",w:"decision",k:"결정",p:"디시전",ex:"It was a hard decision.",exk:"어려운 결정이었어요."},
+  {lv:5,c:"말·표현",w:"describe",k:"묘사하다, 설명하다",p:"디스크라이브",ex:"Describe the mood you want.",exk:"원하는 분위기를 설명해 줘요."},
+  {lv:5,c:"말·표현",w:"detail",k:"세부 사항",p:"디테일",ex:"Send me the details later.",exk:"세부 사항 나중에 보내줘요."},
+  {lv:5,c:"말·표현",w:"device",k:"기기, 장치",p:"디바이스",ex:"This device records sound.",exk:"이 기기가 소리를 녹음해요."},
+  {lv:5,c:"일·업무",w:"discuss",k:"논의하다",p:"디스커스",ex:"Let's discuss the price.",exk:"가격을 논의해 봐요."},
+  {lv:5,c:"말·표현",w:"effort",k:"노력",p:"에퍼트",ex:"Thanks for your effort.",exk:"노력해줘서 고마워요."},
+  {lv:5,c:"일·업무",w:"employee",k:"직원, 피고용인",p:"임플로이이",ex:"We hired a new employee.",exk:"새 직원을 뽑았어요."},
+  {lv:5,c:"촬영·영상",w:"equipment",k:"장비",p:"이큅먼트",ex:"The equipment is in the van.",exk:"장비는 밴에 있어요."},
+  {lv:5,c:"쇼핑·돈",w:"expense",k:"지출, 비용",p:"익스펜스",ex:"Camera gear is an expense.",exk:"카메라 장비는 지출이죠."},
+  {lv:5,c:"말·표현",w:"experience",k:"경험",p:"익스피어리언스",ex:"She has editing experience.",exk:"그녀는 편집 경험이 있어요."},
+  {lv:5,c:"쇼핑·돈",w:"fee",k:"수수료, 요금",p:"피",ex:"There is a delivery fee.",exk:"배달 수수료가 있어요."},
+  {lv:5,c:"촬영·영상",w:"focus",k:"집중하다; 초점",p:"포커스",ex:"Focus on her eyes.",exk:"그녀 눈에 초점 맞추세요."},
+  {lv:5,c:"일·업무",w:"goal",k:"목표",p:"고울",ex:"Our goal is ten videos.",exk:"목표는 영상 열 개예요."},
+  {lv:5,c:"일·업무",w:"growth",k:"성장",p:"그로우쓰",ex:"Our growth was steady.",exk:"우리 성장은 꾸준했어요."},
+  {lv:5,c:"말·표현",w:"habit",k:"습관",p:"해빗",ex:"Coffee is a daily habit.",exk:"커피는 매일의 습관이에요."},
+  {lv:5,c:"일·업무",w:"handle",k:"처리하다, 다루다",p:"핸들",ex:"I'll handle the editing.",exk:"편집은 제가 처리할게요."},
+  {lv:5,c:"일·업무",w:"hire",k:"고용하다, 뽑다",p:"하이어",ex:"We need to hire someone.",exk:"사람을 뽑아야 해요."},
+  {lv:5,c:"말·표현",w:"improve",k:"개선하다, 나아지다",p:"임프루브",ex:"The lighting improved a lot.",exk:"조명이 많이 좋아졌어요."},
+  {lv:5,c:"쇼핑·돈",w:"income",k:"수입, 소득",p:"인컴",ex:"Our income went up.",exk:"우리 수입이 올랐어요."},
+  {lv:5,c:"말·표현",w:"increase",k:"늘리다, 증가하다",p:"인크리스",ex:"Sales increased last month.",exk:"지난달 매출이 늘었어요."},
+  {lv:5,c:"쇼핑·돈",w:"invoice",k:"청구서, 인보이스",p:"인보이스",ex:"I'll send the invoice tomorrow.",exk:"내일 청구서 보낼게요."},
+  {lv:5,c:"말·표현",w:"issue",k:"문제, 사안",p:"이슈",ex:"There is a sound issue.",exk:"사운드 문제가 있어요."},
+  {lv:5,c:"말·표현",w:"knowledge",k:"지식",p:"날리지",ex:"Her coffee knowledge is deep.",exk:"그녀의 커피 지식은 깊어요."},
+  {lv:5,c:"일·업무",w:"manage",k:"관리하다, 해내다",p:"매니지",ex:"She manages two cafes.",exk:"그녀는 카페 두 곳을 맡아요."},
+  {lv:5,c:"일·업무",w:"manager",k:"관리자, 매니저",p:"매니저",ex:"Ask the manager about it.",exk:"매니저한테 물어보세요."},
+  {lv:5,c:"쇼핑·돈",w:"market",k:"시장",p:"마켓",ex:"The coffee market is growing.",exk:"커피 시장이 커지고 있어요."},
+  {lv:5,c:"말·표현",w:"mention",k:"언급하다",p:"멘션",ex:"You mentioned a discount.",exk:"할인 얘기하셨잖아요."},
+  {lv:5,c:"말·표현",w:"method",k:"방법",p:"메써드",ex:"Try a different method.",exk:"다른 방법을 써보세요."},
+  {lv:5,c:"말·표현",w:"mistake",k:"실수",p:"미스테이크",ex:"That was my mistake.",exk:"그건 제 실수였어요."},
+  {lv:5,c:"말·표현",w:"notice",k:"알아차리다; 안내문",p:"노우티스",ex:"Did you notice the shadow?",exk:"그림자 알아챘어요?"},
+  {lv:5,c:"일·업무",w:"offer",k:"제안; 제안하다",p:"아퍼",ex:"They made a good offer.",exk:"좋은 제안을 했어요."},
+  {lv:5,c:"말·표현",w:"opinion",k:"의견",p:"어피니언",ex:"I want your honest opinion.",exk:"솔직한 의견 듣고 싶어요."},
+  {lv:5,c:"말·표현",w:"option",k:"선택지, 옵션",p:"압션",ex:"We have two options.",exk:"선택지가 두 개 있어요."},
+  {lv:5,c:"일·업무",w:"overtime",k:"초과 근무",p:"오버타임",ex:"We worked overtime again.",exk:"또 초과 근무를 했어요."},
+  {lv:5,c:"일·업무",w:"owner",k:"주인, 사장",p:"오우너",ex:"My wife is the owner.",exk:"아내가 사장이에요."},
+  {lv:5,c:"쇼핑·돈",w:"payment",k:"지불, 결제",p:"페이먼트",ex:"The payment came in today.",exk:"오늘 결제가 들어왔어요."},
+  {lv:5,c:"시간·숫자",w:"percent",k:"퍼센트",p:"퍼센트",ex:"Sales rose ten percent.",exk:"매출이 10퍼센트 올랐어요."},
+  {lv:5,c:"일·업무",w:"permission",k:"허가, 허락",p:"퍼미션",ex:"We need permission to shoot.",exk:"촬영 허가가 필요해요."},
+  {lv:5,c:"쇼핑·돈",w:"policy",k:"방침, 정책",p:"팔러시",ex:"What is the refund policy?",exk:"환불 방침이 어떻게 되죠?"},
+  {lv:5,c:"말·표현",w:"prefer",k:"선호하다, 더 좋아하다",p:"프리퍼",ex:"I prefer the morning shoot.",exk:"아침 촬영이 더 좋아요."},
+  {lv:5,c:"동작·행동",w:"prepare",k:"준비하다",p:"프리페어",ex:"Prepare the beans tonight.",exk:"오늘 밤 원두 준비해요."},
+  {lv:5,c:"감정·상태",w:"pressure",k:"압박, 부담",p:"프레셔",ex:"I feel a lot of pressure.",exk:"부담을 많이 느껴요."},
+  {lv:5,c:"말·표현",w:"process",k:"과정, 절차",p:"프라세스",ex:"The editing process takes days.",exk:"편집 과정은 며칠 걸려요."},
+  {lv:5,c:"쇼핑·돈",w:"profit",k:"이익, 수익",p:"프라핏",ex:"The cafe made a profit.",exk:"카페가 수익을 냈어요."},
+  {lv:5,c:"일·업무",w:"progress",k:"진행, 진척",p:"프라그레스",ex:"How is the progress?",exk:"진행 상황 어때요?"},
+  {lv:5,c:"일·업무",w:"project",k:"프로젝트, 과제",p:"프라젝트",ex:"The project starts on Monday.",exk:"프로젝트는 월요일 시작이에요."},
+  {lv:5,c:"동작·행동",w:"provide",k:"제공하다",p:"프러바이드",ex:"We provide free water.",exk:"물은 무료로 드려요."},
+  {lv:5,c:"말·표현",w:"purpose",k:"목적",p:"퍼퍼스",ex:"What's the purpose of this video?",exk:"이 영상의 목적이 뭐죠?"},
+  {lv:5,c:"쇼핑·돈",w:"rate",k:"요금, 비율",p:"레이트",ex:"What's your daily rate?",exk:"하루 요금이 얼마예요?"},
+  {lv:5,c:"말·표현",w:"reason",k:"이유",p:"리즌",ex:"What is the reason?",exk:"이유가 뭐예요?"},
+  {lv:5,c:"촬영·영상",w:"record",k:"녹음하다, 기록하다",p:"레코드",ex:"Record the sound separately.",exk:"소리는 따로 녹음하세요."},
+  {lv:5,c:"말·표현",w:"reduce",k:"줄이다",p:"리듀스",ex:"We should reduce the cost.",exk:"비용을 줄여야 해요."},
+  {lv:5,c:"말·표현",w:"refuse",k:"거절하다",p:"리퓨즈",ex:"He refused the deal.",exk:"그는 거래를 거절했어요."},
+  {lv:5,c:"일·업무",w:"remind",k:"상기시키다",p:"리마인드",ex:"Remind me before the shoot.",exk:"촬영 전에 알려주세요."},
+  {lv:5,c:"일·업무",w:"report",k:"보고서; 보고하다",p:"리포트",ex:"I sent the report already.",exk:"보고서 벌써 보냈어요."},
+  {lv:5,c:"일·업무",w:"request",k:"요청; 요청하다",p:"리퀘스트",ex:"The client had one request.",exk:"클라이언트가 요청을 했어요."},
+  {lv:5,c:"말·표현",w:"require",k:"요구하다, 필요하다",p:"리콰이어",ex:"This job requires patience.",exk:"이 일은 인내가 필요해요."},
+  {lv:5,c:"말·표현",w:"respond",k:"답하다, 응답하다",p:"리스판드",ex:"She responded this morning.",exk:"그녀가 오늘 아침 답했어요."},
+  {lv:5,c:"말·표현",w:"result",k:"결과",p:"리절트",ex:"The final result looks great.",exk:"최종 결과가 좋아요."},
+  {lv:5,c:"촬영·영상",w:"review",k:"검토하다; 후기",p:"리뷰",ex:"Please review the first cut.",exk:"첫 편집본 검토해 주세요."},
+  {lv:5,c:"말·표현",w:"routine",k:"일과, 루틴",p:"루틴",ex:"My morning routine is simple.",exk:"제 아침 일과는 단순해요."},
+  {lv:5,c:"일·업무",w:"rule",k:"규칙",p:"룰",ex:"That's the studio rule.",exk:"그게 스튜디오 규칙이에요."},
+  {lv:5,c:"음식·식당",w:"service",k:"서비스, 접객",p:"써비스",ex:"The service here is fast.",exk:"여기 서비스가 빨라요."},
+  {lv:5,c:"말·표현",w:"situation",k:"상황",p:"시추에이션",ex:"Explain the situation to me.",exk:"상황을 설명해 주세요."},
+  {lv:5,c:"일·업무",w:"skill",k:"기술, 실력",p:"스킬",ex:"Editing is a useful skill.",exk:"편집은 유용한 기술이에요."},
+  {lv:5,c:"일·업무",w:"success",k:"성공",p:"석세스",ex:"The launch was a success.",exk:"오픈은 성공이었어요."},
+  {lv:5,c:"말·표현",w:"suggest",k:"제안하다",p:"써제스트",ex:"Can I suggest another angle?",exk:"다른 앵글 제안해도 될까요?"},
+  {lv:5,c:"말·표현",w:"suggestion",k:"제안",p:"서제스천",ex:"I have one suggestion.",exk:"제안이 하나 있어요."},
+  {lv:5,c:"일·업무",w:"supplier",k:"공급업체",p:"서플라이어",ex:"Our bean supplier changed.",exk:"원두 공급업체가 바뀌었어요."},
+  {lv:5,c:"일·업무",w:"supply",k:"물품, 공급하다",p:"써플라이",ex:"We have enough supply.",exk:"재료는 충분해요."},
+  {lv:5,c:"일·업무",w:"system",k:"시스템, 체계",p:"시스템",ex:"Our order system is new.",exk:"주문 시스템이 새것이에요."},
+  {lv:5,c:"일·업무",w:"target",k:"목표, 대상",p:"타겟",ex:"Young people are our target.",exk:"젊은 사람들이 우리 대상이에요."},
+  {lv:5,c:"일·업무",w:"task",k:"업무, 할 일",p:"태스크",ex:"I finished the first task.",exk:"첫 업무를 끝냈어요."},
+  {lv:5,c:"일·업무",w:"training",k:"교육, 훈련",p:"트레이닝",ex:"Barista training takes two weeks.",exk:"바리스타 교육은 2주 걸려요."},
+  {lv:5,c:"감정·상태",w:"trust",k:"신뢰하다; 신뢰",p:"트러스트",ex:"Clients trust her work.",exk:"고객들은 그녀 작업을 믿어요."},
+  {lv:5,c:"일·업무",w:"update",k:"업데이트하다; 소식",p:"업데이트",ex:"I'll update you tonight.",exk:"오늘 밤 소식 전할게요."},
+  {lv:5,c:"말·표현",w:"value",k:"가치; 소중히 여기다",p:"밸류",ex:"I value your time.",exk:"당신 시간을 소중히 여겨요."},
+  {lv:6,c:"말·표현",w:"actually",k:"사실은, 실제로",p:"액츄얼리",ex:"Actually, I like that one.",exk:"사실 저는 그게 좋아요."},
+  {lv:6,c:"촬영·영상",w:"adjust",k:"조정하다, 맞추다",p:"어저스트",ex:"Can you adjust the light?",exk:"조명 좀 조정해 줄래요?"},
+  {lv:6,c:"말·표현",w:"admit",k:"인정하다",p:"어드밋",ex:"I admit I was wrong.",exk:"제가 틀렸다고 인정해요."},
+  {lv:6,c:"말·표현",w:"affect",k:"영향을 주다",p:"어펙트",ex:"Rain could affect the shoot.",exk:"비가 촬영에 영향을 줄 수 있어요."},
+  {lv:6,c:"촬영·영상",w:"apply",k:"적용하다, 지원하다",p:"어플라이",ex:"Apply the same filter.",exk:"같은 필터를 적용하세요."},
+  {lv:6,c:"말·표현",w:"approach",k:"접근 방식",p:"어프로치",ex:"Let's try another approach.",exk:"다른 방식으로 해 봐요."},
+  {lv:6,c:"말·표현",w:"assume",k:"추측하다, 가정하다",p:"어숨",ex:"I assume you are ready.",exk:"준비됐다고 생각할게요."},
+  {lv:6,c:"일·업무",w:"attend",k:"참석하다",p:"어텐드",ex:"Can you attend the call?",exk:"그 통화에 참석할 수 있어요?"},
+  {lv:6,c:"말·표현",w:"aware",k:"알고 있는",p:"어웨어",ex:"I am aware of that.",exk:"그건 알고 있어요."},
+  {lv:6,c:"말·표현",w:"certain",k:"확실한, 어떤",p:"서튼",ex:"Are you certain about this?",exk:"이거 확실해요?"},
+  {lv:6,c:"촬영·영상",w:"combine",k:"합치다",p:"컴바인",ex:"Let's combine these two clips.",exk:"이 두 클립을 합쳐요."},
+  {lv:6,c:"성질·정도",w:"common",k:"흔한, 공통의",p:"커먼",ex:"That is a common mistake.",exk:"그건 흔한 실수예요."},
+  {lv:6,c:"성질·정도",w:"complicated",k:"복잡한",p:"컴플리케이티드",ex:"This is too complicated.",exk:"이건 너무 복잡해요."},
+  {lv:6,c:"감정·상태",w:"concern",k:"걱정, 우려",p:"컨선",ex:"I have one concern here.",exk:"여기 걱정되는 게 하나 있어요."},
+  {lv:6,c:"동작·행동",w:"connect",k:"연결하다",p:"커넥트",ex:"Connect the cable here.",exk:"여기에 케이블을 연결하세요."},
+  {lv:6,c:"말·표현",w:"consider",k:"고려하다",p:"컨시더",ex:"Please consider my offer.",exk:"제 제안을 고려해 주세요."},
+  {lv:6,c:"일·업무",w:"contact",k:"연락하다, 연락처",p:"컨택트",ex:"I will contact you later.",exk:"나중에 연락드릴게요."},
+  {lv:6,c:"말·표현",w:"continue",k:"계속하다",p:"컨티뉴",ex:"Let's continue after lunch.",exk:"점심 먹고 계속해요."},
+  {lv:6,c:"말·표현",w:"depend",k:"달려 있다",p:"디펜드",ex:"It depends on the weather.",exk:"날씨에 달려 있어요."},
+  {lv:6,c:"촬영·영상",w:"effect",k:"효과, 영향",p:"이펙트",ex:"This effect looks natural.",exk:"이 효과는 자연스러워요."},
+  {lv:6,c:"말·표현",w:"expect",k:"예상하다, 기대하다",p:"익스펙트",ex:"I expect a quick reply.",exk:"빠른 답을 기대해요."},
+  {lv:6,c:"성질·정도",w:"general",k:"전반적인, 일반적인",p:"제너럴",ex:"What is the general idea?",exk:"전체적인 방향이 뭐예요?"},
+  {lv:6,c:"감정·상태",w:"impression",k:"인상, 느낌",p:"임프레션",ex:"My first impression was good.",exk:"첫인상은 좋았어요."},
+  {lv:6,c:"말·표현",w:"involve",k:"포함하다, 관련되다",p:"인발브",ex:"Does it involve travel?",exk:"출장이 포함되나요?"},
+  {lv:6,c:"말·표현",w:"matter",k:"문제, 중요하다",p:"매러",ex:"Does the color matter?",exk:"색깔이 중요한가요?"},
+  {lv:6,c:"동작·행동",w:"measure",k:"재다, 측정하다",p:"메저",ex:"Can you measure the room?",exk:"방 크기를 재 줄래요?"},
+  {lv:6,c:"성질·정도",w:"obvious",k:"분명한",p:"아비어스",ex:"The answer is obvious.",exk:"답은 분명해요."},
+  {lv:6,c:"말·표현",w:"obviously",k:"분명히",p:"아비어슬리",ex:"Obviously, that is wrong.",exk:"분명히 그건 틀렸어요."},
+  {lv:6,c:"동작·행동",w:"organize",k:"정리하다",p:"오거나이즈",ex:"Let's organize the files.",exk:"파일을 정리해요."},
+  {lv:6,c:"성질·정도",w:"particular",k:"특정한, 까다로운",p:"퍼티큘러",ex:"Any particular reason?",exk:"특별한 이유가 있나요?"},
+  {lv:6,c:"말·표현",w:"perhaps",k:"아마도, 어쩌면",p:"퍼햅스",ex:"Perhaps we should wait.",exk:"아마 기다려야 할 것 같아요."},
+  {lv:6,c:"말·표현",w:"prevent",k:"막다, 예방하다",p:"프리벤트",ex:"This will prevent mistakes.",exk:"이러면 실수를 막아요."},
+  {lv:6,c:"말·표현",w:"probably",k:"아마",p:"프라버블리",ex:"It will probably rain.",exk:"아마 비가 올 거예요."},
+  {lv:6,c:"성질·정도",w:"proper",k:"적절한, 제대로 된",p:"프라퍼",ex:"Wear proper shoes today.",exk:"오늘은 제대로 된 신발 신어요."},
+  {lv:6,c:"말·표현",w:"realize",k:"깨닫다",p:"리얼라이즈",ex:"I did not realize that.",exk:"그건 몰랐어요."},
+  {lv:6,c:"시간·숫자",w:"recent",k:"최근의",p:"리슨트",ex:"Send me a recent photo.",exk:"최근 사진 하나 보내 주세요."},
+  {lv:6,c:"말·표현",w:"remain",k:"남아 있다",p:"리메인",ex:"Two seats remain open.",exk:"두 자리가 남아 있어요."},
+  {lv:6,c:"동작·행동",w:"remove",k:"제거하다",p:"리무브",ex:"Please remove that logo.",exk:"그 로고를 지워 주세요."},
+  {lv:6,c:"말·표현",w:"repeat",k:"반복하다",p:"리피트",ex:"Could you repeat that?",exk:"다시 말해 줄래요?"},
+  {lv:6,c:"촬영·영상",w:"replace",k:"교체하다",p:"리플레이스",ex:"We should replace this shot.",exk:"이 장면을 교체해야 해요."},
+  {lv:6,c:"말·표현",w:"select",k:"고르다, 선택하다",p:"설렉트",ex:"Select your favorite photo.",exk:"마음에 드는 사진을 고르세요."},
+  {lv:6,c:"동작·행동",w:"separate",k:"분리하다, 별개의",p:"세퍼레잇",ex:"Keep them in separate folders.",exk:"따로 폴더에 넣어 두세요."},
+  {lv:6,c:"성질·정도",w:"similar",k:"비슷한",p:"시밀러",ex:"These colors look similar.",exk:"이 색들은 비슷해 보여요."},
+  {lv:6,c:"성질·정도",w:"specific",k:"구체적인",p:"스퍼시픽",ex:"Can you be more specific?",exk:"좀 더 구체적으로 말해 줄래요?"},
+  {lv:6,c:"말·표현",w:"support",k:"지원하다, 지지",p:"서포트",ex:"Thanks for your support.",exk:"지원해 주셔서 고마워요."},
+  {lv:6,c:"성질·정도",w:"various",k:"다양한",p:"베리어스",ex:"We tried various angles.",exk:"여러 각도를 시도했어요."},
+  {lv:7,c:"일·업무",w:"approval",k:"승인",p:"어프루벌",ex:"We need client approval.",exk:"클라이언트 승인이 필요해요."},
+  {lv:7,c:"촬영·영상",w:"archive",k:"보관하다, 아카이브",p:"아카이브",ex:"Archive the old projects.",exk:"예전 프로젝트는 보관하세요."},
+  {lv:7,c:"촬영·영상",w:"asset",k:"소스 파일, 자료",p:"애셋",ex:"Send all the assets today.",exk:"오늘 소스 파일을 다 보내요."},
+  {lv:7,c:"일·업무",w:"attachment",k:"첨부 파일",p:"어태치먼트",ex:"Check the attachment please.",exk:"첨부 파일 확인해 주세요."},
+  {lv:7,c:"촬영·영상",w:"backup",k:"백업",p:"백업",ex:"Keep a backup of everything.",exk:"모든 걸 백업해 두세요."},
+  {lv:7,c:"쇼핑·돈",w:"cancellation",k:"취소",p:"캔슬레이션",ex:"What is the cancellation fee?",exk:"취소 수수료가 얼마예요?"},
+  {lv:7,c:"촬영·영상",w:"caption",k:"자막, 설명 문구",p:"캡션",ex:"The caption has a typo.",exk:"자막에 오타가 있어요."},
+  {lv:7,c:"일·업무",w:"clause",k:"조항",p:"클로즈",ex:"Read this clause carefully.",exk:"이 조항을 잘 읽어 보세요."},
+  {lv:7,c:"촬영·영상",w:"composition",k:"구성, 구도",p:"컴퍼지션",ex:"I like this composition.",exk:"이 구도가 마음에 들어요."},
+  {lv:7,c:"일·업무",w:"confidential",k:"기밀의",p:"칸피덴셜",ex:"This file is confidential.",exk:"이 파일은 기밀이에요."},
+  {lv:7,c:"일·업무",w:"copyright",k:"저작권",p:"카피라이트",ex:"Who owns the copyright?",exk:"저작권은 누구한테 있어요?"},
+  {lv:7,c:"촬영·영상",w:"crew",k:"촬영팀, 스태프",p:"크루",ex:"The crew arrives at seven.",exk:"스태프는 7시에 도착해요."},
+  {lv:7,c:"일·업무",w:"delivery",k:"납품, 전달",p:"딜리버리",ex:"Final delivery is Friday.",exk:"최종 납품은 금요일이에요."},
+  {lv:7,c:"일·업무",w:"draft",k:"초안",p:"드래프트",ex:"Here is the first draft.",exk:"첫 초안이에요."},
+  {lv:7,c:"쇼핑·돈",w:"estimate",k:"견적, 추정하다",p:"에스티밋",ex:"Send me a cost estimate.",exk:"비용 견적을 보내 주세요."},
+  {lv:7,c:"촬영·영상",w:"export",k:"내보내다",p:"익스포트",ex:"Export the file as MP4.",exk:"파일을 MP4로 내보내요."},
+  {lv:7,c:"촬영·영상",w:"exposure",k:"노출",p:"익스포저",ex:"Check the exposure again.",exk:"노출 다시 확인해요."},
+  {lv:7,c:"촬영·영상",w:"final cut",k:"최종 편집본",p:"파이널 컷",ex:"Approve the final cut today.",exk:"오늘 최종본을 승인해 주세요."},
+  {lv:7,c:"촬영·영상",w:"footage",k:"촬영 영상, 푸티지",p:"풋티지",ex:"The footage looks amazing.",exk:"촬영본이 정말 좋아요."},
+  {lv:7,c:"촬영·영상",w:"framing",k:"구도, 프레이밍",p:"프레이밍",ex:"The framing feels tight.",exk:"구도가 좀 답답해요."},
+  {lv:7,c:"촬영·영상",w:"gear",k:"장비",p:"기어",ex:"Load the gear in the van.",exk:"장비를 밴에 실어요."},
+  {lv:7,c:"촬영·영상",w:"grading",k:"색보정",p:"그레이딩",ex:"Color grading starts tomorrow.",exk:"색보정은 내일 시작해요."},
+  {lv:7,c:"촬영·영상",w:"lens",k:"렌즈",p:"렌즈",ex:"Bring the wide lens.",exk:"광각 렌즈 가져와요."},
+  {lv:7,c:"일·업무",w:"liability",k:"책임, 배상 책임",p:"라이어빌리티",ex:"Check the liability section.",exk:"책임 조항을 확인하세요."},
+  {lv:7,c:"일·업무",w:"license",k:"사용권, 라이선스",p:"라이슨스",ex:"We license the music legally.",exk:"음악을 정식으로 사용해요."},
+  {lv:7,c:"촬영·영상",w:"lighting",k:"조명",p:"라이팅",ex:"The lighting is too flat.",exk:"조명이 너무 밋밋해요."},
+  {lv:7,c:"촬영·영상",w:"location",k:"촬영 장소",p:"로케이션",ex:"We scouted the location.",exk:"촬영 장소를 답사했어요."},
+  {lv:7,c:"일·업무",w:"milestone",k:"중요 단계",p:"마일스톤",ex:"We hit the first milestone.",exk:"첫 단계를 완료했어요."},
+  {lv:7,c:"일·업무",w:"negotiate",k:"협상하다",p:"니고시에이트",ex:"Let's negotiate the price.",exk:"가격을 협상해 봐요."},
+  {lv:7,c:"촬영·영상",w:"permit",k:"허가증",p:"퍼밋",ex:"We need a filming permit.",exk:"촬영 허가증이 필요해요."},
+  {lv:7,c:"일·업무",w:"pitch",k:"제안하다, 피칭",p:"피치",ex:"We pitch the idea Monday.",exk:"월요일에 아이디어를 제안해요."},
+  {lv:7,c:"일·업무",w:"postpone",k:"연기하다",p:"포스트폰",ex:"They postponed the meeting.",exk:"회의를 연기했어요."},
+  {lv:7,c:"일·업무",w:"proposal",k:"제안서",p:"프러포절",ex:"They liked our proposal.",exk:"우리 제안서를 마음에 들어했어요."},
+  {lv:7,c:"쇼핑·돈",w:"quote",k:"견적서",p:"쿼트",ex:"I will send a quote.",exk:"견적서를 보낼게요."},
+  {lv:7,c:"촬영·영상",w:"render",k:"렌더링하다",p:"렌더",ex:"The render takes two hours.",exk:"렌더링에 두 시간 걸려요."},
+  {lv:7,c:"일·업무",w:"reschedule",k:"일정을 변경하다",p:"리스케쥴",ex:"Can we reschedule the shoot?",exk:"촬영 일정 변경할 수 있을까요?"},
+  {lv:7,c:"촬영·영상",w:"resolution",k:"해상도",p:"레절루션",ex:"Export in higher resolution.",exk:"더 높은 해상도로 내보내요."},
+  {lv:7,c:"일·업무",w:"retainer",k:"선금 계약",p:"리테이너",ex:"They pay a monthly retainer.",exk:"그들은 월 선금을 내요."},
+  {lv:7,c:"촬영·영상",w:"revise",k:"수정하다",p:"리바이즈",ex:"I will revise the edit.",exk:"편집본을 수정할게요."},
+  {lv:7,c:"촬영·영상",w:"revision",k:"수정본, 수정",p:"리비전",ex:"This is revision three.",exk:"이건 세 번째 수정본이에요."},
+  {lv:7,c:"촬영·영상",w:"rough cut",k:"가편집본",p:"러프 컷",ex:"The rough cut is ready.",exk:"가편집본이 준비됐어요."},
+  {lv:7,c:"일·업무",w:"scope",k:"범위",p:"스코프",ex:"That is outside our scope.",exk:"그건 업무 범위 밖이에요."},
+  {lv:7,c:"일·업무",w:"signature",k:"서명",p:"시그니처",ex:"We need your signature here.",exk:"여기 서명이 필요해요."},
+  {lv:7,c:"촬영·영상",w:"storyboard",k:"스토리보드",p:"스토리보드",ex:"I finished the storyboard.",exk:"스토리보드를 끝냈어요."},
+  {lv:7,c:"촬영·영상",w:"subtitle",k:"자막",p:"서브타이틀",ex:"Add English subtitles please.",exk:"영어 자막 넣어 주세요."},
+  {lv:7,c:"일·업무",w:"terms",k:"조건",p:"텀즈",ex:"The terms look fair.",exk:"조건이 공정해 보여요."},
+  {lv:7,c:"촬영·영상",w:"timecode",k:"타임코드",p:"타임코드",ex:"Give me the timecode.",exk:"타임코드 알려 주세요."},
+  {lv:7,c:"일·업무",w:"timeline",k:"일정표",p:"타임라인",ex:"Let's review the timeline.",exk:"일정을 다시 봐요."},
+  {lv:7,c:"촬영·영상",w:"transition",k:"전환, 트랜지션",p:"트랜지션",ex:"That transition is too fast.",exk:"그 전환이 너무 빨라요."},
+  {lv:7,c:"촬영·영상",w:"treatment",k:"기획안",p:"트릿먼트",ex:"The treatment is two pages.",exk:"기획안은 두 장이에요."},
+  {lv:7,c:"촬영·영상",w:"tripod",k:"삼각대",p:"트라이파드",ex:"Set the tripod over there.",exk:"삼각대를 저기에 세워요."},
+  {lv:7,c:"촬영·영상",w:"voiceover",k:"내레이션",p:"보이스오버",ex:"We record the voiceover Monday.",exk:"내레이션은 월요일에 녹음해요."},
+  {lv:8,c:"일·업무",w:"comply",k:"준수하다, 따르다",p:"컴플라이",ex:"All vendors must comply.",exk:"모든 업체는 준수해야 해요."},
+  {lv:8,c:"일·업무",w:"allocate",k:"할당하다, 배정하다",p:"앨러케이트",ex:"We allocate the budget monthly.",exk:"예산을 매달 배정해요."},
+  {lv:8,c:"성질·정도",w:"robust",k:"탄탄한, 견고한",p:"로버스트",ex:"Sales were robust last quarter.",exk:"지난 분기 매출이 탄탄했어요."},
+  {lv:8,c:"일·업무",w:"mitigate",k:"완화하다, 줄이다",p:"미티게이트",ex:"This will mitigate the risk.",exk:"이건 위험을 줄여 줄 거예요."},
+  {lv:8,c:"일·업무",w:"implement",k:"시행하다, 실행하다",p:"임플러멘트",ex:"They implement the new rules today.",exk:"오늘 새 규정을 시행해요."},
+  {lv:8,c:"일·업무",w:"disclose",k:"공개하다, 밝히다",p:"디스클로우즈",ex:"The firm must disclose the fees.",exk:"회사는 수수료를 공개해야 해요."},
+  {lv:8,c:"일·업무",w:"oversee",k:"감독하다, 총괄하다",p:"오버씨",ex:"She will oversee the project.",exk:"그녀가 프로젝트를 총괄할 거예요."},
+  {lv:8,c:"일·업무",w:"mandate",k:"의무화하다; 명령",p:"맨데이트",ex:"The city may mandate masks.",exk:"시가 마스크를 의무화할 수 있어요."},
+  {lv:8,c:"일·업무",w:"streamline",k:"간소화하다",p:"스트림라인",ex:"We need to streamline the process.",exk:"절차를 간소화해야 해요."},
+  {lv:8,c:"일·업무",w:"forecast",k:"예측하다; 예보",p:"포어캐스트",ex:"Analysts forecast slower growth.",exk:"전문가들은 성장 둔화를 예측해요."},
+  {lv:8,c:"일·업무",w:"endorse",k:"지지하다, 보증하다",p:"인도어스",ex:"Two papers endorse the plan.",exk:"신문 두 곳이 그 안을 지지해요."},
+  {lv:8,c:"쇼핑·돈",w:"incentive",k:"유인책, 장려금",p:"인센티브",ex:"The tax incentive ends in May.",exk:"세제 혜택은 5월에 끝나요."},
+  {lv:8,c:"쇼핑·돈",w:"deficit",k:"적자, 부족",p:"데피싯",ex:"The trade deficit grew again.",exk:"무역 적자가 또 늘었어요."},
+  {lv:8,c:"쇼핑·돈",w:"surplus",k:"흑자, 잉여",p:"서플러스",ex:"The budget shows a surplus.",exk:"예산이 흑자를 보이고 있어요."},
+  {lv:8,c:"일·업무",w:"merger",k:"합병",p:"머저",ex:"The merger was approved today.",exk:"오늘 합병이 승인됐어요."},
+  {lv:8,c:"일·업무",w:"audit",k:"감사, 회계 감사",p:"어딧",ex:"The audit starts next Monday.",exk:"감사는 다음 주 월요일 시작해요."},
+  {lv:8,c:"일·업무",w:"consolidate",k:"통합하다, 합치다",p:"컨솔리데이트",ex:"They consolidate two offices.",exk:"두 사무실을 통합해요."},
+  {lv:8,c:"일·업무",w:"stakeholder",k:"이해관계자",p:"스테이크홀더",ex:"Every stakeholder gets a report.",exk:"모든 이해관계자가 보고서를 받아요."},
+  {lv:8,c:"일·업무",w:"transparency",k:"투명성",p:"트랜스패런시",ex:"Investors want more transparency.",exk:"투자자들은 투명성을 더 원해요."},
+  {lv:8,c:"쇼핑·돈",w:"volatile",k:"변동이 심한, 불안정한",p:"발러틀",ex:"The market stayed volatile.",exk:"시장이 계속 불안정했어요."},
+  {lv:8,c:"쇼핑·돈",w:"surge",k:"급증하다; 급증",p:"서지",ex:"Oil prices surge after the news.",exk:"뉴스 후 유가가 급등해요."},
+  {lv:8,c:"일·업무",w:"compile",k:"집계하다, 모으다",p:"컴파일",ex:"We compile the data every Friday.",exk:"매주 금요일 데이터를 모아요."},
+  {lv:8,c:"일·업무",w:"subsidiary",k:"자회사",p:"서브시디어리",ex:"The subsidiary reported a loss.",exk:"자회사가 손실을 보고했어요."},
+  {lv:8,c:"일·업무",w:"procurement",k:"조달, 구매",p:"프로큐어먼트",ex:"Procurement takes about six weeks.",exk:"조달은 약 6주 걸려요."},
+  {lv:8,c:"쇼핑·돈",w:"downturn",k:"경기 침체, 하락",p:"다운턴",ex:"The downturn hit small shops hard.",exk:"침체가 소상공인을 강타했어요."},
+  {lv:8,c:"일·업무",w:"initiative",k:"계획, 주도권",p:"이니셔티브",ex:"The green initiative starts soon.",exk:"친환경 계획이 곧 시작해요."},
+  {lv:8,c:"일·업무",w:"accountable",k:"책임이 있는",p:"어카운터블",ex:"Managers are accountable for costs.",exk:"관리자가 비용에 책임이 있어요."},
+  {lv:8,c:"성질·정도",w:"feasible",k:"실현 가능한",p:"피저블",ex:"That deadline is not feasible.",exk:"그 마감은 실현 불가능해요."},
+  {lv:8,c:"성질·정도",w:"substantial",k:"상당한, 상당히 큰",p:"섭스탠셜",ex:"They made a substantial profit.",exk:"그들은 상당한 이익을 냈어요."},
+  {lv:8,c:"말·표현",w:"allegedly",k:"전해지는 바로는",p:"얼레지들리",ex:"He allegedly ignored the warning.",exk:"그는 경고를 무시했다고 해요."},
+  {lv:9,c:"말·표현",w:"nuance",k:"미묘한 차이",p:"뉘앙스",ex:"You missed the nuance there.",exk:"거기 미묘한 차이를 놓쳤어요."},
+  {lv:9,c:"일·업무",w:"leverage",k:"활용하다; 영향력",p:"레버리지",ex:"We leverage our client list.",exk:"우리 고객 명단을 활용해요."},
+  {lv:9,c:"성질·정도",w:"inherent",k:"내재된, 본질적인",p:"인히어런트",ex:"Every deal has inherent risk.",exk:"모든 거래엔 내재된 위험이 있어요."},
+  {lv:9,c:"말·표현",w:"discrepancy",k:"불일치, 차이",p:"디스크레펀시",ex:"There is a discrepancy here.",exk:"여기 불일치가 있어요."},
+  {lv:9,c:"성질·정도",w:"ambiguous",k:"애매한, 모호한",p:"앰비규어스",ex:"His answer was ambiguous.",exk:"그의 대답은 모호했어요."},
+  {lv:9,c:"성질·정도",w:"coherent",k:"일관된, 논리적인",p:"코히런트",ex:"We need a coherent strategy.",exk:"일관된 전략이 필요해요."},
+  {lv:9,c:"성질·정도",w:"plausible",k:"그럴듯한",p:"플로저블",ex:"That sounds plausible enough.",exk:"그건 꽤 그럴듯하게 들려요."},
+  {lv:9,c:"성질·정도",w:"arbitrary",k:"임의의, 자의적인",p:"아비트러리",ex:"The rule feels arbitrary.",exk:"그 규칙은 자의적으로 느껴져요."},
+  {lv:9,c:"성질·정도",w:"empirical",k:"실증적인, 경험적인",p:"엠피리컬",ex:"We lack empirical evidence.",exk:"실증적 증거가 부족해요."},
+  {lv:9,c:"성질·정도",w:"implicit",k:"암묵적인",p:"임플리싯",ex:"There was an implicit promise.",exk:"암묵적인 약속이 있었어요."},
+  {lv:9,c:"성질·정도",w:"explicit",k:"명시적인, 분명한",p:"익스플리싯",ex:"Give me explicit instructions.",exk:"명확한 지시를 주세요."},
+  {lv:9,c:"성질·정도",w:"prevalent",k:"널리 퍼진, 흔한",p:"프레벌런트",ex:"That myth is still prevalent.",exk:"그 속설은 아직도 흔해요."},
+  {lv:9,c:"성질·정도",w:"viable",k:"실행 가능한",p:"바이어블",ex:"It is the only viable option.",exk:"그게 유일하게 가능한 선택이에요."},
+  {lv:9,c:"성질·정도",w:"intrinsic",k:"본질적인, 고유의",p:"인트린식",ex:"Art has intrinsic value.",exk:"예술은 본질적 가치를 지녀요."},
+  {lv:9,c:"말·표현",w:"premise",k:"전제",p:"프레미스",ex:"The premise sounds wrong.",exk:"그 전제가 틀린 것 같아요."},
+  {lv:9,c:"시간·숫자",w:"subsequent",k:"그 이후의, 뒤따르는",p:"섭시퀀트",ex:"Subsequent tests confirmed it.",exk:"이후 시험들이 그걸 확인했어요."},
+  {lv:9,c:"말·표현",w:"constitute",k:"구성하다, ~에 해당하다",p:"컨스티튜트",ex:"These emails constitute a contract.",exk:"이 메일들이 계약을 구성해요."},
+  {lv:9,c:"말·표현",w:"notion",k:"개념, 생각",p:"노우션",ex:"I reject that notion.",exk:"저는 그 생각에 반대해요."},
+  {lv:9,c:"말·표현",w:"deviate",k:"벗어나다, 일탈하다",p:"디비에이트",ex:"Do not deviate from the script.",exk:"대본에서 벗어나지 마세요."},
+  {lv:9,c:"말·표현",w:"converge",k:"수렴하다, 모이다",p:"컨버지",ex:"The two theories converge here.",exk:"두 이론이 여기서 수렴해요."},
+  {lv:9,c:"시간·숫자",w:"threshold",k:"기준점, 문턱",p:"쓰레숄드",ex:"Sales crossed the threshold.",exk:"매출이 기준점을 넘었어요."},
+  {lv:9,c:"말·표현",w:"rationale",k:"근거, 이유",p:"래셔낼",ex:"Explain the rationale briefly.",exk:"근거를 간단히 설명해 주세요."},
+  {lv:9,c:"말·표현",w:"disparity",k:"격차, 불균형",p:"디스패리티",ex:"The wage disparity is wide.",exk:"임금 격차가 큽니다."},
+  {lv:9,c:"성질·정도",w:"contingent",k:"~에 달린, 조건부의",p:"컨틴전트",ex:"Payment is contingent on delivery.",exk:"지급은 납품에 달려 있어요."},
+  {lv:9,c:"성질·정도",w:"tangible",k:"실체가 있는, 확실한",p:"탠저블",ex:"We need tangible results.",exk:"확실한 결과가 필요해요."},
+  {lv:9,c:"말·표현",w:"prerequisite",k:"선행 조건, 필수 요건",p:"프리레퀴짓",ex:"Trust is a prerequisite here.",exk:"여기선 신뢰가 필수 조건이에요."},
+  {lv:9,c:"성질·정도",w:"comprehensive",k:"포괄적인, 종합적인",p:"컴프리헨시브",ex:"She wrote a comprehensive report.",exk:"그녀는 종합 보고서를 썼어요."},
+  {lv:9,c:"말·표현",w:"entail",k:"수반하다, 포함하다",p:"인테일",ex:"What does the job entail?",exk:"그 일은 뭘 수반하나요?"},
+  {lv:9,c:"말·표현",w:"presume",k:"추정하다, 가정하다",p:"프리줌",ex:"I presume they already know.",exk:"그들이 이미 안다고 봐요."},
+  {lv:9,c:"말·표현",w:"attribute",k:"~의 탓으로 돌리다; 속성",p:"어트리뷰트",ex:"They attribute the loss to rain.",exk:"그들은 손실을 비 탓으로 봐요."},
+  {lv:10,c:"성질·정도",w:"ubiquitous",k:"어디에나 있는",p:"유비쿼터스",ex:"Screens are ubiquitous now.",exk:"이제 화면은 어디에나 있어요."},
+  {lv:10,c:"말·표현",w:"paradigm",k:"패러다임, 전형",p:"패러다임",ex:"This marks a paradigm shift.",exk:"이건 패러다임 전환을 뜻해요."},
+  {lv:10,c:"말·표현",w:"scrutiny",k:"정밀 조사, 감시",p:"스크루터니",ex:"The plan faces heavy scrutiny.",exk:"그 계획은 심한 조사를 받아요."},
+  {lv:10,c:"말·표현",w:"ostensibly",k:"표면상으로는",p:"오스텐서블리",ex:"He came ostensibly to help.",exk:"그는 표면상 돕겠다며 왔어요."},
+  {lv:10,c:"성질·정도",w:"ephemeral",k:"덧없는, 순간적인",p:"이페머럴",ex:"Fame is often ephemeral.",exk:"명성은 종종 덧없어요."},
+  {lv:10,c:"동작·행동",w:"juxtapose",k:"나란히 놓다, 대비하다",p:"적스터포우즈",ex:"The film juxtaposes past and present.",exk:"그 영화는 과거와 현재를 대비해요."},
+  {lv:10,c:"성질·정도",w:"esoteric",k:"난해한, 소수만 아는",p:"에서테릭",ex:"The lecture was quite esoteric.",exk:"그 강의는 꽤 난해했어요."},
+  {lv:10,c:"성질·정도",w:"quintessential",k:"전형적인, 정수의",p:"퀸터센셜",ex:"She is the quintessential host.",exk:"그녀는 전형적인 진행자예요."},
+  {lv:10,c:"성질·정도",w:"salient",k:"두드러진, 핵심적인",p:"세일리언트",ex:"Let us review the salient points.",exk:"핵심 요점을 살펴봅시다."},
+  {lv:10,c:"성질·정도",w:"innocuous",k:"무해한, 악의 없는",p:"이나큐어스",ex:"It was an innocuous remark.",exk:"그건 악의 없는 말이었어요."},
+  {lv:10,c:"감정·상태",w:"meticulous",k:"꼼꼼한, 세심한",p:"머티큘러스",ex:"He is meticulous about detail.",exk:"그는 디테일에 꼼꼼해요."},
+  {lv:10,c:"성질·정도",w:"profound",k:"깊은, 심오한",p:"프러파운드",ex:"The book had a profound effect.",exk:"그 책은 깊은 영향을 줬어요."},
+  {lv:10,c:"성질·정도",w:"austere",k:"소박한, 엄격한",p:"오스티어",ex:"The room felt cold and austere.",exk:"방은 춥고 소박했어요."},
+  {lv:10,c:"성질·정도",w:"eloquent",k:"웅변적인, 설득력 있는",p:"엘러퀀트",ex:"Her speech was truly eloquent.",exk:"그녀의 연설은 정말 훌륭했어요."},
+  {lv:10,c:"성질·정도",w:"pervasive",k:"만연한, 널리 퍼진",p:"퍼베이시브",ex:"The smell was pervasive.",exk:"냄새가 사방에 퍼져 있었어요."},
+  {lv:10,c:"성질·정도",w:"lucid",k:"명료한, 또렷한",p:"루시드",ex:"Her writing is remarkably lucid.",exk:"그녀의 글은 아주 명료해요."},
+  {lv:10,c:"감정·상태",w:"candid",k:"솔직한, 꾸밈없는",p:"캔디드",ex:"Thanks for the candid feedback.",exk:"솔직한 피드백 고마워요."},
+  {lv:10,c:"감정·상태",w:"astute",k:"기민한, 빈틈없는",p:"어스튜트",ex:"That was an astute question.",exk:"정말 예리한 질문이었어요."},
+  {lv:10,c:"몸·건강",w:"benign",k:"온화한, 양성의",p:"비나인",ex:"The tumor turned out benign.",exk:"종양은 양성으로 판명됐어요."},
+  {lv:10,c:"감정·상태",w:"poignant",k:"가슴 저미는, 애틋한",p:"포이넌트",ex:"The ending was deeply poignant.",exk:"결말이 무척 가슴 저몄어요."},
+  {lv:10,c:"성질·정도",w:"tenuous",k:"미약한, 희박한",p:"테뉴어스",ex:"The link is rather tenuous.",exk:"그 연관성은 다소 희박해요."},
+  {lv:10,c:"성질·정도",w:"futile",k:"헛된, 무의미한",p:"퓨틀",ex:"Further protest seemed futile.",exk:"더 항의해도 소용없어 보였어요."},
+  {lv:10,c:"성질·정도",w:"obscure",k:"잘 알려지지 않은, 모호한",p:"업스큐어",ex:"The poet remains obscure.",exk:"그 시인은 여전히 무명이에요."},
+  {lv:10,c:"성질·정도",w:"intricate",k:"복잡한, 정교한",p:"인트리컷",ex:"The pattern is very intricate.",exk:"그 무늬는 아주 정교해요."},
+  {lv:10,c:"성질·정도",w:"elusive",k:"붙잡기 힘든, 규정하기 힘든",p:"일루시브",ex:"A clear answer proved elusive.",exk:"명확한 답을 얻기 어려웠어요."},
+  {lv:10,c:"성질·정도",w:"arduous",k:"고된, 힘든",p:"아듀어스",ex:"It was an arduous climb.",exk:"고된 등반이었어요."},
+  {lv:10,c:"성질·정도",w:"sublime",k:"숭고한, 절묘한",p:"서블라임",ex:"The view was simply sublime.",exk:"경치가 그야말로 장엄했어요."},
+  {lv:10,c:"시간·숫자",w:"myriad",k:"무수한, 수많은",p:"미리어드",ex:"A myriad of stars appeared.",exk:"무수한 별들이 나타났어요."},
+  {lv:10,c:"말·표현",w:"anomaly",k:"이례적인 일, 변칙",p:"어나멀리",ex:"The data showed one anomaly.",exk:"데이터에 이상치가 하나 있었어요."},
+  {lv:10,c:"말·표현",w:"dichotomy",k:"이분법, 양분",p:"다이카터미",ex:"He rejects that false dichotomy.",exk:"그는 그 이분법을 거부해요."},
+  {d:10,lv:1,c:"동작·행동",w:"stay",k:"머물다, 묵다",p:"스테이",ex:"He stays at this hotel.",exk:"그는 이 호텔에 묵어요."},
+  {d:10,lv:2,c:"동작·행동",w:"visit",k:"방문하다, 가보다",p:"비짓",ex:"She visits Mexico every year.",exk:"그녀는 매년 멕시코에 가요."},
+  {d:10,lv:1,c:"동작·행동",w:"play",k:"(운동을) 하다, 놀다",p:"플레이",ex:"He plays soccer.",exk:"그는 축구를 해요."},
+  {d:10,lv:1,c:"동작·행동",w:"sing",k:"노래하다",p:"씽",ex:"She sings every day.",exk:"그녀는 매일 노래해요."},
+  {d:10,lv:2,c:"여행·교통",w:"travel",k:"여행하다",p:"트래블",ex:"My husband travels every month.",exk:"제 남편은 매달 여행해요."},
+  {d:10,lv:2,c:"동작·행동",w:"wear",k:"입다, 쓰다, 바르다",p:"웨어",ex:"He wears sunscreen.",exk:"그는 선크림을 발라요."},
+  {d:10,lv:2,c:"동작·행동",w:"finish",k:"끝나다, 끝내다",p:"피니시",ex:"It finishes at five.",exk:"그건 5시에 끝나요."},
+  {d:10,lv:2,c:"쇼핑·돈",w:"sell",k:"팔다",p:"셀",ex:"They sell tickets here.",exk:"여기서 표를 팔아요."},
+  {d:10,lv:1,c:"사람·관계",w:"soccer",k:"축구",p:"사커",ex:"My husband likes soccer.",exk:"제 남편은 축구를 좋아해요."},
+  {d:10,lv:1,c:"말·표현",w:"movie",k:"영화",p:"무비",ex:"She likes movies.",exk:"그녀는 영화를 좋아해요."},
+  {d:10,lv:1,c:"말·표현",w:"music",k:"음악",p:"뮤직",ex:"He likes this music.",exk:"그는 이 음악을 좋아해요."},
+  {d:10,lv:1,c:"음식·식당",w:"dinner",k:"저녁식사",p:"디너",ex:"We want dinner here.",exk:"저희 여기서 저녁 먹고 싶어요."},
+  {d:10,lv:2,c:"말·표현",w:"Spanish",k:"스페인어",p:"스패니시",ex:"She speaks Spanish.",exk:"그녀는 스페인어를 해요."},
+  {d:10,lv:1,c:"여행·교통",w:"bus",k:"버스",p:"버스",ex:"The bus goes downtown.",exk:"그 버스는 시내로 가요."},
+  {d:10,lv:2,c:"음식·식당",w:"restaurant",k:"식당, 레스토랑",p:"레스토랑",ex:"He works at a restaurant.",exk:"그는 식당에서 일해요."}
+];
+/* ── 문장 데이터 ── 새 문장은 이 배열 끝에 한 줄씩 추가됩니다 ── */
+const SENTS = [
+  {d:1,lv:1,c:"사람·관계",en:"I'm ready.",ko:"저 준비됐어요."},
+  {d:1,lv:1,c:"사람·관계",en:"I'm hungry.",ko:"저 배고파요."},
+  {d:1,lv:1,c:"사람·관계",en:"I'm not sure.",ko:"잘 모르겠어요."},
+  {d:1,lv:1,c:"사람·관계",en:"I'm from Korea.",ko:"저는 한국에서 왔어요."},
+  {d:1,lv:1,c:"사람·관계",en:"I'm not busy.",ko:"저 안 바빠요."},
+  {d:1,lv:1,c:"사람·관계",en:"I'm a teacher.",ko:"저는 선생님이에요."},
+  {d:1,lv:2,c:"사람·관계",en:"I'm a video director.",ko:"저는 영상 감독이에요."},
+  {d:1,lv:1,c:"사람·관계",en:"I'm not hungry.",ko:"저 배 안 고파요."},
+  {d:2,lv:1,c:"사람·관계",en:"You're right.",ko:"맞아요."},
+  {d:2,lv:1,c:"사람·관계",en:"You're welcome.",ko:"천만에요."},
+  {d:2,lv:1,c:"사람·관계",en:"You're early.",ko:"일찍 오셨네요."},
+  {d:2,lv:2,c:"사람·관계",en:"You're so funny.",ko:"정말 웃기시네요."},
+  {d:2,lv:2,c:"사람·관계",en:"You're not wrong.",ko:"틀린 말은 아니에요."},
+  {d:2,lv:1,c:"사람·관계",en:"You're very kind.",ko:"아주 친절하시네요."},
+  {d:2,lv:1,c:"사람·관계",en:"You're my wife.",ko:"당신은 내 아내예요."},
+  {d:2,lv:2,c:"사람·관계",en:"You're so lucky.",ko:"정말 운이 좋으시네요."},
+  {d:3,lv:1,c:"사람·관계",en:"He's my friend.",ko:"그는 제 친구예요."},
+  {d:3,lv:1,c:"사람·관계",en:"She's my sister.",ko:"그녀는 제 동생이에요."},
+  {d:3,lv:1,c:"사람·관계",en:"His name is Dylan.",ko:"그의 이름은 딜런이에요."},
+  {d:3,lv:1,c:"사람·관계",en:"Her name is Seoin.",ko:"그녀의 이름은 서인이에요."},
+  {d:3,lv:1,c:"사람·관계",en:"He's very tall.",ko:"그는 키가 아주 커요."},
+  {d:3,lv:2,c:"사람·관계",en:"She's so smart.",ko:"그녀는 정말 똑똑해요."},
+  {d:3,lv:2,c:"사람·관계",en:"She's my boss.",ko:"그녀는 제 상사예요."},
+  {d:3,lv:2,c:"사람·관계",en:"He's not young.",ko:"그는 젊지 않아요."},
+  {d:4,lv:1,c:"성질·정도",en:"This is my bag.",ko:"이건 제 가방이에요."},
+  {d:4,lv:1,c:"성질·정도",en:"That's my seat.",ko:"저기 제 자리예요."},
+  {d:4,lv:2,c:"성질·정도",en:"It's not free.",ko:"그건 무료가 아니에요."},
+  {d:4,lv:2,c:"성질·정도",en:"This is mine.",ko:"이건 제 거예요."},
+  {d:4,lv:2,c:"성질·정도",en:"That's not mine.",ko:"저건 제 게 아니에요."},
+  {d:4,lv:1,c:"성질·정도",en:"It's very hot.",ko:"아주 뜨거워요."},
+  {d:4,lv:1,c:"성질·정도",en:"This is my room.",ko:"여기 제 방이에요."},
+  {d:4,lv:2,c:"성질·정도",en:"This is not my bag.",ko:"이건 제 가방이 아니에요."},
+  {d:5,lv:2,c:"사람·관계",en:"We're together.",ko:"저희 같이 왔어요."},
+  {d:5,lv:1,c:"사람·관계",en:"We're from Korea.",ko:"저희는 한국에서 왔어요."},
+  {d:5,lv:3,c:"사람·관계",en:"We're on our honeymoon.",ko:"저희 신혼여행 중이에요."},
+  {d:5,lv:2,c:"사람·관계",en:"We're both hungry.",ko:"저희 둘 다 배고파요."},
+  {d:5,lv:2,c:"사람·관계",en:"They're very kind.",ko:"그분들 아주 친절해요."},
+  {d:5,lv:3,c:"사람·관계",en:"They're not open yet.",ko:"아직 안 열었어요."},
+  {d:5,lv:3,c:"사람·관계",en:"We're guests here.",ko:"저희 여기 투숙객이에요."},
+  {d:5,lv:2,c:"사람·관계",en:"We're not late.",ko:"저희 안 늦었어요."},
+  {d:6,lv:1,c:"말·표현",en:"Are you ready?",ko:"준비되셨어요?"},
+  {d:6,lv:1,c:"말·표현",en:"Are you hungry?",ko:"배고프세요?"},
+  {d:6,lv:2,c:"말·표현",en:"Is it far?",ko:"멀어요?"},
+  {d:6,lv:2,c:"말·표현",en:"Is it spicy?",ko:"매워요?"},
+  {d:6,lv:3,c:"말·표현",en:"Is breakfast included?",ko:"아침식사 포함인가요?"},
+  {d:6,lv:2,c:"말·표현",en:"Is it safe here?",ko:"여기 안전해요?"},
+  {d:6,lv:2,c:"말·표현",en:"Are they open?",ko:"거기 문 열었어요?"},
+  {d:6,lv:2,c:"말·표현",en:"We're not American.",ko:"저희 미국인 아니에요."},
+  {d:101,lv:2,c:"음식·식당",en:"Can I get an iced latte?",ko:"아이스 라떼 하나 주세요."},
+  {d:101,lv:2,c:"음식·식당",en:"One large size, please.",ko:"큰 사이즈 하나 주세요."},
+  {d:101,lv:1,c:"음식·식당",en:"I want a hot tea.",ko:"따뜻한 차 주세요."},
+  {d:101,lv:2,c:"음식·식당",en:"Please, no sugar.",ko:"설탕은 빼주세요."},
+  {d:101,lv:2,c:"음식·식당",en:"Can I get a straw?",ko:"빨대 하나 주세요."},
+  {d:101,lv:3,c:"음식·식당",en:"I will pay by card.",ko:"카드로 결제할게요."},
+  {d:101,lv:3,c:"음식·식당",en:"Make it to-go, please.",ko:"포장으로 해주세요."},
+  {d:101,lv:3,c:"음식·식당",en:"Do you have oat milk?",ko:"오트 우유 있어요?"},
+  {d:101,lv:3,c:"음식·식당",en:"What is the wifi password?",ko:"와이파이 비번 뭐예요?"},
+  {d:101,lv:3,c:"음식·식당",en:"I need a receipt, please.",ko:"영수증 좀 주세요."},
+  {d:102,lv:3,c:"음식·식당",en:"A table for two, please.",ko:"두 명 자리 부탁해요."},
+  {d:102,lv:2,c:"음식·식당",en:"Can I see the menu?",ko:"메뉴 좀 볼 수 있어요?"},
+  {d:102,lv:4,c:"음식·식당",en:"We want one appetizer first.",ko:"전채 먼저 하나 주세요."},
+  {d:102,lv:3,c:"음식·식당",en:"I will get the steak.",ko:"저는 스테이크 할게요."},
+  {d:102,lv:4,c:"음식·식당",en:"Sauce on the side, please.",ko:"소스는 따로 주세요."},
+  {d:102,lv:3,c:"음식·식당",en:"Can I get another fork?",ko:"포크 하나 더 주세요."},
+  {d:102,lv:3,c:"음식·식당",en:"More napkins, please.",ko:"냅킨 좀 더 주세요."},
+  {d:102,lv:4,c:"음식·식당",en:"This dish tastes amazing.",ko:"이 요리 정말 맛있어요."},
+  {d:102,lv:4,c:"음식·식당",en:"Can we split the bill?",ko:"따로 계산할 수 있어요?"},
+  {d:102,lv:3,c:"음식·식당",en:"Can we get the check?",ko:"계산서 주실 수 있어요?"},
+  {d:103,lv:3,c:"숙소·생활",en:"I need two extra towels.",ko:"수건 두 장 더 주세요."},
+  {d:103,lv:3,c:"숙소·생활",en:"The AC is not working.",ko:"에어컨이 안 돼요."},
+  {d:103,lv:4,c:"숙소·생활",en:"Can I get a late check-out?",ko:"늦은 체크아웃 가능해요?"},
+  {d:103,lv:3,c:"숙소·생활",en:"My room key does not work.",ko:"방 키가 안 열려요."},
+  {d:103,lv:4,c:"숙소·생활",en:"Please send housekeeping now.",ko:"지금 청소 좀 보내주세요."},
+  {d:103,lv:3,c:"숙소·생활",en:"The shower is broken.",ko:"샤워기가 고장났어요."},
+  {d:103,lv:3,c:"숙소·생활",en:"Which floor is the pool?",ko:"수영장은 몇 층이에요?"},
+  {d:103,lv:4,c:"숙소·생활",en:"Can you keep our luggage?",ko:"짐 좀 맡아주실래요?"},
+  {d:103,lv:4,c:"숙소·생활",en:"I want a wake-up call.",ko:"모닝콜 부탁드려요."},
+  {d:103,lv:3,c:"숙소·생활",en:"This room is too noisy.",ko:"이 방 너무 시끄러워요."},
+  {d:104,lv:2,c:"여행·교통",en:"Can you call a taxi?",ko:"택시 좀 불러주세요."},
+  {d:104,lv:3,c:"여행·교통",en:"Please go to this address.",ko:"이 주소로 가주세요."},
+  {d:104,lv:3,c:"여행·교통",en:"Take us to the airport.",ko:"공항으로 가주세요."},
+  {d:104,lv:3,c:"여행·교통",en:"Can you open the trunk?",ko:"트렁크 좀 열어주세요."},
+  {d:104,lv:3,c:"여행·교통",en:"The traffic is very bad.",ko:"차가 너무 막혀요."},
+  {d:104,lv:4,c:"여행·교통",en:"How much is the fare?",ko:"요금 얼마예요?"},
+  {d:104,lv:3,c:"여행·교통",en:"Please stop at the corner.",ko:"코너에서 멈춰주세요."},
+  {d:104,lv:4,c:"여행·교통",en:"I want to cancel the ride.",ko:"이 차 취소할게요."},
+  {d:104,lv:4,c:"여행·교통",en:"When do we arrive downtown?",ko:"시내에 언제 도착해요?"},
+  {d:104,lv:3,c:"여행·교통",en:"Please wait five more minutes.",ko:"5분만 더 기다려주세요."},
+  {d:105,lv:2,c:"쇼핑·돈",en:"How much is this?",ko:"이거 얼마예요?"},
+  {d:105,lv:2,c:"쇼핑·돈",en:"Can I pay by card?",ko:"카드로 결제할 수 있어요?"},
+  {d:105,lv:3,c:"쇼핑·돈",en:"Do you take cash?",ko:"현금 받으세요?"},
+  {d:105,lv:3,c:"쇼핑·돈",en:"Is this on sale?",ko:"이거 세일 중이에요?"},
+  {d:105,lv:2,c:"쇼핑·돈",en:"I want a large size.",ko:"큰 사이즈로 주세요."},
+  {d:105,lv:3,c:"쇼핑·돈",en:"Can I get a receipt?",ko:"영수증 주세요."},
+  {d:105,lv:3,c:"쇼핑·돈",en:"Do you have a coupon?",ko:"쿠폰 있어요?"},
+  {d:105,lv:3,c:"쇼핑·돈",en:"What is the total?",ko:"총 얼마예요?"},
+  {d:105,lv:3,c:"쇼핑·돈",en:"I want to return this.",ko:"이거 반품하고 싶어요."},
+  {d:105,lv:3,c:"쇼핑·돈",en:"Where is the line?",ko:"줄이 어디예요?"},
+  {d:106,lv:4,c:"촬영·영상",en:"Can you lower the light?",ko:"조명 좀 낮춰 주세요."},
+  {d:106,lv:3,c:"촬영·영상",en:"Let's take one more.",ko:"한 번 더 갈게요."},
+  {d:106,lv:3,c:"촬영·영상",en:"Please stand right here.",ko:"여기 서주세요."},
+  {d:106,lv:3,c:"촬영·영상",en:"Move a little left.",ko:"조금 왼쪽으로 가주세요."},
+  {d:106,lv:4,c:"촬영·영상",en:"Quiet on set, please.",ko:"현장 조용히 해주세요."},
+  {d:106,lv:3,c:"촬영·영상",en:"Can you smile a little?",ko:"조금만 웃어 주실래요?"},
+  {d:106,lv:3,c:"촬영·영상",en:"Let's start in five minutes.",ko:"5분 후에 시작할게요."},
+  {d:106,lv:4,c:"촬영·영상",en:"Come closer to the camera.",ko:"카메라 쪽으로 더 오세요."},
+  {d:106,lv:4,c:"촬영·영상",en:"Please speak a little louder.",ko:"조금 더 크게 말해 주세요."},
+  {d:106,lv:4,c:"촬영·영상",en:"Let me check the sound.",ko:"소리 좀 확인할게요."},
+  {d:107,lv:4,c:"일·업무",en:"Can you explain it again?",ko:"다시 설명해 주실래요?"},
+  {d:107,lv:3,c:"일·업무",en:"What do you mean?",ko:"무슨 뜻이에요?"},
+  {d:107,lv:2,c:"일·업무",en:"I have a question.",ko:"질문이 있어요."},
+  {d:107,lv:3,c:"일·업무",en:"Can we meet next week?",ko:"다음 주에 만날 수 있어요?"},
+  {d:107,lv:4,c:"일·업무",en:"I will send the sample.",ko:"샘플 보내 드릴게요."},
+  {d:107,lv:5,c:"일·업무",en:"Is the budget okay?",ko:"예산은 괜찮아요?"},
+  {d:107,lv:5,c:"일·업무",en:"When is the deadline?",ko:"마감일이 언제예요?"},
+  {d:107,lv:3,c:"일·업무",en:"I like your idea.",ko:"아이디어 좋네요."},
+  {d:107,lv:5,c:"일·업무",en:"Let me check my schedule.",ko:"일정 좀 확인해 볼게요."},
+  {d:107,lv:3,c:"일·업무",en:"Can you call me later?",ko:"나중에 전화 주실래요?"},
+  {d:108,lv:3,c:"음식·식당",en:"For here or to go?",ko:"여기서 드시나요, 포장이세요?"},
+  {d:108,lv:3,c:"음식·식당",en:"One moment, please.",ko:"잠시만 기다려주세요."},
+  {d:108,lv:3,c:"음식·식당",en:"Can I get your name?",ko:"이름 알려주시겠어요?"},
+  {d:108,lv:5,c:"음식·식당",en:"I recommend our oat milk latte.",ko:"오트 우유 라떼 추천해요."},
+  {d:108,lv:4,c:"음식·식당",en:"Do you want whipped cream?",ko:"휘핑크림 올려드릴까요?"},
+  {d:108,lv:4,c:"음식·식당",en:"The bagels are sold out.",ko:"베이글은 다 팔렸어요."},
+  {d:108,lv:3,c:"음식·식당",en:"Do you need a straw?",ko:"빨대 필요하세요?"},
+  {d:108,lv:4,c:"음식·식당",en:"The restroom is in the back.",ko:"화장실은 뒤쪽에 있어요."},
+  {d:108,lv:4,c:"음식·식당",en:"Should I warm it up?",ko:"데워드릴까요?"},
+  {d:108,lv:3,c:"음식·식당",en:"The Wi-Fi password is here.",ko:"와이파이 비번은 여기 있어요."},
+  {d:109,lv:3,c:"몸·건강",en:"I feel sick today.",ko:"오늘 몸이 안 좋아요."},
+  {d:109,lv:4,c:"몸·건강",en:"I need medicine for a headache.",ko:"두통약이 필요해요."},
+  {d:109,lv:4,c:"몸·건강",en:"Where is the nearest pharmacy?",ko:"가까운 약국이 어디예요?"},
+  {d:109,lv:4,c:"몸·건강",en:"My stomach hurts a lot.",ko:"배가 많이 아파요."},
+  {d:109,lv:4,c:"몸·건강",en:"I have a high fever.",ko:"열이 많이 나요."},
+  {d:109,lv:2,c:"몸·건강",en:"Can you help me, please?",ko:"저 좀 도와주시겠어요?"},
+  {d:109,lv:4,c:"몸·건강",en:"I feel dizzy now.",ko:"지금 어지러워요."},
+  {d:109,lv:4,c:"몸·건강",en:"Please call an ambulance.",ko:"구급차를 불러주세요."},
+  {d:109,lv:5,c:"몸·건강",en:"I am allergic to nuts.",ko:"저는 견과류 알레르기가 있어요."},
+  {d:109,lv:4,c:"몸·건강",en:"Is there a doctor inside?",ko:"안에 의사 있어요?"},
+  {d:110,lv:3,c:"사람·관계",en:"Hey, how's it going?",ko:"안녕하세요, 잘 지내세요?"},
+  {d:110,lv:4,c:"사람·관계",en:"What do you do for work?",ko:"무슨 일 하세요?"},
+  {d:110,lv:3,c:"사람·관계",en:"Where do you live now?",ko:"지금 어디 사세요?"},
+  {d:110,lv:3,c:"사람·관계",en:"The weather is really great.",ko:"날씨가 정말 좋네요."},
+  {d:110,lv:3,c:"사람·관계",en:"Is this your first time?",ko:"여기 처음이세요?"},
+  {d:110,lv:2,c:"사람·관계",en:"Nice to meet you.",ko:"만나서 반갑습니다."},
+  {d:110,lv:4,c:"사람·관계",en:"That sounds awesome.",ko:"그거 정말 멋지네요."},
+  {d:110,lv:4,c:"사람·관계",en:"I feel the same way.",ko:"저도 같은 생각이에요."},
+  {d:110,lv:4,c:"사람·관계",en:"Any plans this weekend?",ko:"주말에 계획 있어요?"},
+  {d:110,lv:2,c:"사람·관계",en:"See you later!",ko:"나중에 봐요!"},
+  {d:8,lv:1,c:"동작·행동",en:"I live in Seoul.",ko:"저는 서울에 살아요."},
+  {d:8,lv:2,c:"동작·행동",en:"I speak a little English.",ko:"저는 영어를 조금 해요."},
+  {d:8,lv:2,c:"동작·행동",en:"I study English every day.",ko:"저는 매일 영어를 공부해요."},
+  {d:8,lv:2,c:"동작·행동",en:"I drink coffee every day.",ko:"저는 매일 커피를 마셔요."},
+  {d:8,lv:1,c:"동작·행동",en:"I eat breakfast here.",ko:"저는 여기서 아침을 먹어요."},
+  {d:8,lv:1,c:"동작·행동",en:"I know his name.",ko:"저는 그의 이름을 알아요."},
+  {d:8,lv:1,c:"동작·행동",en:"We live in Korea.",ko:"저희는 한국에 살아요."},
+  {d:8,lv:2,c:"동작·행동",en:"We work together.",ko:"저희는 같이 일해요."},
+  {d:9,lv:1,c:"감정·상태",en:"I like tacos.",ko:"저는 타코를 좋아해요."},
+  {d:9,lv:1,c:"감정·상태",en:"I need more water.",ko:"물 더 필요해요."},
+  {d:9,lv:2,c:"감정·상태",en:"I want to go now.",ko:"저 지금 가고 싶어요."},
+  {d:9,lv:1,c:"감정·상태",en:"I need a towel.",ko:"수건 하나 필요해요."},
+  {d:9,lv:2,c:"감정·상태",en:"We need two tickets.",ko:"표 두 장 필요해요."},
+  {d:9,lv:1,c:"감정·상태",en:"I want a beer.",ko:"맥주 하나 주세요."},
+  {d:9,lv:1,c:"감정·상태",en:"I like this hotel.",ko:"저는 이 호텔이 좋아요."},
+  {d:9,lv:2,c:"감정·상태",en:"We want more juice.",ko:"저희 주스 더 원해요."},
+  {lv:5,c:"일·업무",en:"Let's confirm the schedule first.",ko:"일정부터 확정할게요."},
+  {lv:5,c:"말·표현",en:"I prefer the second option.",ko:"저는 두 번째 안이 더 좋아요."},
+  {lv:5,c:"일·업무",en:"The budget is a little tight.",ko:"예산이 조금 빠듯해요."},
+  {lv:5,c:"일·업무",en:"Could you send me the file?",ko:"파일 좀 보내주시겠어요?"},
+  {lv:5,c:"말·표현",en:"I'll get back to you tomorrow.",ko:"내일 다시 연락드릴게요."},
+  {lv:5,c:"시간·숫자",en:"We're running a little late.",ko:"저희 조금 늦어지고 있어요."},
+  {lv:5,c:"일·업무",en:"This is our busiest hour.",ko:"지금이 제일 바쁜 시간이에요."},
+  {lv:5,c:"사람·관계",en:"Do you mind if I sit here?",ko:"여기 앉아도 될까요?"},
+  {lv:5,c:"음식·식당",en:"I'd like to change my order.",ko:"주문을 바꾸고 싶어요."},
+  {lv:5,c:"여행·교통",en:"The flight was delayed two hours.",ko:"비행기가 두 시간 지연됐어요."},
+  {lv:6,c:"말·표현",en:"Let me walk you through it.",ko:"제가 하나씩 설명해 드릴게요."},
+  {lv:6,c:"감정·상태",en:"I'm a little concerned about the timing.",ko:"시기가 조금 걱정돼요."},
+  {lv:6,c:"촬영·영상",en:"Can we adjust the lighting a bit?",ko:"조명을 조금 조정할 수 있을까요?"},
+  {lv:6,c:"말·표현",en:"That works for me either way.",ko:"저는 어느 쪽이든 괜찮아요."},
+  {lv:6,c:"촬영·영상",en:"We should consider another location.",ko:"다른 장소도 고려해 봐야 해요."},
+  {lv:6,c:"일·업무",en:"I'll take care of the rest.",ko:"나머지는 제가 처리할게요."},
+  {lv:6,c:"일·업무",en:"Would it be okay to reschedule?",ko:"일정을 다시 잡아도 될까요?"},
+  {lv:6,c:"일·업무",en:"The reviews have been really positive.",ko:"후기가 정말 좋았어요."},
+  {lv:6,c:"촬영·영상",en:"Let's keep the shot simple.",ko:"화면은 단순하게 가죠."},
+  {lv:6,c:"말·표현",en:"I appreciate your quick response.",ko:"빠른 답변 감사합니다."},
+  {lv:7,c:"일·업무",en:"Can we push the deadline back?",ko:"마감을 미룰 수 있을까요?"},
+  {lv:7,c:"일·업무",en:"I'll send you a revised estimate.",ko:"수정 견적서를 보내드릴게요."},
+  {lv:7,c:"일·업무",en:"The client requested one more revision.",ko:"클라이언트가 수정을 한 번 더 요청했어요."},
+  {lv:7,c:"일·업무",en:"We need to review the contract.",ko:"계약서를 검토해야 해요."},
+  {lv:7,c:"촬영·영상",en:"The final cut is due Friday.",ko:"최종본은 금요일까지예요."},
+  {lv:7,c:"촬영·영상",en:"Let's confirm the shooting schedule.",ko:"촬영 일정을 확정하죠."},
+  {lv:7,c:"촬영·영상",en:"The footage needs color correction.",ko:"영상에 색보정이 필요해요."},
+  {lv:7,c:"말·표현",en:"I'd rather not commit yet.",ko:"아직 확답은 드리기 어려워요."},
+  {lv:7,c:"쇼핑·돈",en:"Our margins are getting thinner.",ko:"수익이 점점 줄고 있어요."},
+  {lv:7,c:"촬영·영상",en:"Please back up the raw files.",ko:"원본 파일을 백업해 주세요."},
+  {lv:8,c:"일·업무",en:"We must comply with the guidelines.",ko:"지침을 준수해야 합니다."},
+  {lv:8,c:"일·업무",en:"The budget was allocated last quarter.",ko:"예산은 지난 분기에 배정됐어요."},
+  {lv:8,c:"일·업무",en:"Their workflow is remarkably efficient.",ko:"그들의 작업 방식은 아주 효율적이에요."},
+  {lv:8,c:"시간·숫자",en:"We anticipate a slight delay.",ko:"약간의 지연이 예상됩니다."},
+  {lv:8,c:"일·업무",en:"The proposal requires further clarification.",ko:"제안서에 추가 설명이 필요합니다."},
+  {lv:8,c:"쇼핑·돈",en:"Please submit the invoice by Monday.",ko:"월요일까지 청구서를 제출해 주세요."},
+  {lv:8,c:"일·업무",en:"The campaign exceeded our expectations.",ko:"캠페인이 기대를 넘었어요."},
+  {lv:8,c:"일·업무",en:"We're evaluating several vendors.",ko:"여러 업체를 검토하고 있어요."},
+  {lv:8,c:"일·업무",en:"This clause seems unusually strict.",ko:"이 조항은 유난히 엄격해 보여요."},
+  {lv:8,c:"일·업무",en:"The results were fairly consistent.",ko:"결과는 꽤 일관적이었어요."},
+  {lv:9,c:"말·표현",en:"The nuance is hard to translate.",ko:"그 뉘앙스는 번역하기 어려워요."},
+  {lv:9,c:"촬영·영상",en:"We can leverage our existing footage.",ko:"기존 영상을 활용할 수 있어요."},
+  {lv:9,c:"일·업무",en:"Their brand identity feels inconsistent.",ko:"그들의 브랜드 정체성이 일관되지 않아요."},
+  {lv:9,c:"일·업무",en:"The brief was too ambiguous.",ko:"작업 지침이 너무 모호했어요."},
+  {lv:9,c:"일·업무",en:"Some risk is inherent in this process.",ko:"이 과정에는 위험이 내재해 있어요."},
+  {lv:9,c:"말·표현",en:"Let's prioritize clarity over style.",ko:"스타일보다 명확함을 우선하죠."},
+  {lv:9,c:"말·표현",en:"Her feedback was remarkably precise.",ko:"그분 피드백이 아주 정확했어요."},
+  {lv:9,c:"촬영·영상",en:"We underestimated the production scope.",ko:"제작 범위를 과소평가했어요."},
+  {lv:9,c:"촬영·영상",en:"The narrative lacks emotional depth.",ko:"이야기에 감정적 깊이가 부족해요."},
+  {lv:9,c:"사람·관계",en:"Transparency builds long-term trust.",ko:"투명함이 장기적 신뢰를 만듭니다."},
+  {lv:10,c:"촬영·영상",en:"Short-form video is now ubiquitous.",ko:"숏폼 영상은 이제 어디에나 있어요."},
+  {lv:10,c:"말·표현",en:"This marks a real paradigm shift.",ko:"이건 진짜 패러다임의 전환이에요."},
+  {lv:10,c:"일·업무",en:"The contract faced intense scrutiny.",ko:"그 계약은 면밀한 검토를 받았어요."},
+  {lv:10,c:"말·표현",en:"His argument was surprisingly cogent.",ko:"그의 주장은 놀랍도록 설득력 있었어요."},
+  {lv:10,c:"촬영·영상",en:"We strive for aesthetic coherence.",ko:"저희는 미적 일관성을 추구해요."},
+  {lv:10,c:"말·표현",en:"The distinction is largely semantic.",ko:"그 차이는 대체로 표현상의 문제예요."},
+  {lv:10,c:"사람·관계",en:"Her craft borders on the obsessive.",ko:"그분 작업은 거의 집착에 가까워요."},
+  {lv:10,c:"말·표현",en:"Authenticity resonates more than polish.",ko:"진정성이 세련됨보다 더 와닿아요."},
+  {lv:10,c:"촬영·영상",en:"The imagery evokes quiet nostalgia.",ko:"그 화면은 잔잔한 향수를 자아내요."},
+  {lv:10,c:"촬영·영상",en:"Brevity is the soul of editing.",ko:"간결함이 편집의 핵심이에요."},
+  {d:10,lv:1,c:"동작·행동",en:"He works at a restaurant.",ko:"그는 식당에서 일해요."},
+  {d:10,lv:1,c:"동작·행동",en:"She speaks Spanish.",ko:"그녀는 스페인어를 해요."},
+  {d:10,lv:1,c:"동작·행동",en:"My husband likes soccer.",ko:"제 남편은 축구를 좋아해요."},
+  {d:10,lv:2,c:"동작·행동",en:"The bus goes downtown.",ko:"그 버스는 시내로 가요."},
+  {d:10,lv:2,c:"동작·행동",en:"She finishes at five.",ko:"그녀는 5시에 끝나요."},
+  {d:10,lv:2,c:"동작·행동",en:"He wears sunscreen.",ko:"그는 선크림을 발라요."},
+  {d:10,lv:2,c:"동작·행동",en:"The restaurant is not open.",ko:"그 식당은 문을 안 열었어요."},
+  {d:10,lv:2,c:"동작·행동",en:"They sell tickets here.",ko:"여기서 표를 팔아요."}
+];
+/* ── 데이터 끝 ── */
+
+const DEPART = new Date("2027-01-29T00:00:00+09:00");
+const $ = s => document.querySelector(s);
+const store = {
+  get(k,f){ try{ const v=localStorage.getItem(k); return v===null?f:JSON.parse(v); }catch(e){ return f; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} if (window.onStoreSet) window.onStoreSet(k); }
+};
+let best = store.get("vb.best",0);
+
+/* ── 3단계 단어장 ──
+   b:1 외우는 중 · b:2 외운 단어 · b:3 외외운 단어 · 없으면 아직 안 배운 단어
+   2단계는 3일 뒤, 3단계는 14일 뒤 다시 등장합니다(무한 복습). */
+const DAILY_NEW = 20, LEARN_CAP = 20;
+const LVNAME = {1:"왕기초",2:"기초",3:"초급",4:"초중급",5:"중급 진입",
+                6:"중급",7:"중상급",8:"상급 진입",9:"상급",10:"최상급"};
+let myLevel = store.get("vb.level", 0);
+const inMyLevel = x => !myLevel || x.lv == null || (x.lv >= myLevel - 1 && x.lv <= myLevel + 1);
+const WAIT = {2: 3*86400000, 3: 14*86400000};
+let boxes = store.get("vb.box", null);
+if (!boxes || typeof boxes !== "object"){
+  boxes = {};
+  (store.get("vb.star",[]) || []).forEach(k => { boxes[k] = {b:1, t:0}; });
+  store.set("vb.box", boxes);
+}
+const saveBoxes = () => store.set("vb.box", boxes);
+const boxOf = k => (boxes[k] && boxes[k].b) || 0;
+const stampOf = k => (boxes[k] && boxes[k].t) || 0;
+function setBox(k, b){
+  b = Math.round(b);
+  boxes[k] = {b: Math.max(0, Math.min(3, b)), t: Date.now()};   // 0단계도 시간을 남겨야 기기 간에 맞춰집니다
+  saveBoxes();
+}
+const isDue = k => { const b = boxOf(k); return b >= 2 && Date.now() - stampOf(k) >= WAIT[b]; };
+
+function todayWords(){
+  const pool = WORDS.filter(inMyLevel);                 // 내 레벨 ±1 단어만
+  const due  = pool.filter(x => isDue(keyOf(x)));
+  const learn = pool.filter(x => boxOf(keyOf(x)) === 1)
+                    .sort((a,b) => stampOf(keyOf(a)) - stampOf(keyOf(b))).slice(0, LEARN_CAP);
+  const fresh = pool.filter(x => boxOf(keyOf(x)) === 0).slice(0, DAILY_NEW);
+  const seen = new Set(), out = [];
+  [...due, ...learn, ...fresh].forEach(x => {
+    const k = keyOf(x); if (!seen.has(k)){ seen.add(k); out.push(x); }
+  });
+  return out;
+}
+function boxCounts(){
+  const c = {0:0,1:0,2:0,3:0};
+  WORDS.filter(inMyLevel).forEach(x => c[boxOf(keyOf(x))]++);
+  return c;
+}
+
+function renderLevel(){
+  if (myLevel){
+    $("#lvNum").textContent = myLevel;
+    $("#lvName").textContent = `레벨 ${myLevel} / 10`;
+    const n = WORDS.filter(inMyLevel).length, ns = SENTS.filter(inMyLevel).length;
+    $("#lvDesc").textContent = `${LVNAME[myLevel]} · 단어 ${n}개 · 문장 ${ns}개`;
+    $("#lvGo").textContent = "레벨 다시 테스트";
+    $("#lvRing").style.setProperty("--p", (myLevel / 10 * 360) + "deg");
+  } else {
+    $("#lvNum").textContent = "?";
+    $("#lvName").textContent = "레벨을 아직 모릅니다";
+    $("#lvDesc").textContent = "단어와 문장을 함께 보는 테스트입니다";
+    $("#lvGo").textContent = "레벨 테스트 시작";
+    $("#lvRing").style.setProperty("--p", "0deg");
+  }
+}
+
+function headStats(){
+  $("#sTotal").textContent = WORDS.length;
+  $("#sSent").textContent = SENTS.length;
+  $("#sBest").textContent = best;
+  const left = Math.ceil((DEPART - new Date())/86400000);
+  $("#sLeft").textContent = left>0 ? "D-"+left : "출발!";
+}
+
+/* ── 탭 ── */
+function go(i){
+  if (i === 3) renderHome();
+  [0,1,2,3].forEach(j => {
+    $("#t"+j).setAttribute("aria-selected", j===i);
+    $("#p"+j).classList.toggle("on", j===i);
+  });
+  window.scrollTo(0,0);
+}
+[0,1,2,3].forEach(i => $("#t"+i).addEventListener("click", () => go(i)));
+
+/* ── 홈 ── */
+const START = new Date("2026-09-10T00:00:00+09:00");
+function stageOf(w){ return w<=5?"1단계 문장의 뼈대":w<=11?"2단계 여행에서 살아남기":w<=17?"3단계 대화 이어가기":"4단계 자연스럽게"; }
+function renderHome(){
+  const day = Math.min(140, Math.max(1, Math.floor((new Date() - START)/86400000) + 1));
+  $("#hDayN").textContent = day + "일째";
+  $("#hStage").textContent = "Day " + day + " · " + stageOf(Math.ceil(day/7));
+  $("#hProg").style.width = (day/140*100) + "%";
+  $("#hProgN").textContent = day + "/140";
+  const left = Math.ceil((DEPART - new Date())/86400000);
+  $("#hLeft").textContent = left > 0 ? "칸쿤까지 D-" + left : "출발!";
+  $("#hLv").textContent = myLevel ? "Lv." + myLevel : "레벨 테스트";
+  $("#hSent").textContent = deck.length ? `오늘 ${deck.length}문장 · ${correct}개 맞힘` : "오늘 10문장";
+  $("#hWord").textContent = "오늘 볼 단어 " + todayWords().length + "개";
+  const c = boxCounts(), mx = Math.max(1, c[1], c[2], c[3]);
+  [1,2,3].forEach(k => { $("#hb"+k).textContent = c[k]; $("#hi"+k).style.height = (18 + c[k]/mx*48) + "px"; });
+}
+document.querySelector("#p3").addEventListener("click", e => {
+  const t = e.target.closest("[data-go]"); if (t) go(+t.dataset.go);
+});
+$("#hLv").addEventListener("click", startLevelTest);
+
+/* ── 소리 ── */
+const hasTTS = "speechSynthesis" in window;
+const ASR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function speak(text, rate){
+  if (!hasTTS) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang="en-US"; u.rate=rate||1;
+    const vs = speechSynthesis.getVoices();
+    const v = vs.find(x=>/^en[-_]US/i.test(x.lang)) || vs.find(x=>/^en/i.test(x.lang));
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+if (hasTTS) speechSynthesis.onvoiceschanged = ()=>{};
+
+/* ══ 문장 조립 ══ */
+let deck=[], idx=0, picked=[], bankWords=[], streak=0, correct=0, missed=[], locked=false;
+
+function shuffle(a){ return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]); }
+
+function newRound(){
+  const lvPool = SENTS.filter(inMyLevel);
+  const pool = lvPool.length >= 4 ? lvPool : SENTS;
+  deck = shuffle([...pool]).slice(0, Math.min(10, pool.length));
+  idx=0; correct=0; missed=[]; streak=0;
+  $("#gameDone").hidden = true;
+  $("#gameWrap").hidden = false;
+  draw();
+}
+function draw(){
+  locked=false; picked=[];
+  const s = deck[idx];
+  $("#gCount").textContent = (idx+1)+" / "+deck.length;
+  $("#gBar").style.width = (idx/deck.length*100)+"%";
+  $("#gStreak").textContent = "연속 "+streak;
+  $("#gDay").textContent = s.d != null ? "Day "+s.d+(DAYS[s.d]?" · "+DAYS[s.d]:"")
+                                       : "Lv "+(s.lv||"?")+(s.c?" · "+s.c:"");
+  $("#gKo").textContent = s.ko;
+  $("#gAns").innerHTML = "";
+  $("#gSlot").className = "slot";
+  $("#gCheck").textContent = "확인";
+  $("#gCheck").disabled = false;
+
+  const words = s.en.split(" ");
+  bankWords = shuffle(words.map((w,i)=>({w,i})));
+  if (bankWords.length>1 && bankWords.every((b,k)=>b.i===k)) bankWords = shuffle(bankWords);
+  renderSlot(); renderBank();
+}
+function renderSlot(){
+  const el = $("#gSlot");
+  if (!picked.length){ el.innerHTML = '<span class="hint">아래 단어를 순서대로 누르세요</span>'; return; }
+  el.innerHTML = picked.map((p,k)=>`<button class="chip" data-slot="${k}">${p.w}</button>`).join("");
+}
+function renderBank(){
+  $("#gBank").innerHTML = bankWords.map((b,k)=>{
+    const used = picked.some(p=>p.k===k);
+    return `<button class="chip${used?" used":""}" data-bank="${k}"${used?" disabled":""}>${b.w}</button>`;
+  }).join("");
+}
+$("#gBank").addEventListener("click", e => {
+  const b = e.target.closest("[data-bank]"); if(!b||locked) return;
+  const k = +b.dataset.bank;
+  if (picked.some(p=>p.k===k)) return;
+  picked.push({k, w:bankWords[k].w});
+  renderSlot(); renderBank();
+});
+$("#gSlot").addEventListener("click", e => {
+  const b = e.target.closest("[data-slot]"); if(!b||locked) return;
+  picked.splice(+b.dataset.slot,1);
+  renderSlot(); renderBank();
+});
+$("#gClear").addEventListener("click", ()=>{ if(locked) return; picked=[]; renderSlot(); renderBank(); });
+
+$("#gCheck").addEventListener("click", () => {
+  const s = deck[idx];
+  if (locked){ idx++; idx<deck.length ? draw() : finishRound(); return; }
+  if (!picked.length) return;
+  const made = picked.map(p=>p.w).join(" ");
+  const ok = made === s.en;
+  locked = true;
+  $("#gSlot").className = "slot " + (ok?"right":"wrong");
+  if (ok){
+    correct++; streak++;
+    if (streak>best){ best=streak; store.set("vb.best",best); headStats(); }
+    $("#gAns").innerHTML = '<span style="color:var(--ok);font-weight:600">맞았습니다</span>';
+    speak(s.en, 1);
+  } else {
+    streak = 0;
+    missed.push(s);
+    $("#gAns").innerHTML = `<span class="lab">정답</span><span class="en">${s.en}</span>`;
+    speak(s.en, 0.75);
+  }
+  $("#gStreak").textContent = "연속 "+streak;
+  $("#gCheck").textContent = idx+1 < deck.length ? "다음" : "결과 보기";
+});
+
+function finishRound(){
+  $("#gBar").style.width = "100%";
+  $("#gameWrap").hidden = true;
+  const d = $("#gameDone");
+  d.hidden = false;
+  d.innerHTML = `
+    <div class="done">
+      <p class="score">${correct} / ${deck.length}</p>
+      <p class="lab">${missed.length? "틀린 문장은 아래에서 다시 보세요." : "전부 맞히셨습니다."}</p>
+      ${missed.length ? `<div class="missed">${missed.map(m=>
+        `<div class="row"><span class="en">${m.en}</span><span class="ko">${m.ko}</span></div>`).join("")}</div>` : ""}
+      <div class="qBtns"><button class="btn go" id="gAgain">한 번 더</button></div>
+    </div>`;
+  $("#gAgain").addEventListener("click", newRound);
+}
+
+/* ══ 단어 ══ */
+let filterText="", mode="all", catMode="all";
+const CATS = ["여행·교통","음식·식당","쇼핑·돈","숙소·생활","일·업무","촬영·영상","사람·관계",
+              "감정·상태","몸·건강","동작·행동","성질·정도","시간·숫자","말·표현"];
+
+function renderCats(){
+  const base = WORDS.filter(inMyLevel);
+  const st = {};
+  base.forEach(x => {
+    const k = x.c; if (!k) return;
+    if (!st[k]) st[k] = { n:0, got:0 };
+    st[k].n++; if (boxOf(keyOf(x)) >= 2) st[k].got++;
+  });
+  const allGot = base.filter(x => boxOf(keyOf(x)) >= 2).length;
+  const card = (key, name, n, got) => {
+    const pct = n ? Math.round(got / n * 100) : 0;
+    return `<button class="catCard${key === "all" ? " cAll" : ""}" data-c="${esc(key)}"
+      aria-pressed="${catMode === key}"><span class="dot"></span>
+      <span class="nm">${esc(name)}</span>
+      <span class="num">${got} / ${n}개 외움</span>
+      <span class="pbar"><i style="width:${pct}%"></i></span></button>`;
+  };
+  $("#cats").innerHTML = card("all", "전체", base.length, allGot)
+    + CATS.filter(c => st[c]).map(c => card(c, c, st[c].n, st[c].got)).join("");
+  const rst = $("#catReset"); if (rst) rst.hidden = catMode === "all";
+}
+$("#cats").addEventListener("click", e => {
+  const b = e.target.closest("[data-c]"); if (!b) return;
+  catMode = catMode === b.dataset.c ? "all" : b.dataset.c;
+  renderWords();
+  if (catMode !== "all") $("#list").scrollIntoView({ behavior:"smooth", block:"start" });
+});
+$("#catReset").addEventListener("click", () => { catMode = "all"; renderWords(); });
+const keyOf = x => x.d+"|"+x.w;
+
+function visibleWords(){
+  const t = filterText.trim().toLowerCase();
+  let pool = WORDS;
+  if (mode === "today"){ const s = new Set(todayWords().map(keyOf)); pool = WORDS.filter(x=>s.has(keyOf(x))); }
+  else if (mode !== "all"){ const b = +mode; pool = WORDS.filter(x => boxOf(keyOf(x)) === b); }
+  if (catMode !== "all") pool = pool.filter(x => x.c === catMode);
+  if (!t) return pool;
+  return pool.filter(x => x.w.toLowerCase().includes(t) || x.k.includes(t));
+}
+function renderWords(){
+  const items = visibleWords();
+  const byDay = new Map();
+  items.forEach(x=>{ const g = x.d != null ? "d"+x.d : "c"+(x.c||"기타");
+    if(!byDay.has(g)) byDay.set(g,[]); byDay.get(g).push(x); });
+  const el = $("#list");
+  if (!items.length){ el.innerHTML = '<p class="empty">해당하는 단어가 없습니다.</p>'; }
+  else {
+    const order = k => k[0]==="d" ? 10000 - (+k.slice(1))
+                                  : 20000 + Math.max(0, CATS.indexOf(k.slice(1)));
+    el.innerHTML = [...byDay.keys()].sort((a,b)=>order(a)-order(b)).map(d=>{
+      const rows = byDay.get(d).map(x=>{
+        const k = keyOf(x), b = boxOf(k);
+        const lab = b === 0 ? "새" : b + "단계";
+        return `<div class="wrow" data-k="${k}">
+          <span class="w">${x.w}${x.lv?`<span class="wlv">Lv${x.lv}</span>`:""}</span><span class="p">${x.p||""}</span>
+          <button class="bx${isDue(k)?" due":""}" data-b="${b}" data-bk="${k}"
+            title="눌러서 단계 바꾸기">${lab}</button>
+          <span class="k">${x.k}</span>
+          <span class="ex"><i>${x.ex}</i><br>${x.exk}</span></div>`;
+      }).join("");
+      const isDay = d[0] === "d";
+      const head = isDay ? `Day ${+d.slice(1)}` : d.slice(1);
+      const topic = isDay ? (DAYS[+d.slice(1)]||"") : "";
+      return `<section class="day"><div class="dayHead"><h2>${head}</h2>
+        <p class="topic">${topic}</p><span class="cnt">${byDay.get(d).length}단어</span></div>
+        <div class="rows">${rows}</div></section>`;
+    }).join("");
+  }
+  headStats(); renderToday(); renderCats();
+  if ($("#p3").classList.contains("on")) renderHome();
+}
+
+function renderToday(){
+  const list = todayWords(), c = boxCounts();
+  $("#tCnt").textContent = list.length;
+  $("#bc1").textContent = c[1]; $("#bc2").textContent = c[2]; $("#bc3").textContent = c[3];
+  $("#goToday").disabled = list.length === 0;
+  const dueN = WORDS.filter(x=>isDue(keyOf(x))).length;
+  const freshN = Math.min(DAILY_NEW, c[0]);
+  $("#tSub").textContent = list.length
+    ? `새 단어 ${freshN}개 · 외우는 중 ${Math.min(LEARN_CAP,c[1])}개 · 복습할 때가 된 단어 ${dueN}개`
+    : `오늘 볼 단어가 없습니다. 남은 새 단어 ${c[0]}개는 내일 이어서 나옵니다.`;
+}
+
+$("#list").addEventListener("click", e=>{
+  const bx = e.target.closest(".bx");
+  if (bx){
+    e.stopPropagation();
+    const k = bx.dataset.bk, next = (boxOf(k) + 1) % 4;
+    setBox(k, next); renderWords(); return;
+  }
+  const r = e.target.closest(".wrow"); if(!r) return; r.classList.toggle("open");
+});
+
+$("#filters").addEventListener("click", e=>{
+  const b = e.target.closest("[data-f]"); if(!b) return;
+  mode = b.dataset.f;
+  [...$("#filters").children].forEach(x => x.setAttribute("aria-pressed", x === b));
+  renderWords();
+});
+$("#q").addEventListener("input", e=>{ filterText=e.target.value; renderWords(); });
+$("#tHide").addEventListener("click", e=>{
+  const on = document.body.classList.toggle("hide");
+  e.currentTarget.setAttribute("aria-pressed", on);
+});
+
+
+/* 단어 퀴즈 */
+let qDeck=[], qi=0, qMiss=[], qUp=0;
+function startQuiz(list){
+  const pool = Array.isArray(list) && list.length ? list : visibleWords();
+  if(!pool.length) return;
+  qDeck = Array.isArray(list) && list.length ? shuffle([...pool]) : shuffle([...pool]).slice(0, Math.min(20, pool.length));
+  qi=0; qMiss=[]; qUp=0;
+  document.body.classList.add("quizOn");
+  drawQ();
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* 적은 영어가 맞는지 본다. 대소문자·마침표·앞뒤 공백은 무시한다. */
+function judgeEn(input, w, token){
+  const norm = s => String(s).toLowerCase().replace(/[^a-z0-9']/g, "");
+  const a = norm(input);
+  if (!a) return null;
+  if (a === norm(w)) return true;
+  if (token && a === norm(token)) return true;
+  if (token){                                  // You're 자리에 you 를 적어도 인정
+    const bare = norm(token).split("'")[0];
+    if (bare.length >= 2 && a === bare) return true;
+  }
+  return false;
+}
+
+/* 예문에서 그 단어가 있는 자리를 찾아 빈칸으로 만든다.
+   tourists / You're / Pick me up 처럼 형태가 바뀌어 있어도 찾아낸다. */
+const SUF = "(?:'[A-Za-z]{1,2}|es|s|ed|ing|d)?";
+function clozeOf(x){
+  const w = String(x.w);
+  const tries = w.indexOf(" ") >= 0 ? [w, w.split(" ")[0]] : [w];
+  for (const t of tries){
+    const e = t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp("(^|[^A-Za-z'])(" + e + SUF + ")(?![A-Za-z'])", "i");
+    const m = x.ex.match(re);
+    if (m){
+      const s = m.index + m[1].length;
+      return { pre: x.ex.slice(0, s), post: x.ex.slice(s + m[2].length), token: m[2] };
+    }
+  }
+  return null;
+}
+
+function drawQ(){
+  $("#qBar").style.width = (qi/qDeck.length*100)+"%";
+  $("#qCount").textContent = (qi+1)+" / "+qDeck.length;
+  const x = qDeck[qi];
+  const cloze = clozeOf(x);
+  const line = cloze
+    ? esc(cloze.pre) + "<u>&nbsp;</u>" + esc(cloze.post)
+    : "<u>&nbsp;</u>";
+
+  $("#qBody").innerHTML = `
+    <p class="qPrompt">이 뜻에 맞는 영어를 빈칸에 적어보세요</p>
+    <p class="qMean">${esc(x.k)}</p>
+    <p class="qCloze">${line}</p>
+    <p class="qClozeKo">${cloze ? esc(x.exk) : "&nbsp;"}</p>
+    <div class="qType" id="qT">
+      <input type="text" id="qIn" placeholder="영어로 적어보세요" autocomplete="off"
+        autocapitalize="off" autocorrect="off" spellcheck="false">
+      <button class="btn" id="qHint">힌트</button>
+      <button class="btn go" id="qShow">확인</button>
+    </div>
+    <p class="qJudge" id="qJ"></p>
+    <div class="qAns veiled" id="qA">
+      <p class="qWord">${esc(x.w)}</p>
+      <p class="qPron">${esc(x.p||"")}</p>
+      <p class="ex"><i>${esc(x.ex)}</i> &nbsp;${esc(x.exk)}</p>
+    </div>
+    <div class="qBtns" id="qB"></div>`;
+
+  let hinted = 0, done = false;
+
+  $("#qHint").addEventListener("click", ()=>{
+    if (done) return;
+    hinted = Math.min(x.w.length - 1, hinted + 1);
+    $("#qJ").innerHTML = `<span class="typed">${esc(x.w.slice(0, hinted))}…</span>`;
+  });
+
+  function reveal(){
+    if (done) return; done = true;
+    const typed = $("#qIn").value.trim();
+    const ok = judgeEn(typed, x.w, cloze && cloze.token);
+    $("#qT").hidden = true;
+    $("#qA").classList.remove("veiled");
+    if (ok === true) $("#qJ").innerHTML = '<span class="good">맞았습니다</span>';
+    else if (ok === false) $("#qJ").innerHTML = `<span class="miss">적으신 답</span> <span class="typed">${esc(typed)}</span>`;
+    else $("#qJ").innerHTML = "";
+    const k = keyOf(x), b = boxOf(k), nb = Math.min(3, b + 1);
+    const goLab = b >= 3 ? "알겠어요 · 3단계 유지" : `알겠어요 → ${nb}단계`;
+    $("#qB").innerHTML = '<button class="btn" id="qNo">아직 헷갈려요</button>'
+      + `<button class="btn go" id="qYes">${goLab}</button>`;
+    $("#qYes").addEventListener("click", ()=>qNext(true));
+    $("#qNo").addEventListener("click", ()=>qNext(false));
+  }
+  $("#qShow").addEventListener("click", reveal);
+  $("#qIn").addEventListener("keydown", e => { if (e.key === "Enter") reveal(); });
+}
+
+function qNext(ok){
+  const x = qDeck[qi], k = keyOf(x), b = boxOf(k);
+  if (ok){ if (b < 3) qUp++; setBox(k, Math.min(3, b + 1)); }
+  else { qMiss.push(x); setBox(k, 1); }
+  qi++;
+  qi<qDeck.length ? drawQ() : qFinish();
+}
+function qFinish(){
+  $("#qBar").style.width="100%";
+  const got = qDeck.length - qMiss.length;
+  $("#qBody").innerHTML = `
+    <div class="done"><p class="score">${got} / ${qDeck.length}</p>
+    <p class="lab">${qUp}개가 다음 단계로 올라갔습니다.${qMiss.length? " 헷갈린 단어는 1단계로 돌아갑니다." : ""}</p>
+    ${qMiss.length? `<div class="missed">${qMiss.map(m=>
+      `<div class="row"><span class="en">${m.w}</span><span class="ko">${m.k}</span></div>`).join("")}</div>`:""}
+    <div class="qBtns"><button class="btn" id="qAgain">한 번 더</button>
+    <button class="btn go" id="qEnd">목록으로</button></div></div>`;
+  $("#qAgain").addEventListener("click", startQuiz);
+  $("#qEnd").addEventListener("click", endQuiz);
+  renderWords();
+}
+function endQuiz(){ clearTimer(); document.body.classList.remove("quizOn"); }
+/* ══ 레벨 테스트 ══
+   레벨 5에서 시작해 위아래로 좁힌다(이분 탐색). 한 단계는 5문제(단어 3 + 문장 2),
+   4개 이상 맞히면 통과. 한 번 실패하면 같은 레벨을 한 번 더 준다.
+   보기는 같은 분야 단어로 채우고, 문제마다 제한 시간이 있다. */
+const TEST_PER_LV = 5, TEST_PASS = 4;
+const SEC_WORD = 10, SEC_SENT = 15;
+let tLv, tQs, tIdx, tHit, tRetry, tLog, tLo, tHi, tBest;
+
+/* 문장 빈칸에 쓰는 문법어 묶음 — 같은 묶음 안에서 헷갈리는 것만 보기로 낸다 */
+const FUNCG = [
+  {n:"be동사", g:["am","is","are","be"]},
+  {n:"과거 be동사", g:["was","were","been","being"]},
+  {n:"do 조동사", g:["do","does","did","done"]},
+  {n:"조동사 can·should", g:["can","could","should","would"]},
+  {n:"조동사 will·must", g:["will","shall","might","must"]},
+  {n:"have 시제", g:["have","has","had","having"]},
+  {n:"관사 a·the", g:["a","an","the","some"]},
+  {n:"전치사 in·on·at", g:["in","on","at","to"]},
+  {n:"전치사 for·with", g:["for","from","with","about"]},
+  {n:"소유격 my·your", g:["my","your","his","their"]},
+  {n:"지시어 this·that", g:["this","that","these","those"]},
+  {n:"부정어 not·never", g:["not","no","never","none"]},
+  {n:"접속사 and·but", g:["and","but","or","so"]},
+  {n:"목적격 me·him", g:["me","him","her","them"]},
+  {n:"장소·때 here·when", g:["here","there","where","when"]},
+  {n:"수량 more·many", g:["more","most","much","many"]},
+  {n:"I'm 축약형", g:["I'm","I've","I'll","I'd"]},
+  {n:"You're 축약형", g:["You're","You've","You'll","You'd"]},
+  {n:"We're 축약형", g:["We're","We've","We'll","We'd"]}
+];
+/* 문장에서 문법어 하나를 골라 빈칸으로 만든다. 마땅한 게 없으면 null */
+function blankOf(s){
+  const toks = s.en.split(" "), cand = [];
+  toks.forEach((t, i) => {
+    const bare = t.replace(/[^A-Za-z']/g, "");
+    if (!bare) return;
+    const g = FUNCG.find(gr => gr.g.some(w => w.toLowerCase() === bare.toLowerCase()));
+    if (g) cand.push({ i, bare, g });
+  });
+  if (!cand.length) return null;
+  const pick = cand[Math.floor(Math.random() * cand.length)];
+  const wrong = shuffle(pick.g.g.filter(w => w.toLowerCase() !== pick.bare.toLowerCase())).slice(0, 3);
+  if (wrong.length < 3) return null;
+  const line = toks.map((t, i) => i === pick.i ? t.replace(pick.bare, "____") : t).join(" ");
+  return { line, answer: pick.bare, opts: shuffle([pick.bare, ...wrong]), gname: pick.g.n };
+}
+
+/* ── 제한 시간 ── */
+let tTimer = null;
+function clearTimer(){ if (tTimer){ clearInterval(tTimer); tTimer = null; } $("#qClock").hidden = true; }
+function startTimer(sec, onOut){
+  clearTimer();
+  const end = Date.now() + sec * 1000, el = $("#qClock");
+  el.hidden = false;
+  const tick = () => {
+    const left = Math.max(0, end - Date.now());
+    el.textContent = (left / 1000).toFixed(1);
+    el.classList.toggle("warn", left <= 3000);
+    if (left <= 0){ clearTimer(); onOut(); }
+  };
+  tick(); tTimer = setInterval(tick, 100);
+}
+
+function startLevelTest(){
+  tLo = 1; tHi = 10; tBest = 0; tRetry = false; tLog = [];
+  tLv = 5;
+  document.body.classList.add("quizOn");
+  loadLevelSet();
+}
+function loadLevelSet(){
+  const wp = WORDS.filter(x => x.lv === tLv);
+  const sp = SENTS.filter(x => x.lv === tLv);
+  if (wp.length < 4){ tHi = tLv - 1; tRetry = false; stepRange(); return; }
+  const qs = shuffle([...wp]).slice(0, 3).map(x => ({ t:"w", x }));
+  if (sp.length >= 4) shuffle([...sp]).slice(0, 2).forEach(x => qs.push({ t:"s", x }));
+  else shuffle([...wp]).slice(3, 5).forEach(x => qs.push({ t:"w", x }));
+  tQs = shuffle(qs); tIdx = 0; tHit = 0;
+  drawLevelQ();
+}
+/* 한 단계가 끝난 뒤 범위를 좁힌다 */
+function nextStage(){
+  if (tHit >= TEST_PASS){
+    tBest = Math.max(tBest, tLv);
+    tLo = tLv + 1; tRetry = false;
+  } else if (!tRetry){
+    tRetry = true; loadLevelSet(); return;      // 같은 레벨 한 번 더
+  } else {
+    tHi = tLv - 1; tRetry = false;
+  }
+  stepRange();
+}
+function stepRange(){
+  if (tLo > tHi || tHi < 1){ finishLevelTest(); return; }
+  tLv = Math.floor((tLo + tHi) / 2);
+  loadLevelSet();
+}
+
+function drawLevelQ(){
+  const q = tQs[tIdx];
+  const range = tHi - tLo + 1;
+  const base = 1 - range / 10;
+  $("#qBar").style.width = Math.min(100, Math.max(5,
+    (base + (tIdx / tQs.length) * (range / 10) * 0.6) * 100)) + "%";
+  $("#qCount").textContent = `레벨 ${tLv}` + (tRetry ? " 재확인" : "") + ` · ${tIdx + 1}/${tQs.length}`;
+  q.t === "w" ? drawTestWord(q.x) : drawTestSent(q.x);
+}
+
+/* 같은 분야·비슷한 레벨에서 헷갈리는 보기를 뽑는다 */
+/* 뜻이 겹치는 보기는 빼낸다 — agreement(합의, 계약) 옆에 contract(계약, 계약서)를 두면
+   둘 다 맞는 답처럼 보여서 문제가 불공평해진다 */
+const kTerms = k => String(k).split(/[,;]/).map(s => s.replace(/\(.*?\)/g, "").trim()).filter(Boolean);
+function clash(a, b){
+  const A = kTerms(a), B = kTerms(b);
+  return A.some(x => B.some(y => x === y || (x.length >= 2 && (x.includes(y) || y.includes(x)))));
+}
+function distract(x, n){
+  const near = shuffle(WORDS.filter(y => y.c === x.c && y.k !== x.k
+    && y.lv != null && Math.abs(y.lv - tLv) <= 1));
+  const rest = shuffle(WORDS.filter(y => y.k !== x.k && y.lv === tLv && y.c !== x.c));
+  const out = [], seen = new Set([x.k]);
+  for (const pass of [0, 1]){                     // 1차: 뜻 안 겹치는 것만, 2차: 그래도 부족하면 채운다
+    for (const y of near.concat(rest)){
+      if (seen.has(y.k)) continue;
+      if (pass === 0 && (clash(x.k, y.k) || out.some(z => clash(z.k, y.k)))) continue;
+      seen.add(y.k); out.push(y);
+      if (out.length === n) return out;
+    }
+  }
+  return out;
+}
+
+function bindOpts(right, rec, sec){
+  const box = $("#tOpts");
+  let done = false;
+  const settle = (picked, why) => {
+    if (done) return; done = true;
+    clearTimer();
+    [...box.children].forEach(c => {
+      c.disabled = true;
+      if (c.dataset.v === right) c.classList.add("right");
+      else if (picked != null && c.dataset.v === picked) c.classList.add("wrong");
+    });
+    const idk = $("#qIdk"); if (idk) idk.disabled = true;
+    const ok = picked === right;
+    if (rec) tLog.push(Object.assign({ lv: tLv, ok, picked, why: why || null }, rec));
+    if (ok) tHit++;
+    if (why === "time") $("#qOut").textContent = "시간 초과";
+    else if (why === "idk") $("#qOut").textContent = "모르겠다고 답하셨습니다";
+    setTimeout(() => {
+      tIdx++;
+      tIdx < tQs.length ? drawLevelQ() : nextStage();
+    }, why ? 950 : 620);
+  };
+  box.addEventListener("click", e => {
+    const b = e.target.closest(".opt"); if (!b) return;
+    settle(b.dataset.v, null);
+  });
+  const idk = $("#qIdk");
+  if (idk) idk.addEventListener("click", () => settle(null, "idk"));
+  startTimer(sec, () => settle(null, "time"));
+}
+
+function drawTestWord(x){
+  const opts = shuffle([x, ...distract(x, 3)]);
+  $("#qBody").innerHTML = `
+    <p class="qPrompt">이 단어의 뜻을 고르세요</p>
+    <p class="qWord">${esc(x.w)}</p>
+    <div class="opts" id="tOpts">
+      ${opts.map(o => `<button class="opt" data-v="${esc(o.k)}">${esc(o.k)}</button>`).join("")}
+    </div>
+    <p class="qOut" id="qOut"></p>
+    <button class="idk" id="qIdk">모르겠어요</button>`;
+  bindOpts(x.k, { kind:"w", c:x.c, en:x.w, ko:x.k }, SEC_WORD);
+}
+function drawTestSent(s){
+  const bl = blankOf(s);
+  if (bl){
+    $("#qBody").innerHTML = `
+      <p class="qPrompt">빈칸에 알맞은 말을 고르세요</p>
+      <p class="qCloze">${esc(bl.line)}</p>
+      <p class="qClozeKo">${esc(s.ko)}</p>
+      <div class="opts" id="tOpts">
+        ${bl.opts.map(o => `<button class="opt" data-v="${esc(o)}">${esc(o)}</button>`).join("")}
+      </div>
+      <p class="qOut" id="qOut"></p>
+      <button class="idk" id="qIdk">모르겠어요</button>`;
+    bindOpts(bl.answer,
+      { kind:"blank", c:s.c, g:bl.gname, en:bl.line, ko:s.ko, full:s.en, ans:bl.answer }, SEC_SENT);
+  } else {
+    const near = shuffle(SENTS.filter(y => y.en !== s.en && y.c === s.c
+      && y.lv != null && Math.abs(y.lv - tLv) <= 1));
+    const rest = shuffle(SENTS.filter(y => y.en !== s.en && y.lv === tLv));
+    const pick = [], seen = new Set([s.en]);
+    for (const y of near.concat(rest)){
+      if (seen.has(y.en)) continue;
+      seen.add(y.en); pick.push(y); if (pick.length === 3) break;
+    }
+    const opts = shuffle([s, ...pick]);
+    $("#qBody").innerHTML = `
+      <p class="qPrompt">이 뜻에 맞는 문장을 고르세요</p>
+      <p class="qMean">${esc(s.ko)}</p>
+      <div class="opts" id="tOpts">
+        ${opts.map(o => `<button class="opt sent" data-v="${esc(o.en)}">${esc(o.en)}</button>`).join("")}
+      </div>
+      <p class="qOut" id="qOut"></p>
+      <button class="idk" id="qIdk">모르겠어요</button>`;
+    bindOpts(s.en, { kind:"pick", c:s.c, en:s.en, ko:s.ko }, SEC_SENT);
+  }
+}
+function finishLevelTest(){
+  clearTimer();
+  const lv = Math.max(1, tBest || 1);
+  myLevel = lv; store.set("vb.level", lv);
+  const n = WORDS.filter(inMyLevel).length, ns = SENTS.filter(inMyLevel).length;
+  $("#qBar").style.width = "100%";
+  $("#qCount").textContent = "";
+  $("#qBody").innerHTML = `
+    <div class="lvResult">
+      <p class="big">${lv}</p>
+      <p class="nm">레벨 ${lv} · ${LVNAME[lv]}</p>
+      <p class="ds">이제 레벨 ${Math.max(1,lv-1)}~${Math.min(10,lv+1)}에 맞춰
+        단어 ${n}개와 문장 ${ns}개가 나옵니다.</p>
+    </div>
+    ${analysisHTML(lv)}
+    <div class="qBtns" style="margin-top:26px"><button class="btn go" id="lvDone">시작하기</button></div>`;
+  bindPlan();
+  $("#lvDone").addEventListener("click", ()=>{
+    endQuiz(); renderLevel(); renderWords(); newRound(); LPOOL = renderListen();
+  });
+}
+
+/* ══ 테스트 결과 분석 ══ */
+function pctOf(a){ return a.length ? Math.round(a.filter(r => r.ok).length / a.length * 100) : null; }
+function tally(rows, key){
+  const m = {};
+  rows.forEach(r => { const k = r[key]; if (!k) return;
+    if (!m[k]) m[k] = { n:0, bad:0 };
+    m[k].n++; if (!r.ok) m[k].bad++; });
+  return Object.keys(m).map(k => ({ k, n:m[k].n, bad:m[k].bad }))
+    .filter(x => x.bad > 0).sort((a,b) => b.bad - a.bad || b.n - a.n);
+}
+
+function analysisHTML(lv){
+  const L = tLog;
+  if (L.length < 4) return "";
+  const wq = L.filter(r => r.kind === "w"), sq = L.filter(r => r.kind !== "w");
+  const pw = pctOf(wq), ps = pctOf(sq);
+  const wrong = L.filter(r => !r.ok);
+  const outs = L.filter(r => r.why === "time").length;
+
+  /* 1. 한 줄 진단 */
+  let verdict, weak;                 // weak: "word" | "sent" | "both" | "ok"
+  if (pw != null && ps != null && pw - ps >= 25){
+    weak = "sent";
+    verdict = `단어는 <b>${pw}%</b>로 잘 맞히셨는데 문장은 <b>${ps}%</b>였습니다.
+      단어를 몰라서가 아니라 <b>문법과 어순</b>에서 막히는 쪽입니다.`;
+  } else if (pw != null && ps != null && ps - pw >= 25){
+    weak = "word";
+    verdict = `문장은 <b>${ps}%</b>로 감이 좋은데 단어가 <b>${pw}%</b>였습니다.
+      문장 만드는 힘은 있으니 <b>아는 단어를 늘리는 것</b>이 가장 빠릅니다.`;
+  } else if ((pw||0) >= 85 && (ps||0) >= 85){
+    weak = "ok";
+    verdict = `단어 <b>${pw}%</b> · 문장 <b>${ps}%</b>로 레벨 ${lv}은 충분히 소화하고 계십니다.
+      아래 ${Math.min(10,lv+1)}단계 표현으로 넘어가 보세요.`;
+  } else {
+    weak = "both";
+    verdict = `단어 <b>${pw==null?"-":pw+"%"}</b> · 문장 <b>${ps==null?"-":ps+"%"}</b>로 비슷합니다.
+      한쪽이 특별히 약한 게 아니라 <b>레벨 ${lv} 표현 자체</b>를 더 쌓을 때입니다.`;
+  }
+
+  if (outs >= 2) verdict += ` 시간 초과가 <b>${outs}번</b> 있었습니다 — 뜻은 알지만
+    바로 떠오르지 않는 단어가 섞여 있다는 뜻입니다.`;
+
+  /* 2. 약한 분야 · 약한 문법 */
+  const cats = tally(L, "c").slice(0, 3);
+  const gram = tally(L.filter(r => r.kind === "blank"), "g").slice(0, 3);
+
+  const catHTML = cats.length ? `
+    <h3>자주 틀린 분야</h3>
+    ${cats.map(x => `<div class="anRow"><span class="nm2">${esc(x.k)}</span>
+      <span class="cnt2">${x.n}문제 중 ${x.bad}개 틀림</span>
+      <button class="go2" data-cat="${esc(x.k)}">이 분야 단어 보기</button></div>`).join("")}` : "";
+
+  const gramHTML = gram.length ? `
+    <h3>흔들린 문법</h3>
+    ${gram.map(x => `<div class="anRow"><span class="nm2">${esc(x.k)}</span>
+      <span class="cnt2">${x.n}문제 중 ${x.bad}개 틀림</span></div>`).join("")}` : "";
+
+  /* 3. 공부 방향 */
+  const steps = [];
+  if (weak === "word" || weak === "both")
+    steps.push({ t:"매일 단어 20개부터", s:"오늘의 단어를 빈칸 퀴즈로 풀고, 툭 나오면 다음 단계로 올리세요.", b:"오늘의 단어", a:"today" });
+  if (weak === "sent" || weak === "both")
+    steps.push({ t:"문장 조립으로 어순 잡기", s:"뜻을 보고 단어를 순서대로 놓는 연습입니다. 하루 10문장이면 충분합니다.", b:"문장 조립", a:"sent" });
+  if (cats.length)
+    steps.push({ t:`'${cats[0].k}' 분야 집중`, s:"가장 많이 틀린 분야입니다. 이 분야만 켜고 퀴즈를 돌려보세요.", b:"바로 가기", a:"cat:"+cats[0].k });
+  if (gram.length)
+    steps.push({ t:`${gram[0].k} 다시 보기`, s:"문장 빈칸에서 흔들린 부분입니다. 예문을 소리 내어 3번씩 읽어보세요.", b:"", a:"" });
+  if (weak === "ok")
+    steps.push({ t:"소리 내어 말하기", s:"읽고 고르는 건 충분합니다. 듣기·말하기 탭에서 입으로 뱉는 연습으로 넘어가세요.", b:"듣기·말하기", a:"listen" });
+  if (!steps.length)
+    steps.push({ t:"오늘의 단어부터", s:"매일 20개씩, 3단계 단어장으로 반복하세요.", b:"오늘의 단어", a:"today" });
+
+  const planHTML = `
+    <h3>이렇게 공부하세요</h3>
+    <div class="plan">
+      ${steps.slice(0,3).map((s,i) => `<div class="step"><span class="num">${i+1}</span>
+        <span class="tx">${esc(s.t)}<small>${esc(s.s)}</small></span>
+        ${s.b ? `<button class="go2" data-act="${esc(s.a)}">${esc(s.b)}</button>` : ""}</div>`).join("")}
+    </div>`;
+
+  /* 4. 틀린 문제 */
+  const wrongHTML = wrong.length ? `
+    <h3>틀린 문제 ${wrong.length}개</h3>
+    <div class="wrongs">
+      ${wrong.slice(0,10).map(r => {
+        if (r.kind === "w") return `<div class="wg"><p class="en2">${esc(r.en)}</p>
+          <p class="ko2">${esc(r.ko)}</p></div>`;
+        if (r.kind === "blank") return `<div class="wg">
+          <p class="en2">${esc(r.en).replace("____", "<u>"+esc(r.ans)+"</u>")}</p>
+          <p class="ko2">${esc(r.ko)}</p></div>`;
+        return `<div class="wg"><p class="en2">${esc(r.en)}</p><p class="ko2">${esc(r.ko)}</p></div>`;
+      }).join("")}
+    </div>` : `<h3>틀린 문제</h3><div class="wrongs"><div class="wg">
+      <p class="en2">없습니다.</p><p class="ko2">푼 문제를 전부 맞히셨습니다.</p></div></div>`;
+
+  return `<div class="an">
+    <h3>무엇이 부족한가</h3>
+    <div class="verdict">${verdict}</div>
+    <div class="score2">
+      <div><p class="lab2">단어</p><p class="val2">${pw==null?"-":pw+"%"}</p></div>
+      <div><p class="lab2">문장</p><p class="val2">${ps==null?"-":ps+"%"}</p></div>
+    </div>
+    ${catHTML}${gramHTML}${planHTML}${wrongHTML}
+  </div>`;
+}
+
+let planBound = false;
+function bindPlan(){
+  if (planBound) return;
+  planBound = true;
+  $("#qBody").addEventListener("click", e => {
+    const b = e.target.closest("[data-act],[data-cat]"); if (!b) return;
+    const act = b.dataset.cat ? "cat:" + b.dataset.cat : b.dataset.act;
+    if (!act) return;
+    endQuiz(); renderLevel();
+    if (act.startsWith("cat:")){
+      catMode = act.slice(4); mode = "all";
+      [...$("#filters").children].forEach((x,i) => x.setAttribute("aria-pressed", i === 0));
+      go(1); renderWords();
+      $("#cats").scrollIntoView({ behavior:"smooth", block:"start" });
+    } else if (act === "today"){
+      go(1); renderWords(); startQuiz(todayWords());
+    } else if (act === "sent"){
+      newRound(); go(0);
+    } else if (act === "listen"){
+      LPOOL = renderListen(); go(2);
+    }
+  });
+}
+$("#lvGo").addEventListener("click", startLevelTest);
+
+$("#goQuiz").addEventListener("click", ()=>startQuiz());
+$("#goToday").addEventListener("click", ()=>startQuiz(todayWords()));
+
+/* 진도 백업·복원 */
+function fillBackup(){ $("#bkText").value = JSON.stringify(boxes); }
+$("#bkCopy").addEventListener("click", async ()=>{
+  fillBackup();
+  const t = $("#bkText");
+  try{ await navigator.clipboard.writeText(t.value); $("#bkMsg").textContent = "복사했습니다."; }
+  catch(e){ t.select(); $("#bkMsg").textContent = "직접 복사해 주세요 (Ctrl+C)."; }
+});
+$("#bkLoad").addEventListener("click", ()=>{
+  try{
+    const v = JSON.parse($("#bkText").value);
+    if (!v || typeof v !== "object") throw new Error("형식이 맞지 않습니다");
+    boxes = v; saveBoxes(); renderWords();
+    $("#bkMsg").textContent = "복원했습니다.";
+  }catch(e){ $("#bkMsg").textContent = "복원하지 못했습니다. 백업한 글자 전체를 붙여넣었는지 확인해 주세요."; }
+});
+$("#qX").addEventListener("click", endQuiz);
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") endQuiz(); });
+
+/* ══ 듣기·말하기 ══ */
+$("#capNote").innerHTML = hasTTS
+  ? (ASR ? "이 기기에서는 <b>듣기와 말하기</b> 둘 다 됩니다."
+         : "이 기기에서는 <b>듣기만</b> 됩니다. 따라 말하기를 쓰시려면 Chrome으로 열어보세요.")
+  : "이 브라우저는 소리 재생을 지원하지 않습니다.";
+
+function renderListen(){
+  const lvPool = SENTS.filter(inMyLevel);
+  const pool = (lvPool.length >= 4 ? lvPool : SENTS).slice(-12).reverse();
+  $("#listen").innerHTML = pool.map((s,i)=>`
+    <div class="lrow">
+      <p class="en" id="ls${i}">${s.en}</p>
+      <p class="ko">${s.ko}</p>
+      <div class="lbtns">
+        <button class="btn go" data-a="play" data-i="${i}">들어보기</button>
+        <button class="btn" data-a="slow" data-i="${i}">느리게</button>
+        <button class="btn mic" data-a="mic" data-i="${i}">따라 말하기</button>
+      </div>
+      <p class="heard" id="lh${i}"></p>
+    </div>`).join("");
+  return pool;
+}
+let LPOOL = renderListen();
+
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]/g," ").replace(/\s+/g," ").trim();
+function grade(target, heard){
+  const T = norm(target).split(" "), H = norm(heard).split(" ");
+  const m=T.length, n=H.length;
+  const dp = Array.from({length:m+1},()=>new Array(n+1).fill(0));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    dp[i][j] = T[i-1]===H[j-1] ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j], dp[i][j-1]);
+  const hit = new Array(m).fill(false);
+  let i=m,j=n;
+  while(i>0&&j>0){
+    if(T[i-1]===H[j-1]){ hit[i-1]=true; i--; j--; }
+    else if(dp[i-1][j]>=dp[i][j-1]) i--; else j--;
+  }
+  return { hit, score: Math.round(dp[m][n]/m*100) };
+}
+let live=null;
+$("#listen").addEventListener("click", e=>{
+  const b = e.target.closest("[data-a]"); if(!b) return;
+  const i = +b.dataset.i, s = LPOOL[i];
+  if (b.dataset.a==="play") speak(s.en,1);
+  else if (b.dataset.a==="slow") speak(s.en,0.6);
+  else {
+    if (!ASR){ $("#lh"+i).innerHTML='<span class="err">이 브라우저에서는 음성 인식이 안 됩니다.</span>'; return; }
+    if (live){ live.stop(); return; }
+    const rec = new ASR();
+    rec.lang="en-US"; rec.interimResults=false; rec.continuous=false;
+    live = rec; b.classList.add("on"); b.textContent="듣는 중…";
+    $("#lh"+i).textContent="말씀하세요.";
+    rec.onresult = ev => {
+      const heard = ev.results[0][0].transcript;
+      const {hit,score} = grade(s.en, heard);
+      $("#ls"+i).innerHTML = s.en.split(" ").map((w,k)=>
+        `<span class="${hit[k]?"hit":"mis"}">${w}</span>`).join(" ");
+      const c = score>=80?"var(--ok)":score>=50?"var(--ink)":"var(--warn)";
+      $("#lh"+i).innerHTML = `<span class="sc" style="color:${c}">${score}점</span>들린 말: <b>${heard.replace(/</g,"&lt;")}</b>`;
+    };
+    rec.onerror = ev => {
+      const map = {"not-allowed":"마이크 권한이 막혔습니다","service-not-allowed":"마이크 권한이 막혔습니다",
+        "no-speech":"소리가 안 들렸습니다. 다시 눌러보세요","audio-capture":"마이크를 찾지 못했습니다"};
+      $("#lh"+i).innerHTML = '<span class="err">'+(map[ev.error]||ev.error)+'</span>';
+    };
+    rec.onend = ()=>{ live=null; b.classList.remove("on"); b.textContent="따라 말하기"; };
+    try{ rec.start(); }
+    catch(err){ live=null; b.classList.remove("on"); b.textContent="따라 말하기";
+      $("#lh"+i).innerHTML='<span class="err">시작 실패: '+err.message+'</span>'; }
+  }
+});
+
+/* 시작 */
+headStats();
+renderLevel();
+renderWords();
+fillBackup();
+newRound();
+renderHome();
+if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+<script src="firebase-config.js"></script>
+<script src="sync.js"></script>
+
+</body></html>

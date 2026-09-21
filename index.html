@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
 <title>서인의 영어 연습장</title>
-<script src="ipa.js?v=5"></script>
+<script src="ipa.js?v=6"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -491,6 +491,11 @@
   .lsDo{ display:grid; gap:10px }
   .lsDo .btn{ min-height:54px; font-size:16px; border-radius:18px }
   .lsEnd{ background:var(--mint); border-radius:18px; padding:16px; font-size:14.5px; line-height:1.6; color:#1E5A45 }
+  .micBox{ background:var(--pink); border-radius:14px; padding:12px 14px; margin-top:8px;
+    font-size:13px; line-height:1.65; color:#6B3A2E; text-align:left }
+  .micBox b{ display:block; margin-bottom:4px; font-size:13.5px }
+  .micBox ol{ margin:6px 0 0; padding-left:18px } .micBox li{ margin:2px 0 }
+  .micBox .again{ margin-top:10px; min-height:40px; font-size:13px; padding:0 14px }
   .lsNav{ display:flex; align-items:center; gap:8px; margin-bottom:12px }
   .lsNav .btn{ min-height:42px; padding:0 12px; font-size:13px }
   .lsNav .now{ flex:1; text-align:center; font-weight:800; font-size:14px; color:var(--ink-2) }
@@ -2788,7 +2793,50 @@ function grade(target, heard){
   return { hit, score: Math.round(dp[m][n]/m*100) };
 }
 let live=null;
-$("#listen").addEventListener("click", e=>{
+
+/* ── 마이크 권한 ── 인식을 시작하기 전에 먼저 정식으로 권한을 요청합니다 */
+const UA = navigator.userAgent;
+const isIOS = /iPad|iPhone|iPod/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const isStandalone = window.navigator.standalone === true ||
+  (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+async function ensureMic(){
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return "nodevice";
+  try{
+    const st = await navigator.mediaDevices.getUserMedia({ audio: true });
+    st.getTracks().forEach(t => t.stop());
+    return "ok";
+  }catch(err){ return err && err.name ? err.name : "error"; }
+}
+function micHelp(reason){
+  let steps;
+  if (isIOS && isStandalone)
+    steps = `<ol><li>아이폰 <b style="display:inline">설정</b> → <b style="display:inline">개인정보 보호 및 보안</b> → <b style="display:inline">마이크</b></li>
+      <li>목록에서 <b style="display:inline">영어 연습장</b>을 켜 주세요.</li>
+      <li>목록에 없으면 홈 화면 아이콘을 지우고, <b style="display:inline">Safari</b>에서 사이트를 연 뒤 마이크를 허용하고 다시 '홈 화면에 추가'해 주세요.</li></ol>`;
+  else if (isIOS)
+    steps = `<ol><li>주소창 왼쪽 <b style="display:inline">ᴀA</b> 를 누르세요.</li>
+      <li><b style="display:inline">웹사이트 설정</b> → <b style="display:inline">마이크</b> → <b style="display:inline">허용</b></li>
+      <li>화면을 한 번 새로고침해 주세요.</li></ol>`;
+  else
+    steps = `<ol><li>주소창 왼쪽 <b style="display:inline">자물쇠</b> 아이콘을 누르세요.</li>
+      <li><b style="display:inline">권한</b>(또는 사이트 설정) → <b style="display:inline">마이크</b> → <b style="display:inline">허용</b></li>
+      <li>화면을 한 번 새로고침해 주세요.</li></ol>`;
+  const head = reason === "nodevice"
+    ? "이 브라우저에서는 마이크를 쓸 수 없어요."
+    : "마이크 권한이 막혀 있어요.";
+  return `<div class="micBox"><b>${head}</b>아래대로 켜 주시면 바로 됩니다.${steps}
+    <button class="btn again" data-mic="retry">권한 다시 요청</button></div>`;
+}
+$("#listen").addEventListener("click", async e=>{
+  const rt = e.target.closest("[data-mic]");
+  if (rt){
+    const box = rt.closest(".micBox"); const host = box.parentElement;
+    const r = await ensureMic();
+    host.innerHTML = r === "ok"
+      ? '<span class="sc" style="color:var(--ok)">마이크가 켜졌어요. 다시 눌러 보세요.</span>'
+      : micHelp(r);
+    return;
+  }
   const b = e.target.closest("[data-a]"); if(!b) return;
   const i = +b.dataset.i, s = LPOOL[i];
   if (b.dataset.a==="play") speak(s.en,1);
@@ -2796,6 +2844,9 @@ $("#listen").addEventListener("click", e=>{
   else {
     if (!ASR){ $("#lh"+i).innerHTML='<span class="err">이 브라우저에서는 음성 인식이 안 됩니다.</span>'; return; }
     if (live){ live.stop(); return; }
+    $("#lh"+i).textContent = "마이크 확인 중…";
+    const perm = await ensureMic();
+    if (perm !== "ok"){ $("#lh"+i).innerHTML = micHelp(perm); return; }
     const rec = new ASR();
     rec.lang="en-US"; rec.interimResults=false; rec.continuous=false;
     live = rec; b.classList.add("on"); b.textContent="듣는 중…";
@@ -2809,8 +2860,11 @@ $("#listen").addEventListener("click", e=>{
       $("#lh"+i).innerHTML = `<span class="sc" style="color:${c}">${score}점</span>들린 말: <b>${heard.replace(/</g,"&lt;")}</b>`;
     };
     rec.onerror = ev => {
-      const map = {"not-allowed":"마이크 권한이 막혔습니다","service-not-allowed":"마이크 권한이 막혔습니다",
-        "no-speech":"소리가 안 들렸습니다. 다시 눌러보세요","audio-capture":"마이크를 찾지 못했습니다"};
+      if (ev.error === "not-allowed" || ev.error === "service-not-allowed"){
+        $("#lh"+i).innerHTML = micHelp(ev.error); return;
+      }
+      const map = {"no-speech":"소리가 안 들렸습니다. 다시 눌러보세요",
+        "audio-capture":"마이크를 찾지 못했습니다","network":"인터넷 연결을 확인해 주세요"};
       $("#lh"+i).innerHTML = '<span class="err">'+(map[ev.error]||ev.error)+'</span>';
     };
     rec.onend = ()=>{ live=null; b.classList.remove("on"); b.textContent="따라 말하기"; };
@@ -2941,7 +2995,7 @@ renderHome();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=5"></script>
-<script src="sync.js?v=5"></script>
+<script src="firebase-config.js?v=6"></script>
+<script src="sync.js?v=6"></script>
 
 </body></html>

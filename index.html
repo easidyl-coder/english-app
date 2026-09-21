@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
 <title>서인의 영어 연습장</title>
-<script src="ipa.js?v=7"></script>
+<script src="ipa.js?v=8"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -2812,9 +2812,12 @@ async function ensureMic(){
 function micHelp(reason){
   let steps;
   if (isIOS && isStandalone)
-    steps = `<ol><li>아이폰 <b style="display:inline">설정</b> → <b style="display:inline">개인정보 보호 및 보안</b> → <b style="display:inline">마이크</b></li>
-      <li>목록에서 <b style="display:inline">영어 연습장</b>을 켜 주세요.</li>
-      <li>목록에 없으면 홈 화면 아이콘을 지우고, <b style="display:inline">Safari</b>에서 사이트를 연 뒤 마이크를 허용하고 다시 '홈 화면에 추가'해 주세요.</li></ol>`;
+    steps = `<ol><li><b style="display:inline">먼저 진도를 백업하세요.</b> 단어 탭 아래 '진도 백업·복원'에서 글자를 통째로 복사해 메모에 붙여넣어 두세요. (이 단계를 건너뛰면 기록이 지워집니다)</li>
+      <li>홈 화면 아이콘을 꾹 눌러 <b style="display:inline">앱을 삭제</b>하세요. 홈 화면 앱은 아이폰 설정에 목록이 뜨지 않아, 이게 유일한 초기화 방법이에요.</li>
+      <li><b style="display:inline">Safari</b>로 이 주소를 열고 → 공유 버튼 → <b style="display:inline">홈 화면에 추가</b></li>
+      <li>새로 생긴 앱에서 <b style="display:inline">따라 말하기</b>를 누르면 허용 팝업이 뜹니다. <b style="display:inline">허용</b>을 눌러 주세요.</li>
+      <li>마지막으로 '진도 백업·복원'에 아까 복사한 글자를 붙여넣고 복원하세요.</li></ol>
+      <div style="margin-top:8px">급하면 <b style="display:inline">Safari에서 사이트를 열어</b> 바로 쓰셔도 됩니다. 거기서는 지금도 마이크가 됩니다.</div>`;
   else if (isIOS)
     steps = `<ol><li>주소창 왼쪽 <b style="display:inline">ᴀA</b> 를 누르세요.</li>
       <li><b style="display:inline">웹사이트 설정</b> → <b style="display:inline">마이크</b> → <b style="display:inline">허용</b></li>
@@ -3027,7 +3030,7 @@ renderHome();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=7"></script>
-<script src="sync.js?v=7"></script>
+<script src="firebase-config.js?v=8"></script>
+<script src="sync.js?v=8"></script>
 
 </body></html>

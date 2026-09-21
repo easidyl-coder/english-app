@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
 <title>서인의 영어 연습장</title>
-<script src="ipa.js?v=8"></script>
+<script src="ipa.js?v=9"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -666,6 +666,16 @@
       <p class="tSub" id="tSub"></p>
     </div>
 
+    <details class="backup">
+      <summary>진도 백업 · 복원</summary>
+      <p class="lead" style="margin-top:8px">아래 글자를 통째로 복사해 메모장에 보관해 두세요. 기기를 바꾸거나 기록이 지워졌을 때 여기에 붙여넣고 복원하면 단계가 되살아납니다.</p>
+      <textarea id="bkText" spellcheck="false"></textarea>
+      <div class="lbtns">
+        <button class="btn" id="bkCopy">복사</button>
+        <button class="btn" id="bkLoad">붙여넣은 내용으로 복원</button>
+      </div>
+      <p class="bmsg" id="bkMsg"></p>
+    </details>
     <div class="bar">
       <input type="search" id="q" placeholder="단어나 뜻으로 찾기" autocomplete="off">
       <button class="btn" id="tHide" aria-pressed="false">뜻 가리기</button>
@@ -682,16 +692,6 @@
     <p class="lead">줄을 누르면 예문이 펼쳐집니다. 오른쪽 단계 배지를 누르면 단계를 직접 바꿀 수 있습니다.</p>
     <div id="list"></div>
 
-    <details class="backup">
-      <summary>진도 백업 · 복원</summary>
-      <p class="lead" style="margin-top:8px">아래 글자를 통째로 복사해 메모장에 보관해 두세요. 기기를 바꾸거나 기록이 지워졌을 때 여기에 붙여넣고 복원하면 단계가 되살아납니다.</p>
-      <textarea id="bkText" spellcheck="false"></textarea>
-      <div class="lbtns">
-        <button class="btn" id="bkCopy">복사</button>
-        <button class="btn" id="bkLoad">붙여넣은 내용으로 복원</button>
-      </div>
-      <p class="bmsg" id="bkMsg"></p>
-    </details>
   </section>
 
   <!-- 듣기·말하기 -->
@@ -3030,7 +3030,7 @@ renderHome();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=8"></script>
-<script src="sync.js?v=8"></script>
+<script src="firebase-config.js?v=9"></script>
+<script src="sync.js?v=9"></script>
 
 </body></html>

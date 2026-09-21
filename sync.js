@@ -24,7 +24,7 @@
   function label(){
     if (!btn) return;
     btn.disabled = false;
-    btn.textContent = user ? ((user.displayName || user.email || "내 계정").split(" ")[0] + " · 로그아웃") : "로그인";
+    btn.textContent = user ? ((user.displayName || user.email || "내 계정").split(" ")[0]) : "로그인";
   }
 
   function local(){

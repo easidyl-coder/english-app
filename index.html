@@ -490,6 +490,18 @@
   .lsDo{ display:grid; gap:10px }
   .lsDo .btn{ min-height:54px; font-size:16px; border-radius:18px }
   .lsEnd{ background:var(--mint); border-radius:18px; padding:16px; font-size:14.5px; line-height:1.6; color:#1E5A45 }
+  .lsNav{ display:flex; align-items:center; gap:8px; margin-bottom:12px }
+  .lsNav .btn{ min-height:42px; padding:0 12px; font-size:13px }
+  .lsNav .now{ flex:1; text-align:center; font-weight:800; font-size:14px; color:var(--ink-2) }
+  .lsNav .btn[disabled]{ opacity:.35; pointer-events:none }
+  .lsList{ display:grid; grid-template-columns:repeat(auto-fill,minmax(64px,1fr)); gap:8px; margin-top:6px }
+  .lsDay{ font:inherit; font-size:13px; font-weight:800; min-height:46px; border-radius:14px; cursor:pointer;
+    border:1px solid var(--line); background:#fff; color:var(--ink); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; line-height:1.15 }
+  .lsDay small{ font-size:10px; font-weight:700; color:var(--ink-3) }
+  .lsDay.on{ background:var(--honey); border-color:var(--honey) }
+  .lsDay.cur{ background:var(--accent); border-color:var(--accent); color:#fff }
+  .lsDay.cur small{ color:var(--tint) }
   /* ═══ 홈 ═══ */
   header{display:none}
   .hTop{display:flex;justify-content:space-between;align-items:center;padding-top:22px}
@@ -2815,16 +2827,33 @@ function pickBy(arr, n, seed){
   for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; }
   return a.slice(0, n);
 }
-function openLesson(){ renderLesson(); document.body.classList.add("lessonOn"); window.scrollTo(0,0); }
+let LSDAY = 0;                                  // 지금 보고 있는 날짜 (0 = 아직 안 정함)
+function lsPool(){ const p = WORDS.filter(inMyLevel); return p.length >= 25 ? p : WORDS; }
+function lsSents(){ const p = SENTS.filter(inMyLevel); return p.length >= 8 ? p : SENTS; }
+function wordsOfDay(d){                         // 지난 날도 항상 같은 내용이 나오도록 날짜로 고정
+  if (d === dayNo()) return todayWords().slice(0, 20);
+  return pickBy(lsPool(), 20, d * 7 + 3);
+}
+function openLesson(d){
+  LSDAY = d || dayNo();
+  renderLesson(LSDAY);
+  document.body.classList.add("lessonOn");
+  document.getElementById("lesson").scrollTop = 0;
+}
 function closeLesson(){ document.body.classList.remove("lessonOn"); }
-function renderLesson(){
-  const day = dayNo(), wk = Math.ceil(day / 7);
-  const pool = SENTS.filter(inMyLevel), sp = pool.length >= 8 ? pool : SENTS;
-  const todayS = pickBy(sp, 6, day), yestS = pickBy(sp, 2, Math.max(1, day - 1));
-  const tw = todayWords().slice(0, 20);
-  const seen = WORDS.filter(x => boxOf(keyOf(x)) >= 1)
-                    .sort((a,b) => stampOf(keyOf(b)) - stampOf(keyOf(a))).slice(0, 5);
-  const yw = seen.length ? seen : pickBy(WORDS.filter(inMyLevel), 5, Math.max(1, day - 1));
+function renderLesson(day){
+  const today = dayNo(), wk = Math.ceil(day / 7), isToday = day === today;
+  const sp = lsSents();
+  const todayS = pickBy(sp, 6, day), yestS = day > 1 ? pickBy(sp, 2, day - 1) : [];
+  const tw = wordsOfDay(day);
+  let yw;
+  if (day > 1) yw = wordsOfDay(day - 1).slice(0, 5);
+  else yw = [];
+  if (isToday){
+    const seen = WORDS.filter(x => boxOf(keyOf(x)) >= 1)
+                      .sort((a,b) => stampOf(keyOf(b)) - stampOf(keyOf(a))).slice(0, 5);
+    if (seen.length) yw = seen;
+  }
   const wCard = x => `<div class="lsCard"><div class="lsW"><b>${esc(x.w)}</b>
       ${ipaOf(x.w) ? `<span class="ipa">[${esc(ipaOf(x.w))}]</span>` : ""}
       <span class="ipa">${esc(x.p||"")}</span><span class="k">${esc(x.k)}</span></div>
@@ -2836,37 +2865,55 @@ function renderLesson(){
       <button class="btn" data-say="${esc(x.en)}" data-slow="1">느리게</button></div></div>`;
   $("#lsBody").innerHTML = `
     <div class="lsTop"><button class="btn" id="lsX">닫기</button>
-      <span class="gMeta">${day} / 140일 · ${wk}주차</span></div>
+      <span class="gMeta">${today} / 140일 · ${Math.ceil(today/7)}주차</span></div>
+
+    <div class="lsNav">
+      <button class="btn" id="lsPrev" ${day <= 1 ? "disabled" : ""}>◀ 이전</button>
+      <span class="now">Day ${day}${isToday ? " (오늘)" : ""}</span>
+      <button class="btn" id="lsNext" ${day >= today ? "disabled" : ""}>다음 ▶</button>
+      <button class="btn" id="lsAll">목록</button>
+    </div>
+    <div id="lsPick" hidden><div class="lsList">${
+      Array.from({length: today}, (_, i) => today - i).map(n =>
+        `<button class="lsDay ${n === day ? "cur" : ""}" data-day="${n}">${n}<small>${n === today ? "오늘" : Math.ceil(n/7) + "주차"}</small></button>`
+      ).join("")}</div></div>
+
     <div class="lsHero">
       <span class="d">Day ${day} · ${esc(stageOf(wk))}</span>
-      <span class="t">오늘의 레슨</span>
+      <span class="t">${isToday ? "오늘의 레슨" : day + "일차 레슨"}</span>
       <span class="d">문장 ${todayS.length}개 · 단어 ${tw.length}개</span>
     </div>
 
-    <section class="lsSec"><h2>1. 어제 복습</h2>
-      <p class="hint">먼저 어제 본 것부터 입으로 한 번 말해 보세요.</p>
-      ${yw.map(wCard).join("")}${yestS.map(sCard).join("")}</section>
+    ${(yw.length || yestS.length) ? `<section class="lsSec"><h2>1. ${isToday ? "어제" : "전날"} 복습</h2>
+      <p class="hint">먼저 앞에서 본 것부터 입으로 한 번 말해 보세요.</p>
+      ${yw.map(wCard).join("")}${yestS.map(sCard).join("")}</section>` : ""}
 
-    <section class="lsSec"><h2>2. 오늘의 문장</h2>
+    <section class="lsSec"><h2>2. 이 날의 문장</h2>
       <p class="hint">듣고 → 따라 말하고 → 뜻을 보고 다시 만들어 보세요.</p>
       ${todayS.map(sCard).join("")}</section>
 
-    <section class="lsSec"><h2>3. 오늘의 단어 ${tw.length}개</h2>
+    <section class="lsSec"><h2>3. 이 날의 단어 ${tw.length}개</h2>
       <p class="hint">예문과 함께 소리 내어 읽으면 더 오래 남아요.</p>
       ${tw.map(wCard).join("")}</section>
 
-    <section class="lsSec"><h2>4. 오늘의 연습</h2>
+    ${isToday ? `<section class="lsSec"><h2>4. 오늘의 연습</h2>
       <div class="lsDo">
         <button class="btn go" data-go2="sent">문장 조립 10문제 풀기</button>
         <button class="btn" data-go2="quiz">오늘의 단어 빈칸 퀴즈</button>
         <button class="btn" data-go2="listen">듣고 따라 말하기</button>
-      </div></section>
+      </div></section>` : ""}
 
-    <section class="lsSec"><h2>5. 오늘 한 줄 정리</h2>
-      <div class="lsEnd">오늘은 <b>${esc(stageOf(wk))}</b> 단계예요.
-        오늘 본 문장 중 하나만 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요.</div></section>`;
+    <section class="lsSec"><h2>${isToday ? "5" : "4"}. 한 줄 정리</h2>
+      <div class="lsEnd"><b>${esc(stageOf(wk))}</b> 단계예요.
+        여기서 본 문장 중 하나만 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요.</div></section>`;
+
   $("#lsX").addEventListener("click", closeLesson);
+  $("#lsPrev").addEventListener("click", () => { LSDAY = Math.max(1, day - 1); renderLesson(LSDAY); document.getElementById("lesson").scrollTop = 0; });
+  $("#lsNext").addEventListener("click", () => { LSDAY = Math.min(today, day + 1); renderLesson(LSDAY); document.getElementById("lesson").scrollTop = 0; });
+  $("#lsAll").addEventListener("click", () => { const b = $("#lsPick"); b.hidden = !b.hidden; });
   $("#lsBody").addEventListener("click", e => {
+    const dd = e.target.closest("[data-day]");
+    if (dd){ LSDAY = +dd.dataset.day; renderLesson(LSDAY); document.getElementById("lesson").scrollTop = 0; return; }
     const say = e.target.closest("[data-say]");
     if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
     const g = e.target.closest("[data-go2]"); if (!g) return;
@@ -2876,7 +2923,7 @@ function renderLesson(){
     else { LPOOL = renderListen(); go(2); }
   });
 }
-$("#hLesson").addEventListener("click", openLesson);
+$("#hLesson").addEventListener("click", () => openLesson());
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeLesson(); });
 
 /* 시작 */

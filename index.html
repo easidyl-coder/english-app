@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
 <title>서인의 영어 연습장</title>
+<script src="ipa.js?v=4"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -455,6 +456,40 @@
   .btn.mic{border-color:var(--honey);background:var(--honey);color:var(--ink);box-shadow:0 3px 0 var(--honey-dark)}
   .btn.mic.on{background:var(--bad);border-color:var(--bad);color:#fff;box-shadow:none}
   @media (max-width:480px){ h1{font-size:25px} .qWord{font-size:36px} }
+  /* 터치 화면에서 '선택된 것처럼' 보이던 문제 고침 */
+  @media (hover: none){
+    .opt:hover, .chip:hover, .btn:hover, .catCard:hover, .filters button:hover,
+    .cats button:hover, .anRow .go2:hover, .plan .go2:hover{ border-color: var(--line) }
+    .btn.go:hover{ border-color: var(--honey) }
+    .opt:hover{ background: var(--raise) }
+  }
+  .opt, .chip, .btn, button{ -webkit-tap-highlight-color: transparent }
+  .opt:focus:not(:focus-visible){ outline: none; border-color: var(--line); background: var(--raise) }
+  /* 발음기호 */
+  .ipa{ font-size: 11.5px; color: var(--ink-3); font-family: "Gothic A1", sans-serif; letter-spacing: 0 }
+  .wrow .p{ display: flex; flex-direction: column; align-items: flex-end; line-height: 1.3 }
+  /* 오늘의 레슨 */
+  .lesson{ display:none; position:fixed; inset:0; z-index:60; background:var(--ground); overflow-y:auto; padding-block:16px 40px }
+  body.lessonOn .lesson{ display:block } body.lessonOn{ overflow:hidden }
+  .lsTop{ display:flex; align-items:center; gap:12px; margin-bottom:14px }
+  .lsTop .btn{ min-width:64px }
+  .lsHero{ background:var(--accent); color:#fff; border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:6px }
+  .lsHero .d{ font-size:13px; font-weight:600; color:var(--tint) }
+  .lsHero .t{ font-family:"Jua",sans-serif; font-size:26px; line-height:1.25 }
+  .lsSec{ margin-top:22px }
+  .lsSec h2{ font-family:"Jua",sans-serif; font-weight:400; font-size:19px; margin:0 0 10px }
+  .lsSec .hint{ font-size:12.5px; color:var(--ink-2); margin:0 0 10px }
+  .lsCard{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:14px 16px; box-shadow:var(--shadow); margin-bottom:10px }
+  .lsCard .en{ font-size:18px; font-weight:800; line-height:1.4 }
+  .lsCard .ko{ font-size:13.5px; color:var(--ink-2); margin-top:3px }
+  .lsCard .row2{ display:flex; align-items:center; gap:8px; margin-top:10px }
+  .lsCard .row2 .btn{ font-size:13px; padding:7px 12px; min-height:40px }
+  .lsW{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap }
+  .lsW b{ font-size:17px } .lsW .k{ font-size:14px; color:var(--ink-2) }
+  .lsEx{ font-size:13px; color:var(--ink-2); margin-top:5px }
+  .lsDo{ display:grid; gap:10px }
+  .lsDo .btn{ min-height:54px; font-size:16px; border-radius:18px }
+  .lsEnd{ background:var(--mint); border-radius:18px; padding:16px; font-size:14.5px; line-height:1.6; color:#1E5A45 }
   /* ═══ 홈 ═══ */
   header{display:none}
   .hTop{display:flex;justify-content:space-between;align-items:center;padding-top:22px}
@@ -528,7 +563,7 @@
       <div class="big">오늘의 레슨 시작!</div>
       <div class="hBarRow"><div class="hBar"><i id="hProg" style="width:0"></i></div><span id="hProgN">0/140</span></div>
       <div class="hFoot"><span id="hLeft">칸쿤까지</span>
-        <a class="hOpen" href="https://claude.ai/artifact/Gvrmtv2HiUDKZtusNrQw5F" target="_blank" rel="noopener">열기</a></div>
+        <button class="hOpen" id="hLesson" type="button">열기</button></div>
     </div>
     <div class="hGrid">
       <button class="hTile wide" data-go="0">
@@ -649,6 +684,8 @@
 
 </div>
 
+
+<div class="lesson" id="lesson"><div class="shell" id="lsBody"></div></div>
 <div class="quiz" id="quiz">
   <div class="shell">
     <div class="gTop">
@@ -2138,7 +2175,7 @@ function renderWords(){
         const k = keyOf(x), b = boxOf(k);
         const lab = b === 0 ? "새" : b + "단계";
         return `<div class="wrow" data-k="${k}">
-          <span class="w">${x.w}${x.lv?`<span class="wlv">Lv${x.lv}</span>`:""}</span><span class="p">${x.p||""}</span>
+          <span class="w">${x.w}${x.lv?`<span class="wlv">Lv${x.lv}</span>`:""}</span><span class="p">${ipaOf(x.w)?`<span class="ipa">[${ipaOf(x.w)}]</span>`:""}${x.p||""}</span>
           <button class="bx${isDue(k)?" due":""}" data-b="${b}" data-bk="${k}"
             title="눌러서 단계 바꾸기">${lab}</button>
           <span class="k">${x.k}</span>
@@ -2258,7 +2295,7 @@ function drawQ(){
     <p class="qJudge" id="qJ"></p>
     <div class="qAns veiled" id="qA">
       <p class="qWord">${esc(x.w)}</p>
-      <p class="qPron">${esc(x.p||"")}</p>
+      <p class="qPron">${ipaOf(x.w)?`[${esc(ipaOf(x.w))}] · `:""}${esc(x.p||"")}</p>
       <p class="ex"><i>${esc(x.ex)}</i> &nbsp;${esc(x.exk)}</p>
     </div>
     <div class="qBtns" id="qB"></div>`;
@@ -2769,6 +2806,79 @@ $("#listen").addEventListener("click", e=>{
   }
 });
 
+/* ══ 오늘의 레슨 ══ 그날 분량을 앱이 직접 만들어 보여줍니다 */
+const ipaOf = w => (window.IPA && window.IPA[w]) || "";
+function dayNo(){ return Math.min(140, Math.max(1, Math.floor((new Date() - START)/86400000) + 1)); }
+function pickBy(arr, n, seed){
+  const a = arr.slice(); let s = (seed * 9301 + 49297) % 233280;
+  const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a.slice(0, n);
+}
+function openLesson(){ renderLesson(); document.body.classList.add("lessonOn"); window.scrollTo(0,0); }
+function closeLesson(){ document.body.classList.remove("lessonOn"); }
+function renderLesson(){
+  const day = dayNo(), wk = Math.ceil(day / 7);
+  const pool = SENTS.filter(inMyLevel), sp = pool.length >= 8 ? pool : SENTS;
+  const todayS = pickBy(sp, 6, day), yestS = pickBy(sp, 2, Math.max(1, day - 1));
+  const tw = todayWords().slice(0, 20);
+  const seen = WORDS.filter(x => boxOf(keyOf(x)) >= 1)
+                    .sort((a,b) => stampOf(keyOf(b)) - stampOf(keyOf(a))).slice(0, 5);
+  const yw = seen.length ? seen : pickBy(WORDS.filter(inMyLevel), 5, Math.max(1, day - 1));
+  const wCard = x => `<div class="lsCard"><div class="lsW"><b>${esc(x.w)}</b>
+      ${ipaOf(x.w) ? `<span class="ipa">[${esc(ipaOf(x.w))}]</span>` : ""}
+      <span class="ipa">${esc(x.p||"")}</span><span class="k">${esc(x.k)}</span></div>
+      <div class="lsEx">${esc(x.ex)}<br>${esc(x.exk)}</div>
+      <div class="row2"><button class="btn" data-say="${esc(x.ex)}">들어보기</button></div></div>`;
+  const sCard = x => `<div class="lsCard"><div class="en">${esc(x.en)}</div>
+      <div class="ko">${esc(x.ko)}</div>
+      <div class="row2"><button class="btn" data-say="${esc(x.en)}">들어보기</button>
+      <button class="btn" data-say="${esc(x.en)}" data-slow="1">느리게</button></div></div>`;
+  $("#lsBody").innerHTML = `
+    <div class="lsTop"><button class="btn" id="lsX">닫기</button>
+      <span class="gMeta">${day} / 140일 · ${wk}주차</span></div>
+    <div class="lsHero">
+      <span class="d">Day ${day} · ${esc(stageOf(wk))}</span>
+      <span class="t">오늘의 레슨</span>
+      <span class="d">문장 ${todayS.length}개 · 단어 ${tw.length}개</span>
+    </div>
+
+    <section class="lsSec"><h2>1. 어제 복습</h2>
+      <p class="hint">먼저 어제 본 것부터 입으로 한 번 말해 보세요.</p>
+      ${yw.map(wCard).join("")}${yestS.map(sCard).join("")}</section>
+
+    <section class="lsSec"><h2>2. 오늘의 문장</h2>
+      <p class="hint">듣고 → 따라 말하고 → 뜻을 보고 다시 만들어 보세요.</p>
+      ${todayS.map(sCard).join("")}</section>
+
+    <section class="lsSec"><h2>3. 오늘의 단어 ${tw.length}개</h2>
+      <p class="hint">예문과 함께 소리 내어 읽으면 더 오래 남아요.</p>
+      ${tw.map(wCard).join("")}</section>
+
+    <section class="lsSec"><h2>4. 오늘의 연습</h2>
+      <div class="lsDo">
+        <button class="btn go" data-go2="sent">문장 조립 10문제 풀기</button>
+        <button class="btn" data-go2="quiz">오늘의 단어 빈칸 퀴즈</button>
+        <button class="btn" data-go2="listen">듣고 따라 말하기</button>
+      </div></section>
+
+    <section class="lsSec"><h2>5. 오늘 한 줄 정리</h2>
+      <div class="lsEnd">오늘은 <b>${esc(stageOf(wk))}</b> 단계예요.
+        오늘 본 문장 중 하나만 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요.</div></section>`;
+  $("#lsX").addEventListener("click", closeLesson);
+  $("#lsBody").addEventListener("click", e => {
+    const say = e.target.closest("[data-say]");
+    if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
+    const g = e.target.closest("[data-go2]"); if (!g) return;
+    closeLesson();
+    if (g.dataset.go2 === "sent"){ newRound(); go(0); }
+    else if (g.dataset.go2 === "quiz"){ go(1); renderWords(); startQuiz(todayWords()); }
+    else { LPOOL = renderListen(); go(2); }
+  });
+}
+$("#hLesson").addEventListener("click", openLesson);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeLesson(); });
+
 /* 시작 */
 headStats();
 renderLevel();
@@ -2779,7 +2889,7 @@ renderHome();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js"></script>
-<script src="sync.js"></script>
+<script src="firebase-config.js?v=4"></script>
+<script src="sync.js?v=4"></script>
 
 </body></html>

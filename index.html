@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
 <title>서인의 영어 연습장</title>
-<script src="ipa.js?v=9"></script>
+<script src="ipa.js?v=10"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -2801,11 +2801,22 @@ const UA = navigator.userAgent;
 const isIOS = /iPad|iPhone|iPod/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const isStandalone = window.navigator.standalone === true ||
   (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+let micOK = false;                               // 이미 허용됐으면 다시 묻지 않습니다
+(async () => {
+  try{
+    if (navigator.permissions && navigator.permissions.query){
+      const st = await navigator.permissions.query({ name: "microphone" });
+      micOK = st.state === "granted";
+      st.onchange = () => { micOK = st.state === "granted"; };
+    }
+  }catch(e){}
+})();
 async function ensureMic(){
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return "nodevice";
   try{
     const st = await navigator.mediaDevices.getUserMedia({ audio: true });
     st.getTracks().forEach(t => t.stop());
+    micOK = true;
     return "ok";
   }catch(err){ return err && err.name ? err.name : "error"; }
 }
@@ -2819,9 +2830,10 @@ function micHelp(reason){
       <li>마지막으로 '진도 백업·복원'에 아까 복사한 글자를 붙여넣고 복원하세요.</li></ol>
       <div style="margin-top:8px">급하면 <b style="display:inline">Safari에서 사이트를 열어</b> 바로 쓰셔도 됩니다. 거기서는 지금도 마이크가 됩니다.</div>`;
   else if (isIOS)
-    steps = `<ol><li>주소창 왼쪽 <b style="display:inline">ᴀA</b> 를 누르세요.</li>
-      <li><b style="display:inline">웹사이트 설정</b> → <b style="display:inline">마이크</b> → <b style="display:inline">허용</b></li>
-      <li>화면을 한 번 새로고침해 주세요.</li></ol>`;
+    steps = `<ol><li>화면 <b style="display:inline">맨 아래 주소창</b>에서, 주소 글자 <b style="display:inline">바로 왼쪽</b> 아이콘을 누르세요.</li>
+      <li><b style="display:inline">페이지 메뉴</b>가 열리면 <b style="display:inline">맨 아래까지 스크롤</b>해서 <b style="display:inline">웹사이트 설정</b>을 누르세요.</li>
+      <li><b style="display:inline">마이크</b> → <b style="display:inline">허용</b></li>
+      <li>주소창 오른쪽 <b style="display:inline">↻</b> 로 새로고침한 뒤 다시 눌러 주세요.</li></ol>`;
   else
     steps = `<ol><li>주소창 왼쪽 <b style="display:inline">자물쇠</b> 아이콘을 누르세요.</li>
       <li><b style="display:inline">권한</b>(또는 사이트 설정) → <b style="display:inline">마이크</b> → <b style="display:inline">허용</b></li>
@@ -2879,9 +2891,14 @@ $("#listen").addEventListener("click", async e=>{
   else {
     if (!ASR){ $("#lh"+i).innerHTML='<span class="err">이 브라우저에서는 음성 인식이 안 됩니다.</span>'; return; }
     if (live){ live.stop(); return; }
-    $("#lh"+i).textContent = "마이크 확인 중…";
-    const perm = await ensureMic();
-    if (perm !== "ok"){ $("#lh"+i).innerHTML = micHelp(perm); return; }
+    if (!micOK){                                   // 아직 허용 전일 때만 물어봅니다
+      $("#lh"+i).textContent = "마이크 확인 중…";
+      const perm = await ensureMic();
+      if (perm !== "ok"){ $("#lh"+i).innerHTML = micHelp(perm); return; }
+      $("#lh"+i).innerHTML = '<span class="sc" style="color:var(--ok)">마이크 준비됐어요. <b>따라 말하기</b>를 한 번 더 눌러 주세요.</span>';
+      return;
+    }
+    if (hasTTS) speechSynthesis.cancel();          // 읽어주기가 켜져 있으면 인식이 끊깁니다
     const rec = new ASR();
     rec.lang="en-US"; rec.interimResults=false; rec.continuous=false;
     live = rec; b.classList.add("on"); b.textContent="듣는 중…";
@@ -2899,6 +2916,7 @@ $("#listen").addEventListener("click", async e=>{
         $("#lh"+i).innerHTML = micHelp(ev.error); return;
       }
       const map = {"no-speech":"소리가 안 들렸습니다. 다시 눌러보세요",
+        "aborted":"인식이 중간에 멈췄어요. 들어보기가 끝난 뒤 다시 눌러 주세요",
         "audio-capture":"마이크를 찾지 못했습니다","network":"인터넷 연결을 확인해 주세요"};
       $("#lh"+i).innerHTML = '<span class="err">'+(map[ev.error]||ev.error)+'</span>';
     };
@@ -3030,7 +3048,7 @@ renderHome();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=9"></script>
-<script src="sync.js?v=9"></script>
+<script src="firebase-config.js?v=10"></script>
+<script src="sync.js?v=10"></script>
 
 </body></html>

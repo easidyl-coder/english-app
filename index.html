@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
 <title>서인의 영어 연습장</title>
-<script src="ipa.js?v=4"></script>
+<script src="ipa.js?v=5"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -463,7 +463,8 @@
     .btn.go:hover{ border-color: var(--honey) }
     .opt:hover{ background: var(--raise) }
   }
-  .opt, .chip, .btn, button{ -webkit-tap-highlight-color: transparent }
+  .opt, .chip, .btn, button, a, .lsDay, .catCard{ -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none }
   .opt:focus:not(:focus-visible){ outline: none; border-color: var(--line); background: var(--raise) }
   /* 발음기호 */
   .ipa{ font-size: 11.5px; color: var(--ink-3); font-family: "Gothic A1", sans-serif; letter-spacing: 0 }
@@ -504,14 +505,15 @@
   .lsDay.cur small{ color:var(--tint) }
   /* ═══ 홈 ═══ */
   header{display:none}
-  .hTop{display:flex;justify-content:space-between;align-items:center;padding-top:22px}
-  .hLogo{font-family:"Jua",sans-serif;font-size:24px}
+  .hTop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-top:22px;flex-wrap:wrap}
+  .hLogo{font-family:"Jua",sans-serif;font-size:24px;white-space:nowrap;flex:0 0 auto;line-height:36px}
   .hChips{display:flex;gap:8px}
   .hChip{display:flex;align-items:center;height:36px;padding:0 12px;border-radius:18px;font:inherit;
     font-size:13px;font-weight:800;border:1px solid var(--line);background:#fff;color:var(--ink)}
   button.hChip{cursor:pointer;background:var(--honey);border-color:var(--honey)}
-  button.hChip.acct{background:#fff;border-color:var(--line);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .hChips{flex-wrap:wrap;justify-content:flex-end}
+  button.hChip.acct{background:#fff;border-color:var(--line);max-width:118px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;line-height:34px}
+  .hChips{flex-wrap:wrap;justify-content:flex-end;flex:1 1 auto;min-width:0;row-gap:8px}
+  @media (max-width:400px){ .hChip{padding:0 10px;font-size:12.5px} .hLogo{font-size:22px} }
   .hHero{background:var(--accent);color:#fff;border-radius:22px;padding:20px;margin-top:18px;display:flex;flex-direction:column;gap:12px}
   .hHero .sub{font-size:13px;font-weight:600;color:var(--tint)}
   .hHero .big{font-family:"Jua",sans-serif;font-size:28px;line-height:1.2}
@@ -2907,22 +2909,25 @@ function renderLesson(day){
       <div class="lsEnd"><b>${esc(stageOf(wk))}</b> 단계예요.
         여기서 본 문장 중 하나만 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요.</div></section>`;
 
-  $("#lsX").addEventListener("click", closeLesson);
-  $("#lsPrev").addEventListener("click", () => { LSDAY = Math.max(1, day - 1); renderLesson(LSDAY); document.getElementById("lesson").scrollTop = 0; });
-  $("#lsNext").addEventListener("click", () => { LSDAY = Math.min(today, day + 1); renderLesson(LSDAY); document.getElementById("lesson").scrollTop = 0; });
-  $("#lsAll").addEventListener("click", () => { const b = $("#lsPick"); b.hidden = !b.hidden; });
-  $("#lsBody").addEventListener("click", e => {
-    const dd = e.target.closest("[data-day]");
-    if (dd){ LSDAY = +dd.dataset.day; renderLesson(LSDAY); document.getElementById("lesson").scrollTop = 0; return; }
-    const say = e.target.closest("[data-say]");
-    if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
-    const g = e.target.closest("[data-go2]"); if (!g) return;
-    closeLesson();
-    if (g.dataset.go2 === "sent"){ newRound(); go(0); }
-    else if (g.dataset.go2 === "quiz"){ go(1); renderWords(); startQuiz(todayWords()); }
-    else { LPOOL = renderListen(); go(2); }
-  });
 }
+/* 클릭 처리는 한 번만 연결 — 매번 다시 붙이면 눌렀을 때 점점 느려집니다 */
+function lsTop0(){ document.getElementById("lesson").scrollTop = 0; }
+$("#lsBody").addEventListener("click", e => {
+  const today = dayNo();
+  if (e.target.closest("#lsX")){ closeLesson(); return; }
+  if (e.target.closest("#lsPrev")){ LSDAY = Math.max(1, LSDAY - 1); renderLesson(LSDAY); lsTop0(); return; }
+  if (e.target.closest("#lsNext")){ LSDAY = Math.min(today, LSDAY + 1); renderLesson(LSDAY); lsTop0(); return; }
+  if (e.target.closest("#lsAll")){ const b = $("#lsPick"); b.hidden = !b.hidden; return; }
+  const dd = e.target.closest("[data-day]");
+  if (dd){ LSDAY = +dd.dataset.day; renderLesson(LSDAY); lsTop0(); return; }
+  const say = e.target.closest("[data-say]");
+  if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
+  const g = e.target.closest("[data-go2]"); if (!g) return;
+  closeLesson();
+  if (g.dataset.go2 === "sent"){ newRound(); go(0); }
+  else if (g.dataset.go2 === "quiz"){ go(1); renderWords(); startQuiz(todayWords()); }
+  else { LPOOL = renderListen(); go(2); }
+});
 $("#hLesson").addEventListener("click", () => openLesson());
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeLesson(); });
 
@@ -2936,7 +2941,7 @@ renderHome();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=4"></script>
-<script src="sync.js?v=4"></script>
+<script src="firebase-config.js?v=5"></script>
+<script src="sync.js?v=5"></script>
 
 </body></html>

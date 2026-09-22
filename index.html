@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
 <title>서인의 영어 연습장</title>
-<script src="ipa.js?v=11"></script>
+<script src="ipa.js?v=12"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -494,6 +494,15 @@
   .lsEx{ font-size:13px; color:var(--ink-2); margin-top:5px }
   .lsDo{ display:grid; gap:10px }
   .lsDo .btn{ min-height:54px; font-size:16px; border-radius:18px }
+  .gram{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:var(--shadow) }
+  .gram .f{ font-family:"Gothic A1",sans-serif; font-size:19px; font-weight:800; color:var(--accent);
+    background:var(--tint-2, #E9EAF7); border-radius:12px; padding:10px 12px; text-align:center; letter-spacing:-.2px }
+  .gram p{ margin:12px 0 0; font-size:14.5px; line-height:1.7 }
+  .gram .miss{ margin-top:12px; background:var(--pink); border-radius:12px; padding:11px 13px;
+    font-size:13.5px; line-height:1.6; color:#6B3A2E }
+  .gram .miss b{ display:block; font-size:12.5px; margin-bottom:3px }
+  .btn.done{ width:100%; margin-top:14px; min-height:54px; font-size:16px; border-radius:18px;
+    background:var(--accent); border-color:var(--accent); color:#fff }
   .lsEnd{ background:var(--mint); border-radius:18px; padding:16px; font-size:14.5px; line-height:1.6; color:#1E5A45 }
   .micBox{ background:var(--pink); border-radius:14px; padding:12px 14px; margin-top:8px;
     font-size:13px; line-height:1.65; color:#6B3A2E; text-align:left }
@@ -1912,7 +1921,175 @@ const SENTS = [
   {d:10,lv:2,c:"동작·행동",en:"She finishes at five.",ko:"그녀는 5시에 끝나요."},
   {d:10,lv:2,c:"동작·행동",en:"He wears sunscreen.",ko:"그는 선크림을 발라요."},
   {d:10,lv:2,c:"동작·행동",en:"The restaurant is not open.",ko:"그 식당은 문을 안 열었어요."},
-  {d:10,lv:2,c:"동작·행동",en:"They sell tickets here.",ko:"여기서 표를 팔아요."}
+  {d:10,lv:2,c:"동작·행동",en:"They sell tickets here.",ko:"여기서 표를 팔아요."},
+  {d:7,lv:1,c:"사람·관계",en:"I'm not hungry yet.",ko:"아직 배 안 고파요."},
+  {d:7,lv:1,c:"사람·관계",en:"It's not far.",ko:"멀지 않아요."},
+  {d:7,lv:1,c:"사람·관계",en:"He's not here.",ko:"그는 여기 없어요."},
+  {d:7,lv:1,c:"사람·관계",en:"We're not ready.",ko:"저희 준비 안 됐어요."},
+  {d:7,lv:1,c:"사람·관계",en:"It isn't ready yet.",ko:"아직 준비 안 됐어요."},
+  {d:7,lv:1,c:"사람·관계",en:"Yes, I am.",ko:"네, 맞아요."},
+  {d:7,lv:1,c:"사람·관계",en:"No, I'm not.",ko:"아니요, 아니에요."},
+  {d:7,lv:1,c:"사람·관계",en:"It's not a problem.",ko:"문제 없어요."},
+  {d:11,lv:2,c:"동작·행동",en:"I don't eat spicy food.",ko:"저는 매운 거 안 먹어요."},
+  {d:11,lv:2,c:"동작·행동",en:"I don't drink coffee.",ko:"저는 커피 안 마셔요."},
+  {d:11,lv:2,c:"동작·행동",en:"We don't need a bag.",ko:"봉투는 필요 없어요."},
+  {d:11,lv:2,c:"동작·행동",en:"He doesn't speak Korean.",ko:"그는 한국어를 못해요."},
+  {d:11,lv:2,c:"동작·행동",en:"She doesn't work here.",ko:"그녀는 여기서 일 안 해요."},
+  {d:11,lv:2,c:"동작·행동",en:"I don't understand.",ko:"이해가 안 돼요."},
+  {d:11,lv:2,c:"동작·행동",en:"It doesn't work.",ko:"이거 안 돼요."},
+  {d:11,lv:2,c:"동작·행동",en:"They don't open on Monday.",ko:"월요일엔 문 안 열어요."},
+  {d:12,lv:2,c:"말·표현",en:"Do you have a menu?",ko:"메뉴 있어요?"},
+  {d:12,lv:2,c:"말·표현",en:"Do you speak Korean?",ko:"한국어 하세요?"},
+  {d:12,lv:2,c:"말·표현",en:"Do you take cards?",ko:"카드 받으세요?"},
+  {d:12,lv:2,c:"말·표현",en:"Does it come with rice?",ko:"밥이 같이 나오나요?"},
+  {d:12,lv:2,c:"말·표현",en:"Does he know the address?",ko:"그가 주소를 아나요?"},
+  {d:12,lv:2,c:"말·표현",en:"Do you have this in black?",ko:"이거 검정색 있어요?"},
+  {d:12,lv:2,c:"말·표현",en:"Do we need a reservation?",ko:"예약해야 하나요?"},
+  {d:12,lv:2,c:"말·표현",en:"Does the price include tax?",ko:"세금 포함인가요?"},
+  {d:13,lv:2,c:"말·표현",en:"What is this?",ko:"이게 뭐예요?"},
+  {d:13,lv:2,c:"말·표현",en:"What do you recommend?",ko:"뭐가 맛있어요?"},
+  {d:13,lv:2,c:"말·표현",en:"What time do you open?",ko:"몇 시에 열어요?"},
+  {d:13,lv:2,c:"말·표현",en:"What does this mean?",ko:"이게 무슨 뜻이에요?"},
+  {d:13,lv:2,c:"말·표현",en:"Where is the restroom?",ko:"화장실이 어디예요?"},
+  {d:13,lv:2,c:"말·표현",en:"Where do you live?",ko:"어디 사세요?"},
+  {d:13,lv:2,c:"말·표현",en:"Where can I buy tickets?",ko:"표는 어디서 사요?"},
+  {d:13,lv:2,c:"말·표현",en:"Where are you from?",ko:"어디서 오셨어요?"},
+  {d:14,lv:2,c:"말·표현",en:"When does it start?",ko:"언제 시작해요?"},
+  {d:14,lv:2,c:"말·표현",en:"When do you close?",ko:"몇 시에 닫아요?"},
+  {d:14,lv:2,c:"말·표현",en:"How long does it take?",ko:"얼마나 걸려요?"},
+  {d:14,lv:2,c:"말·표현",en:"How do I get there?",ko:"거기 어떻게 가요?"},
+  {d:14,lv:2,c:"말·표현",en:"How many people?",ko:"몇 분이세요?"},
+  {d:14,lv:2,c:"말·표현",en:"Why is it closed?",ko:"왜 닫았어요?"},
+  {d:14,lv:2,c:"말·표현",en:"Which one is better?",ko:"어느 게 더 나아요?"},
+  {d:14,lv:2,c:"말·표현",en:"Who is in charge?",ko:"담당자가 누구예요?"},
+  {d:15,lv:2,c:"동작·행동",en:"I can swim.",ko:"저 수영할 수 있어요."},
+  {d:15,lv:2,c:"동작·행동",en:"I can't eat spicy food.",ko:"저 매운 거 못 먹어요."},
+  {d:15,lv:2,c:"동작·행동",en:"I can drive.",ko:"저 운전할 수 있어요."},
+  {d:15,lv:2,c:"동작·행동",en:"I can't hear you.",ko:"잘 안 들려요."},
+  {d:15,lv:2,c:"동작·행동",en:"She can speak English.",ko:"그녀는 영어를 할 수 있어요."},
+  {d:15,lv:2,c:"동작·행동",en:"We can wait.",ko:"저희 기다릴 수 있어요."},
+  {d:15,lv:2,c:"동작·행동",en:"I can't find my bag.",ko:"제 가방을 못 찾겠어요."},
+  {d:15,lv:2,c:"동작·행동",en:"Can you hear me?",ko:"제 말 들리세요?"},
+  {d:16,lv:2,c:"말·표현",en:"Can you help me?",ko:"도와주실래요?"},
+  {d:16,lv:2,c:"말·표현",en:"Can you say that again?",ko:"다시 말씀해 주실래요?"},
+  {d:16,lv:2,c:"말·표현",en:"Can you speak slowly?",ko:"천천히 말씀해 주실래요?"},
+  {d:16,lv:2,c:"말·표현",en:"Can you write it down?",ko:"적어 주실래요?"},
+  {d:16,lv:2,c:"말·표현",en:"Can I sit here?",ko:"여기 앉아도 될까요?"},
+  {d:16,lv:2,c:"말·표현",en:"Can I try this on?",ko:"이거 입어봐도 될까요?"},
+  {d:16,lv:2,c:"말·표현",en:"Could you take a photo?",ko:"사진 좀 찍어 주실래요?"},
+  {d:16,lv:2,c:"말·표현",en:"Can I have the bill, please?",ko:"계산서 주세요."},
+  {d:17,lv:2,c:"동작·행동",en:"I'll take this one.",ko:"이걸로 할게요."},
+  {d:17,lv:2,c:"동작·행동",en:"I'll be right back.",ko:"금방 올게요."},
+  {d:17,lv:2,c:"동작·행동",en:"We're going to Cancun.",ko:"저희 칸쿤에 가요."},
+  {d:17,lv:2,c:"동작·행동",en:"I'm going to call a taxi.",ko:"택시 부를게요."},
+  {d:17,lv:2,c:"동작·행동",en:"It will be ready soon.",ko:"곧 준비될 거예요."},
+  {d:17,lv:2,c:"동작·행동",en:"I'll pay by card.",ko:"카드로 결제할게요."},
+  {d:17,lv:2,c:"동작·행동",en:"We're going to stay three nights.",ko:"3박 묵을 거예요."},
+  {d:17,lv:2,c:"동작·행동",en:"I won't be late.",ko:"늦지 않을게요."},
+  {d:18,lv:2,c:"동작·행동",en:"I'm looking for the gate.",ko:"게이트를 찾고 있어요."},
+  {d:18,lv:2,c:"동작·행동",en:"I'm waiting for my friend.",ko:"친구를 기다리고 있어요."},
+  {d:18,lv:2,c:"동작·행동",en:"We're staying at this hotel.",ko:"저희 이 호텔에 묵고 있어요."},
+  {d:18,lv:2,c:"동작·행동",en:"He's working right now.",ko:"그는 지금 일하는 중이에요."},
+  {d:18,lv:2,c:"동작·행동",en:"It's raining outside.",ko:"밖에 비가 와요."},
+  {d:18,lv:2,c:"동작·행동",en:"I'm not feeling well.",ko:"몸이 좀 안 좋아요."},
+  {d:18,lv:2,c:"동작·행동",en:"Are you waiting in line?",ko:"줄 서신 거예요?"},
+  {d:18,lv:2,c:"동작·행동",en:"I'm just looking, thanks.",ko:"그냥 보는 거예요, 감사합니다."},
+  {d:19,lv:2,c:"성질·정도",en:"There's a problem.",ko:"문제가 있어요."},
+  {d:19,lv:2,c:"성질·정도",en:"There's no hot water.",ko:"온수가 안 나와요."},
+  {d:19,lv:2,c:"성질·정도",en:"There are two of us.",ko:"저희 두 명이에요."},
+  {d:19,lv:2,c:"성질·정도",en:"Is there a pharmacy nearby?",ko:"근처에 약국 있어요?"},
+  {d:19,lv:2,c:"성질·정도",en:"There's a mistake on the bill.",ko:"계산서에 잘못된 게 있어요."},
+  {d:19,lv:2,c:"성질·정도",en:"There aren't any towels.",ko:"수건이 하나도 없어요."},
+  {d:19,lv:2,c:"성질·정도",en:"There's a long line.",ko:"줄이 길어요."},
+  {d:19,lv:2,c:"성질·정도",en:"Is there Wi-Fi here?",ko:"여기 와이파이 되나요?"},
+  {d:20,lv:2,c:"쇼핑·돈",en:"I have a reservation.",ko:"예약했어요."},
+  {d:20,lv:2,c:"쇼핑·돈",en:"I have two bags.",ko:"가방 두 개 있어요."},
+  {d:20,lv:2,c:"쇼핑·돈",en:"Do you have a bigger size?",ko:"더 큰 사이즈 있어요?"},
+  {d:20,lv:2,c:"쇼핑·돈",en:"We have a question.",ko:"질문이 있어요."},
+  {d:20,lv:2,c:"쇼핑·돈",en:"She has my passport.",ko:"그녀가 제 여권을 갖고 있어요."},
+  {d:20,lv:2,c:"쇼핑·돈",en:"I don't have cash.",ko:"현금이 없어요."},
+  {d:20,lv:2,c:"쇼핑·돈",en:"Do you have anything cheaper?",ko:"더 싼 거 있어요?"},
+  {d:20,lv:2,c:"쇼핑·돈",en:"I have a headache.",ko:"머리가 아파요."},
+  {d:21,lv:2,c:"말·표현",en:"Can I get a table for two?",ko:"두 명 자리 있을까요?"},
+  {d:21,lv:2,c:"말·표현",en:"I don't have a reservation.",ko:"예약은 안 했어요."},
+  {d:21,lv:2,c:"말·표현",en:"Is there a menu in English?",ko:"영어 메뉴 있어요?"},
+  {d:21,lv:2,c:"말·표현",en:"I'll have the same, please.",ko:"같은 걸로 할게요."},
+  {d:21,lv:2,c:"말·표현",en:"We're going to order now.",ko:"지금 주문할게요."},
+  {d:21,lv:2,c:"말·표현",en:"Can you bring some water?",ko:"물 좀 주실래요?"},
+  {d:21,lv:2,c:"말·표현",en:"There's no fork here.",ko:"여기 포크가 없어요."},
+  {d:21,lv:2,c:"말·표현",en:"Can we pay separately?",ko:"따로 계산할 수 있어요?"},
+  {d:22,lv:3,c:"감정·상태",en:"It was great.",ko:"정말 좋았어요."},
+  {d:22,lv:3,c:"감정·상태",en:"The food was delicious.",ko:"음식이 맛있었어요."},
+  {d:22,lv:3,c:"감정·상태",en:"We were tired.",ko:"저희 피곤했어요."},
+  {d:22,lv:3,c:"감정·상태",en:"I was there yesterday.",ko:"어제 거기 있었어요."},
+  {d:22,lv:3,c:"감정·상태",en:"It wasn't expensive.",ko:"비싸지 않았어요."},
+  {d:22,lv:3,c:"감정·상태",en:"The room was clean.",ko:"방이 깨끗했어요."},
+  {d:22,lv:3,c:"감정·상태",en:"Were you at the beach?",ko:"해변에 계셨어요?"},
+  {d:22,lv:3,c:"감정·상태",en:"I was a little late.",ko:"조금 늦었어요."},
+  {d:23,lv:3,c:"동작·행동",en:"I booked a room.",ko:"방을 예약했어요."},
+  {d:23,lv:3,c:"동작·행동",en:"We walked to the beach.",ko:"해변까지 걸어갔어요."},
+  {d:23,lv:3,c:"동작·행동",en:"I ordered the chicken.",ko:"치킨을 주문했어요."},
+  {d:23,lv:3,c:"동작·행동",en:"She called me last night.",ko:"그녀가 어젯밤에 전화했어요."},
+  {d:23,lv:3,c:"동작·행동",en:"We arrived this morning.",ko:"오늘 아침에 도착했어요."},
+  {d:23,lv:3,c:"동작·행동",en:"I finished my work.",ko:"일을 끝냈어요."},
+  {d:23,lv:3,c:"동작·행동",en:"They closed early.",ko:"일찍 닫았어요."},
+  {d:23,lv:3,c:"동작·행동",en:"I checked the schedule.",ko:"일정을 확인했어요."},
+  {d:24,lv:3,c:"동작·행동",en:"We went to the beach.",ko:"해변에 갔어요."},
+  {d:24,lv:3,c:"동작·행동",en:"I had breakfast already.",ko:"아침 벌써 먹었어요."},
+  {d:24,lv:3,c:"동작·행동",en:"She took my bag.",ko:"그녀가 제 가방을 가져갔어요."},
+  {d:24,lv:3,c:"동작·행동",en:"I got your message.",ko:"메시지 받았어요."},
+  {d:24,lv:3,c:"동작·행동",en:"We saw a great show.",ko:"멋진 공연을 봤어요."},
+  {d:24,lv:3,c:"동작·행동",en:"I lost my key.",ko:"열쇠를 잃어버렸어요."},
+  {d:24,lv:3,c:"동작·행동",en:"He came back early.",ko:"그는 일찍 돌아왔어요."},
+  {d:24,lv:3,c:"동작·행동",en:"I made a reservation.",ko:"예약을 했어요."},
+  {d:25,lv:3,c:"말·표현",en:"Did you call a taxi?",ko:"택시 부르셨어요?"},
+  {d:25,lv:3,c:"말·표현",en:"I didn't order this.",ko:"이거 주문 안 했어요."},
+  {d:25,lv:3,c:"말·표현",en:"Did you sleep well?",ko:"잘 주무셨어요?"},
+  {d:25,lv:3,c:"말·표현",en:"We didn't get the bill.",ko:"계산서 못 받았어요."},
+  {d:25,lv:3,c:"말·표현",en:"Did it arrive yesterday?",ko:"어제 도착했나요?"},
+  {d:25,lv:3,c:"말·표현",en:"I didn't know that.",ko:"그건 몰랐어요."},
+  {d:25,lv:3,c:"말·표현",en:"Did you enjoy your meal?",ko:"식사 맛있게 하셨어요?"},
+  {d:25,lv:3,c:"말·표현",en:"She didn't come.",ko:"그녀는 안 왔어요."},
+  {d:26,lv:3,c:"시간·숫자",en:"See you at three.",ko:"3시에 봬요."},
+  {d:26,lv:3,c:"시간·숫자",en:"It's on Monday.",ko:"월요일이에요."},
+  {d:26,lv:3,c:"시간·숫자",en:"I'll be back in ten minutes.",ko:"10분 뒤에 올게요."},
+  {d:26,lv:3,c:"시간·숫자",en:"We arrive in the morning.",ko:"아침에 도착해요."},
+  {d:26,lv:3,c:"시간·숫자",en:"It's on the second floor.",ko:"2층에 있어요."},
+  {d:26,lv:3,c:"시간·숫자",en:"Meet me at the lobby.",ko:"로비에서 만나요."},
+  {d:26,lv:3,c:"시간·숫자",en:"My flight is at noon.",ko:"제 비행기는 정오예요."},
+  {d:26,lv:3,c:"시간·숫자",en:"It's in my bag.",ko:"제 가방 안에 있어요."},
+  {d:27,lv:3,c:"성질·정도",en:"Do you have a cheaper one?",ko:"더 싼 거 있어요?"},
+  {d:27,lv:3,c:"성질·정도",en:"This one is better.",ko:"이게 더 나아요."},
+  {d:27,lv:3,c:"성질·정도",en:"It's too expensive.",ko:"너무 비싸요."},
+  {d:27,lv:3,c:"성질·정도",en:"Can I get a bigger size?",ko:"더 큰 사이즈 주실래요?"},
+  {d:27,lv:3,c:"성질·정도",en:"Which is the closest?",ko:"어디가 제일 가까워요?"},
+  {d:27,lv:3,c:"성질·정도",en:"This is the best one.",ko:"이게 제일 좋아요."},
+  {d:27,lv:3,c:"성질·정도",en:"It's a little smaller.",ko:"조금 더 작아요."},
+  {d:27,lv:3,c:"성질·정도",en:"The other one was cheaper.",ko:"다른 게 더 쌌어요."},
+  {d:28,lv:3,c:"말·표현",en:"We went there yesterday, and it was great.",ko:"어제 거기 갔는데 정말 좋았어요."},
+  {d:28,lv:3,c:"말·표현",en:"I didn't book a room yet.",ko:"아직 방 예약 안 했어요."},
+  {d:28,lv:3,c:"말·표현",en:"Can you come at seven?",ko:"7시에 오실 수 있어요?"},
+  {d:28,lv:3,c:"말·표현",en:"There was a problem with my order.",ko:"주문에 문제가 있었어요."},
+  {d:28,lv:3,c:"말·표현",en:"I'll take the cheaper one.",ko:"더 싼 걸로 할게요."},
+  {d:28,lv:3,c:"말·표현",en:"Did you have breakfast?",ko:"아침 드셨어요?"},
+  {d:28,lv:3,c:"말·표현",en:"We're staying until Friday.",ko:"금요일까지 묵어요."},
+  {d:28,lv:3,c:"말·표현",en:"It wasn't what I ordered.",ko:"제가 주문한 게 아니에요."},
+  {d:29,lv:3,c:"말·표현",en:"I'm not sure, but I'll check.",ko:"확실하진 않지만 확인해 볼게요."},
+  {d:29,lv:3,c:"말·표현",en:"Can I ask you something?",ko:"뭐 하나 여쭤봐도 될까요?"},
+  {d:29,lv:3,c:"말·표현",en:"Where can I find a taxi?",ko:"택시는 어디서 타요?"},
+  {d:29,lv:3,c:"말·표현",en:"I don't need a bag, thanks.",ko:"봉투는 필요 없어요."},
+  {d:29,lv:3,c:"말·표현",en:"There's one more thing.",ko:"하나 더 있어요."},
+  {d:29,lv:3,c:"말·표현",en:"Does this come with a drink?",ko:"음료 포함인가요?"},
+  {d:29,lv:3,c:"말·표현",en:"I had a great time.",ko:"정말 즐거웠어요."},
+  {d:29,lv:3,c:"말·표현",en:"Let me know when you're ready.",ko:"준비되면 말씀해 주세요."},
+  {d:30,lv:3,c:"여행·교통",en:"I'm here on vacation.",ko:"휴가차 왔어요."},
+  {d:30,lv:3,c:"여행·교통",en:"I'm staying for ten days.",ko:"10일 머물 거예요."},
+  {d:30,lv:3,c:"여행·교통",en:"I'm staying at a hotel in Cancun.",ko:"칸쿤 호텔에 묵어요."},
+  {d:30,lv:3,c:"여행·교통",en:"This is my return ticket.",ko:"이게 제 돌아가는 표예요."},
+  {d:30,lv:3,c:"여행·교통",en:"I'm traveling with my wife.",ko:"아내와 함께 왔어요."},
+  {d:30,lv:3,c:"여행·교통",en:"I have nothing to declare.",ko:"신고할 것 없어요."},
+  {d:30,lv:3,c:"여행·교통",en:"It's my first time here.",ko:"여기 처음이에요."},
+  {d:30,lv:3,c:"여행·교통",en:"Thank you, have a good day.",ko:"감사합니다, 좋은 하루 되세요."},
 ];
 /* ── 데이터 끝 ── */
 
@@ -2004,14 +2181,56 @@ function go(i){
 [0,1,2,3].forEach(i => $("#t"+i).addEventListener("click", () => go(i)));
 
 /* ── 홈 ── */
+/* 날짜별 오늘의 문법 */
+const GRAM = {
+  1:{t:"나는 ~이에요",f:"I'm + 명사/형용사",d:"나를 소개하거나 내 상태를 말할 때. I am을 줄인 게 I'm이에요.",x:"‘I am ready’도 맞지만, 말할 땐 거의 항상 I'm 으로 붙여 말합니다."},
+  2:{t:"당신은 ~예요",f:"You're + 명사/형용사",d:"상대를 가리킬 때. You are를 줄인 게 You're.",x:"한 명이든 여러 명이든 전부 you 입니다. 복수형이 따로 없어요."},
+  3:{t:"그/그녀는 ~예요",f:"He's / She's + 명사/형용사",d:"제3자를 말할 때. 남자는 he, 여자는 she.",x:"한국어는 주어를 자주 빼지만 영어는 못 뺍니다. 꼭 he/she를 넣으세요."},
+  4:{t:"이건 / 저건 ~예요",f:"This is / That's / It's + 명사",d:"가까우면 this, 멀면 that, 이미 말한 건 it.",x:"물건을 가리키며 ‘Is mine’이라고 하기 쉬운데, 앞에 This is 를 꼭 붙이세요."},
+  5:{t:"우리는 / 그들은 ~예요",f:"We're / They're + 명사/형용사",d:"두 명 이상일 때. are 를 씁니다.",x:"We is (X) — 복수에는 무조건 are 입니다."},
+  6:{t:"~인가요?",f:"Are you ~? / Is it ~?",d:"be동사 문장은 그 동사를 맨 앞으로 옮기면 질문이 됩니다.",x:"You are ready? 도 통하지만, 정식은 Are you ready? 입니다."},
+  7:{t:"~아니에요 + 짧은 대답",f:"I'm not / It's not · Yes, I am. / No, I'm not.",d:"be동사 뒤에 not 만 붙이면 부정. 대답은 주어+be로 짧게.",x:"Yes 만 하고 끝내지 마세요. Yes, I am. 까지 해야 자연스럽습니다."},
+  8:{t:"나는 ~해요",f:"I + 동사",d:"be동사 말고 진짜 동작을 말할 때. 그대로 씁니다.",x:"I am live in Seoul (X) — be동사와 일반동사는 같이 못 씁니다."},
+  9:{t:"원해요 / 필요해요 / 좋아해요",f:"I want / need / like + 명사 (또는 to + 동사)",d:"여행에서 가장 많이 쓰는 세 동사입니다.",x:"I want go (X) → I want to go. 동사가 오면 to 를 넣으세요."},
+  10:{t:"그는 ~해요",f:"He / She / It + 동사 + s",d:"주어가 3인칭 하나일 때만 동사에 s 를 붙입니다.",x:"He work (X) → He works. 이 s 를 빠뜨리는 실수가 가장 흔합니다."},
+  11:{t:"안 해요",f:"don't / doesn't + 동사",d:"일반동사 부정은 don't. 주어가 he/she/it 이면 doesn't.",x:"He doesn't works (X) → doesn't 뒤 동사는 원형으로 돌아갑니다."},
+  12:{t:"~하세요?",f:"Do you ~? / Does he ~?",d:"일반동사 질문은 맨 앞에 Do, 3인칭이면 Does.",x:"Do you have 뒤에 물건을 넣으면 가게에서 거의 다 통합니다."},
+  13:{t:"뭐 / 어디",f:"What / Where + do you + 동사",d:"의문사를 맨 앞에 두고 뒤는 질문 순서 그대로.",x:"Where you live? (X) → Where do you live?"},
+  14:{t:"언제 / 어떻게 / 왜",f:"When / How / Why / Which / Who",d:"나머지 의문사. 쓰는 자리는 What, Where와 똑같습니다.",x:"How much(얼마) 와 How long(얼마나 오래) 를 헷갈리지 마세요."},
+  15:{t:"할 수 있어요 / 못해요",f:"can / can't + 동사원형",d:"능력이나 가능 여부. can 뒤에는 무조건 동사원형.",x:"I can to swim (X) — can 뒤에 to 는 넣지 않습니다."},
+  16:{t:"해주실래요? / 해도 될까요?",f:"Can you ~? (부탁) / Can I ~? (허락)",d:"여행 회화의 절반이 이 두 개입니다.",x:"더 정중하게는 Could you ~? — 뒤는 똑같이 동사원형입니다."},
+  17:{t:"~할 거예요",f:"I'll + 동사 / I'm going to + 동사",d:"지금 정한 건 I'll, 이미 정해둔 계획은 I'm going to.",x:"식당에서 주문할 땐 I'll take / I'll have 가 가장 자연스럽습니다."},
+  18:{t:"지금 ~하는 중이에요",f:"I'm + 동사ing",d:"말하는 그 순간 하고 있는 일.",x:"I looking (X) → I'm looking. am/is/are 를 빠뜨리지 마세요."},
+  19:{t:"~가 있어요",f:"There is / There are + 명사",d:"무언가의 존재를 말할 때. 하나면 is, 여럿이면 are.",x:"Have a problem (X) → There's a problem. 문제를 알릴 때 이 표현을 씁니다."},
+  20:{t:"가지고 있어요",f:"I have / He has + 명사",d:"소유, 예약, 증상까지 두루 씁니다.",x:"He have (X) → He has."},
+  21:{t:"1~20 복습",f:"배운 패턴 섞어 쓰기",d:"식당 한 판을 통째로 굴려봅니다.",x:"한 문장씩 떠올리지 말고, 상황을 떠올리며 이어서 말해 보세요."},
+  22:{t:"~였어요",f:"was / were",d:"be동사의 과거. I/he/she/it 은 was, you/we/they 는 were.",x:"You was (X) → You were."},
+  23:{t:"~했어요",f:"동사 + ed",d:"규칙 동사의 과거는 대부분 ed 를 붙입니다.",x:"booked, walked, arrived — 발음이 t, d, id 로 갈리니 들어보며 익히세요."},
+  24:{t:"불규칙 과거",f:"go→went, have→had, take→took, get→got, see→saw",d:"자주 쓰는 동사일수록 불규칙합니다. 통째로 외우세요.",x:"goed (X) → went. 규칙을 적용하지 말고 그냥 외우는 게 빠릅니다."},
+  25:{t:"안 했어요 / 했어요?",f:"didn't + 동사원형 / Did you + 동사원형?",d:"과거 부정과 질문은 did 가 시제를 맡습니다.",x:"I didn't ordered (X) → didn't 뒤에는 원형입니다."},
+  26:{t:"시간과 장소",f:"at 시각 · on 요일·날짜 · in 월·연도·오전오후",d:"작은 점에는 at, 하루 단위는 on, 넓은 덩어리는 in.",x:"in ten minutes 는 ‘10분 안에’가 아니라 ‘10분 뒤에’ 입니다."},
+  27:{t:"더 ~한 / 가장 ~한",f:"-er / more ~ · the -est / the most ~",d:"짧은 단어는 er, 긴 단어는 more 를 앞에 붙입니다.",x:"more cheaper (X) — 둘 중 하나만 씁니다."},
+  28:{t:"22~27 복습",f:"과거와 비교 섞어 쓰기",d:"겪은 일을 말하고, 더 나은 걸 고르는 연습.",x:"어제 한 일을 세 문장으로 말해 보세요."},
+  29:{t:"1~28 총정리",f:"배운 패턴 전부",d:"속사포로 뱉어 보며 굳히는 날.",x:"막히는 문장은 그 날짜 레슨으로 돌아가 다시 보세요."},
+  30:{t:"실전 - 입국 심사",f:"묻는 말에 한 문장으로 답하기",d:"칸쿤 공항에서 실제로 받게 될 질문들입니다.",x:"길게 말할 필요 없어요. 짧고 분명하게 한 문장이면 충분합니다."},
+};
 const START = new Date("2026-09-10T00:00:00+09:00");
+/* ── 진도 기준 Day ── 하루치를 끝내야 다음 날로 넘어갑니다 */
+const LASTDAY = 30;                               // 지금까지 만들어 둔 마지막 레슨
+let curDay = Math.min(LASTDAY, Math.max(1, store.get("vb.day", 1)));
+function dayNo(){ return curDay; }
+function finishDay(){
+  if (curDay < LASTDAY){ curDay++; store.set("vb.day", curDay); }
+  renderHome();
+}
+function sinceStart(){ return Math.max(1, Math.floor((new Date() - START)/86400000) + 1); }
 function stageOf(w){ return w<=5?"1단계 문장의 뼈대":w<=11?"2단계 여행에서 살아남기":w<=17?"3단계 대화 이어가기":"4단계 자연스럽게"; }
 function renderHome(){
-  const day = Math.min(140, Math.max(1, Math.floor((new Date() - START)/86400000) + 1));
-  $("#hDayN").textContent = day + "일째";
-  $("#hStage").textContent = "Day " + day + " · " + stageOf(Math.ceil(day/7));
-  $("#hProg").style.width = (day/140*100) + "%";
-  $("#hProgN").textContent = day + "/140";
+  const day = curDay;
+  $("#hDayN").textContent = sinceStart() + "일째";
+  $("#hStage").textContent = "Day " + day + " · " + (GRAM[day] ? GRAM[day].t : stageOf(Math.ceil(day/7)));
+  $("#hProg").style.width = (day/LASTDAY*100) + "%";
+  $("#hProgN").textContent = day + "/" + LASTDAY;
   const left = Math.ceil((DEPART - new Date())/86400000);
   $("#hLeft").textContent = left > 0 ? "칸쿤까지 D-" + left : "출발!";
   $("#hLv").textContent = myLevel ? "Lv." + myLevel : "레벨 테스트";
@@ -2814,7 +3033,6 @@ $("#listen").addEventListener("click", e=>{
 
 /* ══ 오늘의 레슨 ══ 그날 분량을 앱이 직접 만들어 보여줍니다 */
 const ipaOf = w => (window.IPA && window.IPA[w]) || "";
-function dayNo(){ return Math.min(140, Math.max(1, Math.floor((new Date() - START)/86400000) + 1)); }
 function pickBy(arr, n, seed){
   const a = arr.slice(); let s = (seed * 9301 + 49297) % 233280;
   const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
@@ -2822,11 +3040,24 @@ function pickBy(arr, n, seed){
   return a.slice(0, n);
 }
 let LSDAY = 0;                                  // 지금 보고 있는 날짜 (0 = 아직 안 정함)
-function lsPool(){ const p = WORDS.filter(inMyLevel); return p.length >= 25 ? p : WORDS; }
-function lsSents(){ const p = SENTS.filter(inMyLevel); return p.length >= 8 ? p : SENTS; }
-function wordsOfDay(d){                         // 지난 날도 항상 같은 내용이 나오도록 날짜로 고정
-  if (d === dayNo()) return todayWords().slice(0, 20);
-  return pickBy(lsPool(), 20, d * 7 + 3);
+function sentsOfDay(d){                          // 그날 배우는 문장 — 날짜에 맞는 것만
+  const own = SENTS.filter(x => x.d === d);
+  if (own.length) return own;
+  const p = SENTS.filter(inMyLevel);
+  return pickBy(p.length >= 8 ? p : SENTS, 6, d);
+}
+function wordsOfDay(d){                          // 그날 배우는 단어 — 날짜에 맞는 것만
+  const own = WORDS.filter(x => x.d === d);
+  if (own.length) return own;
+  const text = " " + sentsOfDay(d).map(x => x.en.toLowerCase()).join(" ") + " ";
+  const hit = WORDS.filter(x => {
+    const w = x.w.toLowerCase();
+    return text.includes(" " + w + " ") || text.includes(" " + w + ".") ||
+           text.includes(" " + w + "?") || text.includes(" " + w + ",");
+  });
+  const seen = new Set(hit.map(x => x.w));
+  const p = WORDS.filter(x => inMyLevel(x) && !seen.has(x.w));
+  return hit.concat(pickBy(p, Math.max(0, 15 - hit.length), d * 7 + 3));
 }
 function openLesson(d){
   LSDAY = d || dayNo();
@@ -2836,18 +3067,12 @@ function openLesson(d){
 }
 function closeLesson(){ document.body.classList.remove("lessonOn"); }
 function renderLesson(day){
-  const today = dayNo(), wk = Math.ceil(day / 7), isToday = day === today;
-  const sp = lsSents();
-  const todayS = pickBy(sp, 6, day), yestS = day > 1 ? pickBy(sp, 2, day - 1) : [];
-  const tw = wordsOfDay(day);
-  let yw;
-  if (day > 1) yw = wordsOfDay(day - 1).slice(0, 5);
-  else yw = [];
-  if (isToday){
-    const seen = WORDS.filter(x => boxOf(keyOf(x)) >= 1)
-                      .sort((a,b) => stampOf(keyOf(b)) - stampOf(keyOf(a))).slice(0, 5);
-    if (seen.length) yw = seen;
-  }
+  const today = dayNo(), isToday = day === today, g = GRAM[day];
+  const todayS = sentsOfDay(day);
+  const yestS  = day > 1 ? sentsOfDay(day - 1).slice(0, 3) : [];
+  const tw     = wordsOfDay(day);
+  const yw     = day > 1 ? wordsOfDay(day - 1).slice(0, 5) : [];
+  let no = 0; const N = () => ++no;              // 섹션 번호는 있는 것만 세어서 붙입니다
   const wCard = x => `<div class="lsCard"><div class="lsW"><b>${esc(x.w)}</b>
       ${ipaOf(x.w) ? `<span class="ipa">[${esc(ipaOf(x.w))}]</span>` : ""}
       <span class="ipa">${esc(x.p||"")}</span><span class="k">${esc(x.k)}</span></div>
@@ -2859,7 +3084,7 @@ function renderLesson(day){
       <button class="btn" data-say="${esc(x.en)}" data-slow="1">느리게</button></div></div>`;
   $("#lsBody").innerHTML = `
     <div class="lsTop"><button class="btn" id="lsX">닫기</button>
-      <span class="gMeta">${today} / 140일 · ${Math.ceil(today/7)}주차</span></div>
+      <span class="gMeta">Day ${today} / ${LASTDAY}</span></div>
 
     <div class="lsNav">
       <button class="btn" id="lsPrev" ${day <= 1 ? "disabled" : ""}>◀ 이전</button>
@@ -2869,38 +3094,49 @@ function renderLesson(day){
     </div>
     <div id="lsPick" hidden><div class="lsList">${
       Array.from({length: today}, (_, i) => today - i).map(n =>
-        `<button class="lsDay ${n === day ? "cur" : ""}" data-day="${n}">${n}<small>${n === today ? "오늘" : Math.ceil(n/7) + "주차"}</small></button>`
+        `<button class="lsDay ${n === day ? "cur" : ""}" data-day="${n}">${n}<small>${n === today ? "오늘" : (GRAM[n] ? GRAM[n].t.slice(0,4) : "")}</small></button>`
       ).join("")}</div></div>
 
     <div class="lsHero">
-      <span class="d">Day ${day} · ${esc(stageOf(wk))}</span>
-      <span class="t">${isToday ? "오늘의 레슨" : day + "일차 레슨"}</span>
+      <span class="d">Day ${day}${g ? "" : " · " + esc(stageOf(Math.ceil(day/7)))}</span>
+      <span class="t">${g ? esc(g.t) : (isToday ? "오늘의 레슨" : day + "일차 레슨")}</span>
       <span class="d">문장 ${todayS.length}개 · 단어 ${tw.length}개</span>
     </div>
 
-    ${(yw.length || yestS.length) ? `<section class="lsSec"><h2>1. ${isToday ? "어제" : "전날"} 복습</h2>
-      <p class="hint">먼저 앞에서 본 것부터 입으로 한 번 말해 보세요.</p>
+    ${g ? `<section class="lsSec"><h2>${N()}. 오늘의 문법</h2>
+      <div class="gram">
+        <div class="f">${esc(g.f)}</div>
+        <p>${esc(g.d)}</p>
+        <div class="miss"><b>자주 하는 실수</b>${esc(g.x)}</div>
+      </div></section>` : ""}
+
+    ${(yw.length || yestS.length) ? `<section class="lsSec"><h2>${N()}. 어제 복습</h2>
+      <p class="hint">Day ${day - 1}에서 본 것부터 입으로 한 번 말해 보세요.</p>
       ${yw.map(wCard).join("")}${yestS.map(sCard).join("")}</section>` : ""}
 
-    <section class="lsSec"><h2>2. 이 날의 문장</h2>
-      <p class="hint">듣고 → 따라 말하고 → 뜻을 보고 다시 만들어 보세요.</p>
+    <section class="lsSec"><h2>${N()}. 오늘의 문장 ${todayS.length}개</h2>
+      <p class="hint">공식에 맞춰 하나씩 소리 내어 말해 보세요.</p>
       ${todayS.map(sCard).join("")}</section>
 
-    <section class="lsSec"><h2>3. 이 날의 단어 ${tw.length}개</h2>
+    <section class="lsSec"><h2>${N()}. 오늘의 단어 ${tw.length}개</h2>
       <p class="hint">예문과 함께 소리 내어 읽으면 더 오래 남아요.</p>
       ${tw.map(wCard).join("")}</section>
 
-    ${isToday ? `<section class="lsSec"><h2>4. 오늘의 연습</h2>
+    ${isToday ? `<section class="lsSec"><h2>${N()}. 오늘의 연습</h2>
       <div class="lsDo">
         <button class="btn go" data-go2="sent">문장 조립 10문제 풀기</button>
         <button class="btn" data-go2="quiz">오늘의 단어 빈칸 퀴즈</button>
         <button class="btn" data-go2="listen">듣고 소리 내어 말하기</button>
       </div></section>` : ""}
 
-    <section class="lsSec"><h2>${isToday ? "5" : "4"}. 한 줄 정리</h2>
-      <div class="lsEnd"><b>${esc(stageOf(wk))}</b> 단계예요.
-        여기서 본 문장 중 하나만 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요.</div></section>`;
-
+    <section class="lsSec"><h2>${N()}. 한 줄 정리</h2>
+      <div class="lsEnd">${g ? `오늘은 <b>${esc(g.f)}</b> 하나만 확실히 하면 됩니다.<br>
+        오늘 본 문장 중 하나를 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요.`
+        : "오늘 본 문장 중 하나를 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요."}</div>
+      ${isToday ? (day < LASTDAY
+        ? `<button class="btn go done" id="lsDone">오늘 레슨 끝 · Day ${day + 1}로</button>`
+        : `<div class="lsEnd" style="margin-top:10px">여기까지가 지금 준비된 마지막 레슨이에요. 수고하셨습니다!</div>`) : ""}
+    </section>`;
 }
 /* 클릭 처리는 한 번만 연결 — 매번 다시 붙이면 눌렀을 때 점점 느려집니다 */
 function lsTop0(){ document.getElementById("lesson").scrollTop = 0; }
@@ -2910,6 +3146,9 @@ $("#lsBody").addEventListener("click", e => {
   if (e.target.closest("#lsPrev")){ LSDAY = Math.max(1, LSDAY - 1); renderLesson(LSDAY); lsTop0(); return; }
   if (e.target.closest("#lsNext")){ LSDAY = Math.min(today, LSDAY + 1); renderLesson(LSDAY); lsTop0(); return; }
   if (e.target.closest("#lsAll")){ const b = $("#lsPick"); b.hidden = !b.hidden; return; }
+  if (e.target.closest("#lsDone")){
+    finishDay(); LSDAY = dayNo(); renderLesson(LSDAY); lsTop0(); return;
+  }
   const dd = e.target.closest("[data-day]");
   if (dd){ LSDAY = +dd.dataset.day; renderLesson(LSDAY); lsTop0(); return; }
   const say = e.target.closest("[data-say]");
@@ -2933,7 +3172,7 @@ renderHome();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=11"></script>
-<script src="sync.js?v=11"></script>
+<script src="firebase-config.js?v=12"></script>
+<script src="sync.js?v=12"></script>
 
 </body></html>

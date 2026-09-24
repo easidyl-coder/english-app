@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=31"></script>
+<script src="ipa.js?v=32"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -159,6 +159,18 @@
     background:var(--raise);border:1px solid var(--line);border-radius:9px;padding:9px 12px;box-shadow:var(--shadow);
   }
   input[type="search"]::placeholder{color:var(--ink-3)}
+  /* 단어 찾기 */
+  .wSearch{position:relative;display:flex;align-items:center;margin:12px 0 4px}
+  .wSearch svg{position:absolute;left:16px;width:20px;height:20px;color:var(--ink-3);pointer-events:none}
+  .wSearch input[type="search"]{flex:1;min-height:54px;padding:0 44px 0 46px;border-radius:18px;border:2px solid #D5D7EC;
+    font-size:16px;font-weight:600;box-shadow:none;-webkit-appearance:none;appearance:none}
+  .wSearch input[type="search"]:focus{outline:none;border-color:var(--accent)}
+  .wSearch input::-webkit-search-cancel-button{display:none}
+  .wSearch #qClear{position:absolute;right:8px;width:36px;height:36px;border:0;border-radius:50%;background:var(--line-2);
+    color:var(--ink-2);font:inherit;font-size:14px;cursor:pointer}
+  .allSearchBtn{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;padding:0 16px;margin:0 0 12px;
+    background:#fff;border:2px solid #D5D7EC;border-radius:18px;font:inherit;font-size:15px;font-weight:600;color:var(--ink-3);cursor:pointer;text-align:left}
+  .allSearchBtn svg{width:20px;height:20px;flex:0 0 auto}
   .day{padding-block:22px 4px;border-top:1px solid var(--line-2)}
   .day:first-of-type{border-top:0}
   .dayHead{display:flex;align-items:baseline;gap:9px;margin:0 0 12px}
@@ -860,6 +872,12 @@
   <!-- 단어 -->
   <section class="panel" id="p1">
     <div class="subTop"><button class="btn" type="button" data-back>‹ 뒤로</button><h2>단어장</h2></div>
+    <div class="wSearch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.6-3.6"></path></svg>
+      <input type="search" id="q" placeholder="영어·뜻·발음으로 단어 찾기" autocomplete="off"
+        autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" aria-label="단어 찾기">
+      <button type="button" id="qClear" hidden aria-label="지우기">✕</button>
+    </div>
 
     <div class="catWrap">
       <div class="catHead"><h2>분야별로 보기</h2>
@@ -884,7 +902,6 @@
     </div>
 
     <div class="bar">
-      <input type="search" id="q" placeholder="단어나 뜻으로 찾기" autocomplete="off">
       <button class="btn" id="tHide" aria-pressed="false">뜻 가리기</button>
       <button class="btn" id="goQuiz">이 목록 퀴즈</button>
     </div>
@@ -2762,8 +2779,8 @@ function newRound(day, from){
 }
 function drawMode(){
   $("#gModeTx").textContent = deckDay > LASTDAY ? `실전 회화 · ${DAYS[deckDay] || ""}`
-    : deckDay ? `레슨 문장 · Day ${deckDay}${GRAM[deckDay] ? " " + GRAM[deckDay].t : ""}`
-    : "전체 문장에서 랜덤";
+    : deckDay ? `레슨 문장${GRAM[deckDay] ? " · " + GRAM[deckDay].t : ""}`
+    : myLevel ? `내 레벨(${lvShow(myLevel)}) 문장에서 랜덤` : "전체 문장에서 랜덤";
   $("#gModeBtn").textContent = deckDay ? "전체 문장으로" : "레슨 문장으로";
 }
 $("#gModeBtn").addEventListener("click", () => newRound(deckDay ? 0 : dayNo()));
@@ -2773,8 +2790,7 @@ function draw(){
   $("#gCount").textContent = (idx+1)+" / "+deck.length;
   $("#gBar").style.width = (idx/deck.length*100)+"%";
   $("#gStreak").textContent = "연속 "+streak;
-  $("#gDay").textContent = s.d != null ? "Day "+s.d+(DAYS[s.d]?" · "+DAYS[s.d]:"")
-                                       : "Lv "+(s.lv||"?")+(s.c?" · "+s.c:"");
+  $("#gDay").textContent = (s.c || "문장") + (s.lv ? " · 레벨 " + s.lv : "");   // Day 대신 분야·레벨
   $("#gKo").textContent = s.ko;
   $("#gAns").innerHTML = "";
   $("#gSlot").className = "slot";
@@ -2888,53 +2904,62 @@ $("#cats").addEventListener("click", e => {
 $("#catReset").addEventListener("click", () => { catMode = "all"; renderWords(); });
 const keyOf = x => x.d+"|"+x.w;
 
+/* 찾기: 영어·뜻·한글 발음에서 찾는다. 찾을 때는 레벨·분야·단계 거르기 없이 모든 단어에서 */
+function searchWords(t){
+  const q = t.trim().toLowerCase(); if (!q) return [];
+  const hit = WORDS.filter(x => x.w.toLowerCase().includes(q) || x.k.includes(q) || (x.p || "").includes(q));
+  const rank = x => x.w.toLowerCase() === q ? 0 : x.w.toLowerCase().startsWith(q) ? 1 : x.k.split(/[,;]\s*/).includes(q) ? 2 : 3;
+  return hit.sort((a, b) => rank(a) - rank(b) || (a.lv || 0) - (b.lv || 0));   // 딱 맞는 것부터
+}
 function visibleWords(){
   const t = filterText.trim().toLowerCase();
+  if (t) return searchWords(t);
   let pool = WORDS;
   if (mode === "today"){ const s = new Set(todayWords().map(keyOf)); pool = WORDS.filter(x=>s.has(keyOf(x))); }
   else if (mode === "miss"){ pool = WORDS.filter(x => isMissed(keyOf(x))); }
   else if (mode !== "all"){ const b = +mode; pool = WORDS.filter(x => boxOf(keyOf(x)) === b); }
-  if (!t && (mode === "all" || mode === "0")) pool = pool.filter(inMyLevel);   // 레벨이 있으면 내 레벨 ±1만 (찾기는 전체)
+  if (mode === "all" || mode === "0") pool = pool.filter(inMyLevel);   // 레벨이 있으면 내 레벨 ±1만 (찾기는 전체)
   if (catMode !== "all") pool = pool.filter(x => x.c === catMode);
-  if (!t) return pool;
-  return pool.filter(x => x.w.toLowerCase().includes(t) || x.k.includes(t));
+  return pool;
 }
 function renderWords(){
-  const items = visibleWords();
-  const byDay = new Map();
-  items.forEach(x=>{ const g = x.d != null ? "d"+x.d : "c"+(x.c||"기타");
-    if(!byDay.has(g)) byDay.set(g,[]); byDay.get(g).push(x); });
+  const items = visibleWords(), searching = !!filterText.trim();
+  const byCat = new Map();                        // Day 대신 분야(여행·음식…)로 묶는다. 찾을 때는 한 묶음
+  items.forEach(x => { const g = searching ? "찾은 단어" : (x.c || "기타");
+    if (!byCat.has(g)) byCat.set(g, []); byCat.get(g).push(x); });
   const el = $("#list");
-  if (!items.length){ el.innerHTML = mode === "miss"
+  if (!items.length){ el.innerHTML = searching
+    ? '<p class="empty">찾는 단어가 없어요. 영어 철자나 뜻을 조금 짧게 넣어 보세요. (예: coff, 커피)</p>'
+    : mode === "miss"
     ? '<p class="empty">헷갈린 단어가 없어요. 퀴즈에서 한 번이라도 틀린 단어가 여기에 모여요.</p>'
     : '<p class="empty">해당하는 단어가 없습니다.</p>'; }
   else {
-    const order = k => k[0]==="d" ? 10000 - (+k.slice(1))
-                                  : 20000 + Math.max(0, CATS.indexOf(k.slice(1)));
-    el.innerHTML = [...byDay.keys()].sort((a,b)=>order(a)-order(b)).map(d=>{
-      const rows = byDay.get(d).map(x=>{
+    const order = g => { const i = CATS.indexOf(g); return i < 0 ? 999 : i; };
+    el.innerHTML = [...byCat.keys()].sort((a, b) => order(a) - order(b)).map(g => {
+      const list = searching ? byCat.get(g) : byCat.get(g).slice().sort((a, b) => (a.lv || 0) - (b.lv || 0));
+      const rows = list.map(x=>{
         const k = keyOf(x), b = boxOf(k);
         const lab = b === 0 ? "새" : b + "단계";
-        return `<div class="wrow" data-k="${k}">
+        return `<div class="wrow${searching ? " open" : ""}" data-k="${k}">
           <span class="w">${x.w}${x.lv?`<span class="wlv">Lv${x.lv}</span>`:""}</span><span class="p">${ipaOf(x.w)?`<span class="ipa">[${ipaOf(x.w)}]</span>`:""}${x.p||""}</span>
           <button class="bx${isDue(k)?" due":""}" data-b="${b}" data-bk="${k}"
             title="눌러서 단계 바꾸기">${lab}</button>
           <span class="k">${x.k}</span>
           <span class="ex"><i>${x.ex}</i><br>${x.exk}</span></div>`;
       }).join("");
-      const isDay = d[0] === "d";
-      const head = isDay ? `Day ${+d.slice(1)}` : d.slice(1);
-      const topic = isDay ? (DAYS[+d.slice(1)]||"") : "";
-      return `<section class="day"><div class="dayHead"><h2>${head}</h2>
-        <p class="topic">${topic}</p><span class="cnt">${byDay.get(d).length}단어</span></div>
+      return `<section class="day"><div class="dayHead"><h2>${esc(g)}</h2>
+        <span class="cnt">${list.length}단어</span></div>
         <div class="rows">${rows}</div></section>`;
     }).join("");
   }
   headStats(); renderToday(); renderCats();
-  const nt = $("#wLvNote"), lvOn = myLevel && !filterText.trim() && (mode === "all" || mode === "0");
-  nt.hidden = !lvOn;
-  if (lvOn){ const L = Math.round(myLevel);
+  const nt = $("#wLvNote"), lvOn = myLevel && !searching && (mode === "all" || mode === "0");
+  nt.hidden = !(lvOn || searching);
+  if (searching) nt.textContent = `"${filterText.trim()}" 찾은 단어 ${items.length}개 · 모든 레벨·분야에서 찾았어요.`;
+  else if (lvOn){ const L = Math.round(myLevel);
     nt.textContent = `내 레벨(${lvShow(myLevel)})에 맞는 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)} 단어만 보여요. 다른 단어는 위 찾기로 검색하세요.`; }
+  $("#qClear").hidden = !searching;
+  ["#p1 .catWrap", "#p1 .today", "#filters"].forEach(s => { $(s).hidden = searching; });   // 찾는 중엔 결과가 바로 밑에 보이게
   if ($("#p3").classList.contains("on")) renderHome();
 }
 
@@ -2966,6 +2991,9 @@ $("#filters").addEventListener("click", e=>{
   renderWords();
 });
 $("#q").addEventListener("input", e=>{ filterText=e.target.value; renderWords(); });
+$("#q").addEventListener("keydown", e=>{ if (e.key === "Enter"){ e.preventDefault(); e.target.blur();          // 엔터 = 키보드 내리고 결과 보기
+  $("#wLvNote").scrollIntoView({ block: "start", behavior: "smooth" }); } });
+$("#qClear").addEventListener("click", ()=>{ filterText = ""; $("#q").value = ""; renderWords(); $("#q").focus(); });
 $("#tHide").addEventListener("click", e=>{
   const on = document.body.classList.toggle("hide");
   e.currentTarget.setAttribute("aria-pressed", on);
@@ -4285,7 +4313,10 @@ function allWordHtml(){
     st[x.c] = st[x.c] || { n:0, got:0 };
     st[x.c].n++; if (boxOf(keyOf(x)) >= 2) st[x.c].got++;
   });
-  return `<p class="allHint">분야를 누르면 그 분야 단어 목록이 열려요. 목록 위 "이 목록 퀴즈"로 바로 풀 수 있어요.</p>
+  return `<button type="button" class="allSearchBtn" data-allsearch>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.6-3.6"></path></svg>
+      <span>단어 찾기 · 영어, 뜻, 발음</span></button>
+    <p class="allHint">분야를 누르면 그 분야 단어 목록이 열려요. 목록 위 "이 목록 퀴즈"로 바로 풀 수 있어요.</p>
     <div class="catGrid">${CATS.filter(c => st[c]).map(c => {
       const s = st[c], pct = Math.round(s.got / s.n * 100);
       return `<button class="catCard" data-allcat="${esc(c)}"><span class="dot"></span><span class="nm">${esc(c)}</span>
@@ -4365,6 +4396,8 @@ $("#p4").addEventListener("click", e => {
   if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
   const cat = e.target.closest("[data-allcat]");
   if (cat){ showWords("all", cat.dataset.allcat); return; }
+  if (e.target.closest("[data-allsearch]")){               // 단어장을 열고 찾기 칸에 바로 커서 (누른 순간이라 키보드도 뜸)
+    showWords("all", "all"); window.scrollTo(0, 0); $("#q").focus(); return; }
   const ls = e.target.closest("[data-alllesson]");
   if (ls){ openLesson(+ls.dataset.alllesson); return; }
   const ss = e.target.closest("[data-sitsent]");
@@ -4491,7 +4524,7 @@ $("#suBody").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=31"></script>
-<script src="sync.js?v=31"></script>
+<script src="firebase-config.js?v=32"></script>
+<script src="sync.js?v=32"></script>
 
 </body></html>

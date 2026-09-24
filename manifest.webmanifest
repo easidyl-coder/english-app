@@ -1,6 +1,8 @@
 {
+  "id": "./",
   "name": "영어 연습장",
   "short_name": "영어 연습장",
+  "description": "레벨에 맞춘 여행 영어 단어·문장·말하기 연습",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

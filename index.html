@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=32"></script>
+<script src="ipa.js?v=33"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -168,6 +168,45 @@
   .wSearch input::-webkit-search-cancel-button{display:none}
   .wSearch #qClear{position:absolute;right:8px;width:36px;height:36px;border:0;border-radius:50%;background:var(--line-2);
     color:var(--ink-2);font:inherit;font-size:14px;cursor:pointer}
+  /* 한 줄 칩 (옆으로 밀어서 보기) — 단어장 레벨·분야·단계 */
+  .chipRow, #filters{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin:10px -16px 0;padding:2px 16px 4px;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .chipRow::-webkit-scrollbar, #filters::-webkit-scrollbar{display:none}
+  .chipRow button{flex:0 0 auto;font:inherit;font-size:13px;font-weight:700;min-height:38px;padding:0 14px;border-radius:19px;
+    border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+  .chipRow button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chipRow button small{font-size:11.5px;font-weight:600;opacity:.75;margin-left:4px}
+  #cats button[aria-pressed="true"]{background:var(--honey);border-color:var(--honey);color:var(--ink)}
+  #filters button{flex:0 0 auto;white-space:nowrap}
+  .wTools{display:flex;align-items:center;gap:8px;margin:12px 0 2px}
+  .wTools #wLvNote{flex:1;min-width:0;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+  .wTools .btn{min-height:38px;padding:0 12px;font-size:13px}
+  .btn.more{display:block;width:100%;min-height:50px;margin:14px 0 4px}
+  /* 앱 설치 안내 (홈 맨 위) */
+  .hInstall{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:2px solid var(--accent);
+    border-radius:18px;padding:12px 10px 12px 16px;margin-top:14px}
+  .hInstall .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .hInstall .tx b{font-size:15px;color:var(--accent)} .hInstall .tx span{font-size:12.5px;color:var(--ink-2);line-height:1.5}
+  .hInstall .btn{min-height:40px;padding:0 16px}
+  .hInstall .x{border:0;background:none;font:inherit;font-size:16px;color:var(--ink-3);cursor:pointer;width:32px;height:32px}
+  .hInstall ol{flex-basis:100%;margin:4px 0 2px;padding-left:22px;font-size:13.5px;line-height:1.75;color:var(--ink)}
+  .hInstall ol b{color:var(--accent)}
+  .catMini{display:flex;flex-wrap:wrap;gap:8px}
+  .catMini button{font:inherit;font-size:13.5px;font-weight:700;min-height:42px;padding:0 14px;border-radius:14px;
+    border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;box-shadow:var(--shadow)}
+  .catMini button small{font-size:11.5px;font-weight:600;color:var(--ink-3);margin-left:6px}
+  .gStage{margin-bottom:10px}
+  .gStage > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 16px;
+    background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+  .gStage > summary::-webkit-details-marker{display:none}
+  .gStage > summary .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .gStage > summary b{font-size:15.5px} .gStage > summary small{font-size:12.5px;color:var(--ink-2)}
+  .gStage > summary .tag{font-size:11.5px;font-weight:800;color:#fff;background:var(--accent);border-radius:8px;padding:2px 8px}
+  .gStage > summary::after{content:"";flex:0 0 auto;width:8px;height:8px;margin:-4px 4px 0 0;
+    border-right:2.4px solid var(--ink-3);border-bottom:2.4px solid var(--ink-3);transform:rotate(45deg)}
+  .gStage[open] > summary{border-color:var(--accent);background:var(--accent-soft)}
+  .gStage[open] > summary::after{transform:rotate(-135deg);margin-top:4px}
+  .gStage .gIn{padding:10px 0 0 12px}
   .allSearchBtn{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;padding:0 16px;margin:0 0 12px;
     background:#fff;border:2px solid #D5D7EC;border-radius:18px;font:inherit;font-size:15px;font-weight:600;color:var(--ink-3);cursor:pointer;text-align:left}
   .allSearchBtn svg{width:20px;height:20px;flex:0 0 auto}
@@ -818,6 +857,7 @@
       <div class="hWho"><div class="hHello" id="hHello">오늘도 영어 한 걸음</div><div class="hDate" id="hDate"></div></div>
       <div class="hChips"><button class="hChip acct" id="hAcct" hidden>로그인</button><span class="hChip fire" id="hStreak">0일 연속</span><button class="hChip" id="hLv">Lv.?</button></div>
     </div>
+    <div class="hInstall" id="hInstall" hidden></div>
     <div class="hHero">
       <div class="sub" id="hStage">Day 1</div>
       <div class="big" id="hTitle">오늘의 레슨</div>
@@ -879,32 +919,9 @@
       <button type="button" id="qClear" hidden aria-label="지우기">✕</button>
     </div>
 
-    <div class="catWrap">
-      <div class="catHead"><h2>분야별로 보기</h2>
-        <button class="re" id="catReset" hidden>전체 보기</button></div>
-      <div class="catGrid" id="cats"></div>
-    </div>
-
-    <div class="today">
-      <div class="tHead">
-        <div>
-          <p class="tLab">오늘 볼 단어</p>
-          <p class="tNum"><span id="tCnt">0</span><em>개</em></p>
-        </div>
-        <button class="btn go" id="goToday">시작하기</button>
-      </div>
-      <div class="boxes">
-        <div class="boxchip"><b id="bc1">0</b><span>외우는 중</span></div>
-        <div class="boxchip b2"><b id="bc2">0</b><span>외운 단어</span></div>
-        <div class="boxchip b3"><b id="bc3">0</b><span>외외운 단어</span></div>
-      </div>
-      <p class="tSub" id="tSub"></p>
-    </div>
-
-    <div class="bar">
-      <button class="btn" id="tHide" aria-pressed="false">뜻 가리기</button>
-      <button class="btn" id="goQuiz">이 목록 퀴즈</button>
-    </div>
+    <!-- 한 줄짜리 칩으로 줄여서 아래로 덜 내려가게: 레벨 · 분야 · 단계 -->
+    <div class="chipRow" id="wLv"></div>
+    <div class="chipRow" id="cats"></div>
     <div class="filters" id="filters">
       <button data-f="all" aria-pressed="true">전체</button>
       <button data-f="today" aria-pressed="false">오늘</button>
@@ -914,8 +931,9 @@
       <button data-f="3" aria-pressed="false">외외운</button>
       <button data-f="miss" aria-pressed="false">헷갈림</button>
     </div>
-    <p class="lead" id="wLvNote" hidden></p>
-    <p class="lead">줄을 누르면 예문이 펼쳐집니다. 오른쪽 단계 배지를 누르면 단계를 직접 바꿀 수 있습니다.</p>
+    <div class="wTools"><span id="wLvNote"></span>
+      <button class="btn" id="tHide" aria-pressed="false">뜻 가리기</button>
+      <button class="btn go" id="goQuiz">이 목록 퀴즈</button></div>
     <div id="list"></div>
 
   </section>
@@ -2871,37 +2889,41 @@ function finishRound(){
 
 /* ══ 단어 ══ */
 let filterText="", mode="all", catMode="all";
+let lvMode = "my";                                // 단어장 레벨: "my"(내 레벨 ±1) · 1~10 · "all"
+let wLimit = 30;                                  // 한 번에 보여줄 단어 수 ('더 보기'로 늘어남)
+const resetList = () => { wLimit = 30; };
 const CATS = ["여행·교통","음식·식당","쇼핑·돈","숙소·생활","일·업무","촬영·영상","사람·관계",
               "감정·상태","몸·건강","동작·행동","성질·정도","시간·숫자","말·표현"];
 
-function renderCats(){
-  const base = WORDS.filter(inMyLevel);
-  const st = {};
-  base.forEach(x => {
-    const k = x.c; if (!k) return;
-    if (!st[k]) st[k] = { n:0, got:0 };
-    st[k].n++; if (boxOf(keyOf(x)) >= 2) st[k].got++;
-  });
-  const allGot = base.filter(x => boxOf(keyOf(x)) >= 2).length;
-  const card = (key, name, n, got) => {
-    const pct = n ? Math.round(got / n * 100) : 0;
-    return `<button class="catCard${key === "all" ? " cAll" : ""}" data-c="${esc(key)}"
-      aria-pressed="${catMode === key}"><span class="dot"></span>
-      <span class="nm">${esc(name)}</span>
-      <span class="num">${got} / ${n}개 외움</span>
-      <span class="pbar"><i style="width:${pct}%"></i></span></button>`;
-  };
-  $("#cats").innerHTML = card("all", "전체", base.length, allGot)
-    + CATS.filter(c => st[c]).map(c => card(c, c, st[c].n, st[c].got)).join("");
-  const rst = $("#catReset"); if (rst) rst.hidden = catMode === "all";
+/* 지금 고른 레벨 칩에 맞는 단어 */
+function levelPool(){
+  if (lvMode === "my") return WORDS.filter(inMyLevel);
+  if (lvMode === "all") return WORDS;
+  return WORDS.filter(x => x.lv === lvMode);
 }
+function renderLvChips(){
+  if (!myLevel && lvMode === "my") lvMode = "all";
+  const L = myLevel ? Math.round(myLevel) : 0;
+  const chip = (v, lab) => `<button type="button" data-lv="${v}" aria-pressed="${String(lvMode) === String(v)}">${lab}</button>`;
+  $("#wLv").innerHTML = (myLevel ? chip("my", `내 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)}`) : "")
+    + chip("all", "모든 레벨") + [1,2,3,4,5,6,7,8,9,10].map(n => chip(n, `레벨 ${n}`)).join("");
+}
+function renderCats(){
+  const base = levelPool(), st = {};
+  base.forEach(x => { if (x.c) st[x.c] = (st[x.c] || 0) + 1; });
+  const chip = (key, name, n) => `<button type="button" data-c="${esc(key)}" aria-pressed="${catMode === key}">${esc(name)}<small>${n}</small></button>`;
+  $("#cats").innerHTML = chip("all", "모든 분야", base.length) + CATS.filter(c => st[c]).map(c => chip(c, c, st[c])).join("");
+}
+$("#wLv").addEventListener("click", e => {
+  const b = e.target.closest("[data-lv]"); if (!b) return;
+  const v = b.dataset.lv; lvMode = v === "my" || v === "all" ? v : +v;
+  resetList(); renderWords();
+});
 $("#cats").addEventListener("click", e => {
   const b = e.target.closest("[data-c]"); if (!b) return;
   catMode = catMode === b.dataset.c ? "all" : b.dataset.c;
-  renderWords();
-  if (catMode !== "all") $("#list").scrollIntoView({ behavior:"smooth", block:"start" });
+  resetList(); renderWords();
 });
-$("#catReset").addEventListener("click", () => { catMode = "all"; renderWords(); });
 const keyOf = x => x.d+"|"+x.w;
 
 /* 찾기: 영어·뜻·한글 발음에서 찾는다. 찾을 때는 레벨·분야·단계 거르기 없이 모든 단어에서 */
@@ -2918,12 +2940,21 @@ function visibleWords(){
   if (mode === "today"){ const s = new Set(todayWords().map(keyOf)); pool = WORDS.filter(x=>s.has(keyOf(x))); }
   else if (mode === "miss"){ pool = WORDS.filter(x => isMissed(keyOf(x))); }
   else if (mode !== "all"){ const b = +mode; pool = WORDS.filter(x => boxOf(keyOf(x)) === b); }
-  if (mode === "all" || mode === "0") pool = pool.filter(inMyLevel);   // 레벨이 있으면 내 레벨 ±1만 (찾기는 전체)
+  if (mode !== "today" && mode !== "miss"){        // 레벨 칩 (찾기는 전체). '내 레벨'은 전체·새 단어에만 — 외운 단어는 다 보이게
+    if (lvMode === "my"){ if (mode === "all" || mode === "0") pool = pool.filter(inMyLevel); }
+    else if (lvMode !== "all") pool = pool.filter(x => x.lv === lvMode);
+  }
   if (catMode !== "all") pool = pool.filter(x => x.c === catMode);
   return pool;
 }
 function renderWords(){
-  const items = visibleWords(), searching = !!filterText.trim();
+  renderLvChips();
+  const searching = !!filterText.trim();
+  const catOrder = g => { const i = CATS.indexOf(g); return i < 0 ? 999 : i; };
+  const all = searching ? visibleWords()
+    : visibleWords().slice().sort((a, b) => catOrder(a.c) - catOrder(b.c) || (a.lv || 0) - (b.lv || 0));
+  const items = all.slice(0, wLimit), rest = all.length - items.length;   // 한 번에 30개씩 — 아래로 덜 내려가게
+  const total = new Map(); all.forEach(x => { const g = searching ? "찾은 단어" : (x.c || "기타"); total.set(g, (total.get(g) || 0) + 1); });
   const byCat = new Map();                        // Day 대신 분야(여행·음식…)로 묶는다. 찾을 때는 한 묶음
   items.forEach(x => { const g = searching ? "찾은 단어" : (x.c || "기타");
     if (!byCat.has(g)) byCat.set(g, []); byCat.get(g).push(x); });
@@ -2934,9 +2965,8 @@ function renderWords(){
     ? '<p class="empty">헷갈린 단어가 없어요. 퀴즈에서 한 번이라도 틀린 단어가 여기에 모여요.</p>'
     : '<p class="empty">해당하는 단어가 없습니다.</p>'; }
   else {
-    const order = g => { const i = CATS.indexOf(g); return i < 0 ? 999 : i; };
-    el.innerHTML = [...byCat.keys()].sort((a, b) => order(a) - order(b)).map(g => {
-      const list = searching ? byCat.get(g) : byCat.get(g).slice().sort((a, b) => (a.lv || 0) - (b.lv || 0));
+    el.innerHTML = [...byCat.keys()].map(g => {
+      const list = byCat.get(g);
       const rows = list.map(x=>{
         const k = keyOf(x), b = boxOf(k);
         const lab = b === 0 ? "새" : b + "단계";
@@ -2948,33 +2978,20 @@ function renderWords(){
           <span class="ex"><i>${x.ex}</i><br>${x.exk}</span></div>`;
       }).join("");
       return `<section class="day"><div class="dayHead"><h2>${esc(g)}</h2>
-        <span class="cnt">${list.length}단어</span></div>
+        <span class="cnt">${total.get(g)}단어</span></div>
         <div class="rows">${rows}</div></section>`;
-    }).join("");
+    }).join("") + (rest > 0 ? `<button class="btn more" type="button" data-more>${Math.min(30, rest)}개 더 보기 · 남은 단어 ${rest}개</button>` : "");
   }
-  headStats(); renderToday(); renderCats();
-  const nt = $("#wLvNote"), lvOn = myLevel && !searching && (mode === "all" || mode === "0");
-  nt.hidden = !(lvOn || searching);
-  if (searching) nt.textContent = `"${filterText.trim()}" 찾은 단어 ${items.length}개 · 모든 레벨·분야에서 찾았어요.`;
-  else if (lvOn){ const L = Math.round(myLevel);
-    nt.textContent = `내 레벨(${lvShow(myLevel)})에 맞는 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)} 단어만 보여요. 다른 단어는 위 찾기로 검색하세요.`; }
+  headStats(); renderCats();
+  $("#wLvNote").textContent = searching ? `"${filterText.trim()}" 찾은 단어 ${all.length}개 · 모든 레벨에서`
+    : `${lvMode === "my" && myLevel && (mode === "all" || mode === "0") ? `내 레벨(${lvShow(myLevel)})` : typeof lvMode === "number" ? `레벨 ${lvMode}` : "모든 레벨"} 단어 ${all.length}개`;
   $("#qClear").hidden = !searching;
-  ["#p1 .catWrap", "#p1 .today", "#filters"].forEach(s => { $(s).hidden = searching; });   // 찾는 중엔 결과가 바로 밑에 보이게
+  ["#wLv", "#cats", "#filters"].forEach(s => { $(s).hidden = searching; });   // 찾는 중엔 결과가 바로 밑에 보이게
   if ($("#p3").classList.contains("on")) renderHome();
 }
 
-function renderToday(){
-  const list = todayWords(), c = boxCounts();
-  $("#tCnt").textContent = list.length;
-  $("#bc1").textContent = c[1]; $("#bc2").textContent = c[2]; $("#bc3").textContent = c[3];
-  $("#goToday").disabled = list.length === 0;
-  const freshN = list.filter(x => boxOf(keyOf(x)) === 0).length, learnN = list.filter(x => boxOf(keyOf(x)) === 1).length;
-  $("#tSub").textContent = list.length
-    ? `새 단어 ${freshN}개 · 외우는 중 ${learnN}개 · 복습할 때가 된 단어 ${list.length - freshN - learnN}개`
-    : `오늘 볼 단어를 다 봤어요. 새 단어는 내일 ${goalW()}개가 또 나와요.`;
-}
-
 $("#list").addEventListener("click", e=>{
+  if (e.target.closest("[data-more]")){ wLimit += 30; renderWords(); return; }
   const bx = e.target.closest(".bx");
   if (bx){
     e.stopPropagation();
@@ -2986,11 +3003,11 @@ $("#list").addEventListener("click", e=>{
 
 $("#filters").addEventListener("click", e=>{
   const b = e.target.closest("[data-f]"); if(!b) return;
-  mode = b.dataset.f;
+  mode = b.dataset.f; resetList();
   [...$("#filters").children].forEach(x => x.setAttribute("aria-pressed", x === b));
   renderWords();
 });
-$("#q").addEventListener("input", e=>{ filterText=e.target.value; renderWords(); });
+$("#q").addEventListener("input", e=>{ filterText=e.target.value; resetList(); renderWords(); });
 $("#q").addEventListener("keydown", e=>{ if (e.key === "Enter"){ e.preventDefault(); e.target.blur();          // 엔터 = 키보드 내리고 결과 보기
   $("#wLvNote").scrollIntoView({ block: "start", behavior: "smooth" }); } });
 $("#qClear").addEventListener("click", ()=>{ filterText = ""; $("#q").value = ""; renderWords(); $("#q").focus(); });
@@ -3580,7 +3597,7 @@ function bindPlan(){
     if (!act) return;
     endQuiz(); renderLevel();
     if (act.startsWith("cat:")){
-      catMode = act.slice(4); mode = "all";
+      catMode = act.slice(4); mode = "all"; lvMode = "all"; resetList();
       [...$("#filters").children].forEach((x,i) => x.setAttribute("aria-pressed", i === 0));
       go(1); renderWords();
       $("#cats").scrollIntoView({ behavior:"smooth", block:"start" });
@@ -3596,7 +3613,6 @@ function bindPlan(){
 $("#lvGo").addEventListener("click", startLevelTest);
 
 $("#goQuiz").addEventListener("click", ()=>startQuiz());
-$("#goToday").addEventListener("click", ()=>startQuiz(todayWords()));
 
 /* 진도 백업·복원 */
 function fillBackup(){ $("#bkText").value = JSON.stringify(boxes); }
@@ -3636,10 +3652,13 @@ function drawCount(){
                                      : "오늘 아직 안 하셨어요. 한 문장부터 시작해 보세요.";
 }
 
+const LISTEN_N = 5;                               // 한 번에 5문장 — 아래로 덜 내려가게, '다른 문장 5개'로 바꿔 가며
 function renderListen(){
   const lvPool = SENTS.filter(inMyLevel);
-  const pool = (lvPool.length >= 4 ? lvPool : SENTS).slice(-12).reverse();
-  $("#listen").innerHTML = `<div class="lcount" id="lCount"></div>` + pool.map((s,i)=>`
+  const pool = shuffle([...(lvPool.length >= LISTEN_N ? lvPool : SENTS)]).slice(0, LISTEN_N);
+  $("#listen").innerHTML = `<div class="lcount" id="lCount"></div>`
+    + (myLevel ? `<p class="lead" style="margin:0 0 2px">내 레벨(${lvShow(myLevel)})에 맞는 문장 ${LISTEN_N}개예요.</p>` : "")
+    + pool.map((s,i)=>`
     <div class="lrow" id="lr${i}">
       <p class="ko">${s.ko}</p>
       <p class="en hid" id="ls${i}" data-a="peek" data-i="${i}">${s.en}</p>
@@ -3651,7 +3670,8 @@ function renderListen(){
                            : `<button class="btn say" data-a="done" data-i="${i}">말했어요</button>`}
       </div>
       <p class="heard" id="lh${i}"></p>
-    </div>`).join("");
+    </div>`).join("")
+    + `<button class="btn more" type="button" data-a="more">다른 문장 ${LISTEN_N}개</button>`;
   drawCount();
   return pool;
 }
@@ -3753,6 +3773,7 @@ $("#listen").addEventListener("click", e=>{
   const b = e.target.closest("[data-a]"); if(!b) return;
   const i = +b.dataset.i, s = LPOOL[i];
   const act = b.dataset.a;
+  if (act === "more"){ stopRec(); LPOOL = renderListen(); $("#listen").scrollIntoView({ block: "start", behavior: "smooth" }); return; }
   if (act === "play") speak(s.en, 1);
   else if (act === "slow") speak(s.en, 0.6);
   else if (act === "peek"){
@@ -4316,24 +4337,31 @@ function allWordHtml(){
   return `<button type="button" class="allSearchBtn" data-allsearch>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.6-3.6"></path></svg>
       <span>단어 찾기 · 영어, 뜻, 발음</span></button>
-    <p class="allHint">분야를 누르면 그 분야 단어 목록이 열려요. 목록 위 "이 목록 퀴즈"로 바로 풀 수 있어요.</p>
-    <div class="catGrid">${CATS.filter(c => st[c]).map(c => {
-      const s = st[c], pct = Math.round(s.got / s.n * 100);
-      return `<button class="catCard" data-allcat="${esc(c)}"><span class="dot"></span><span class="nm">${esc(c)}</span>
-        <span class="num">${s.got} / ${s.n}개 외움</span><span class="pbar"><i style="width:${pct}%"></i></span></button>`;
+    <p class="allHint">${myLevel ? `내 레벨(${lvShow(myLevel)}) 단어를 분야별로 모았어요.` : "분야별로 모았어요."} 누르면 그 분야 단어 목록이 열려요.</p>
+    <div class="catMini">${CATS.filter(c => st[c]).map(c => {
+      const s = st[c];
+      return `<button type="button" data-allcat="${esc(c)}">${esc(c)}<small>${s.got}/${s.n}</small></button>`;
     }).join("")}</div>`;
 }
+/* 문법 40개를 5단계로 묶고, 내 레벨(없으면 지금 레슨)에 맞는 단계만 펼쳐 둔다 — 아래로 덜 내려가게 */
+const GSTAGE = [[1, 7, "be동사 — 나는 ~이에요"], [8, 14, "일반동사·질문하기"], [15, 21, "조동사·미래·진행·있어요"],
+                [22, 30, "과거·전치사·비교"], [31, 40, "문장 길게 말하기"]];
 function allGramHtml(){
-  const today = dayNo();
-  const days = Object.keys(GRAM).map(Number).filter(d => d <= LASTDAY).sort((a, b) => a - b);
-  return `<p class="allHint">레슨 ${days.length}개의 문법을 한곳에 모았어요. 눌러서 펼쳐 보세요.</p>` + days.map(d => {
-    const g = GRAM[d], done = d <= today;
+  const today = dayNo(), mine = myLevel ? placeDay(myLevel) : today;
+  const card = d => { const g = GRAM[d], done = d <= today;
     return `<details class="allCard"><summary><span class="tx"><b>Day ${d} · ${esc(g.t)}</b><small>${esc(g.f)}</small></span>
       <span class="tag${done ? "" : " later"}">${d === today ? "오늘" : done ? "배움" : "예정"}</span></summary>
       <div class="allIn"><div class="gram"><p style="margin-top:0">${esc(g.d)}</p>
         <div class="miss"><b>자주 하는 실수</b>${esc(g.x)}</div></div>
-        ${done ? `<div class="row2"><button class="btn" data-alllesson="${d}">Day ${d} 레슨 보기</button></div>` : ""}</div></details>`;
-  }).join("");
+        ${done ? `<div class="row2"><button class="btn" data-alllesson="${d}">Day ${d} 레슨 보기</button></div>` : ""}</div></details>`; };
+  return `<p class="allHint">${myLevel ? `내 레벨(${lvShow(myLevel)})에 맞는 단계를 펼쳐 뒀어요.` : "지금 레슨 단계를 펼쳐 뒀어요."} 다른 단계는 눌러서 보세요.</p>`
+    + GSTAGE.map(([a, b, name], i) => {
+      const days = []; for (let d = a; d <= b; d++) if (GRAM[d]) days.push(d);
+      const here = mine >= a && mine <= b;
+      return `<details class="gStage"${here ? " open" : ""}><summary><span class="tx"><b>${i + 1}단계 · ${esc(name)}</b>
+        <small>Day ${a}~${b} · 문법 ${days.length}개</small></span>${here ? `<span class="tag">${myLevel ? "내 레벨" : "지금"}</span>` : ""}</summary>
+        <div class="gIn">${days.map(card).join("")}</div></details>`;
+    }).join("");
 }
 function allTalkHtml(){
   return `<p class="allHint">여행에서 바로 쓰는 상황별 문장이에요. 레슨 순서와 상관없이 골라서 연습하세요.</p>` + TALK.map(d => {
@@ -4347,12 +4375,15 @@ function allTalkHtml(){
   }).join("");
 }
 function allListenHtml(){
-  const today = dayNo(), ss = sentsOfDay(today);
+  const today = dayNo(), d = new Date();
+  const pool = SENTS.filter(inMyLevel);           // 레벨이 있으면 내 레벨 문장 5개(날마다 바뀜), 없으면 오늘 레슨 문장
+  const ss = myLevel ? pickBy(pool.length >= 5 ? pool : SENTS, 5, d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate() + 7)
+                     : sentsOfDay(today).slice(0, 5);
   return `<p class="allHint">뜻을 보고 먼저 소리 내어 말한 뒤, 들어보기로 원어민 발음과 비교하세요.
       ${spoke.n ? `오늘 ${spoke.n}문장 말했어요.` : ""}</p>
-    <div class="allGo"><button class="btn go" data-allgo="2">듣기·말하기 열기</button></div>
-    <details class="allCard" open><summary><span class="tx"><b>오늘 레슨 문장 듣기</b>
-      <small>Day ${today} · ${ss.length}문장</small></span></summary>
+    <div class="allGo"><button class="btn go" data-allgo="2">말하기 연습 열기 (채점)</button></div>
+    <details class="allCard" open><summary><span class="tx"><b>${myLevel ? "오늘의 내 레벨 문장" : "오늘 레슨 문장 듣기"}</b>
+      <small>${myLevel ? `레벨 ${lvShow(myLevel)}` : `Day ${today}`} · ${ss.length}문장</small></span></summary>
       <div class="allIn">${ss.map(allSentHtml).join("")}</div></details>`;
 }
 function allMineHtml(){
@@ -4368,7 +4399,9 @@ function allMineHtml(){
     + row("goal", "var(--honey)", '<circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3.5"></circle>', "하루 목표",
           `새 단어 ${goalW()}개 · 문장 ${goalS()}개 · 눌러서 바꾸기`)
     + row("mic", "var(--tint)", '<rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path>', "마이크 테스트",
-          "이 휴대폰에서 마이크·음성 인식이 되는지 확인");
+          "이 휴대폰에서 마이크·음성 인식이 되는지 확인")
+    + (canInstall() ? row("install", "var(--accent-soft)", '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path>', "앱으로 설치",
+          "휴대폰에 앱처럼 설치하기") : "");
 }
 function renderAll(){
   [...$("#allChips").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.ac === allCat));
@@ -4385,9 +4418,9 @@ function renderAll(){
 /* 단어 탭을 원하는 필터·분야로 열어 줍니다 */
 function showWords(f, cat){
   mode = f; catMode = cat; filterText = ""; $("#q").value = "";
+  lvMode = myLevel ? "my" : "all"; resetList();
   [...$("#filters").children].forEach(x => x.setAttribute("aria-pressed", x.dataset.f === f));
-  go(1); renderWords();
-  $("#filters").scrollIntoView({ block: "center" });
+  go(1); renderWords();                           // 이제 목록이 위쪽에 있어서 따로 스크롤하지 않음
 }
 $("#p4").addEventListener("click", e => {
   const ch = e.target.closest("[data-ac]");
@@ -4476,6 +4509,9 @@ $("#p7").addEventListener("click", e => {
   else if (m.dataset.mine === "note") openNote();
   else if (m.dataset.mine === "goal") openSetup(false);
   else if (m.dataset.mine === "mic"){ go(2); $("#micTest").scrollIntoView({ block: "center" }); }
+  else if (m.dataset.mine === "install"){                         // 안 보기로 숨겼어도 여기서는 다시 보여 줌
+    store.set("vb.noinstall", false); installOpen = !installEvt; go(3); renderInstall();
+    if (installEvt) doInstall(); }
   else showWords("2", "all");
 });
 
@@ -4517,14 +4553,50 @@ $("#suBody").addEventListener("click", e => {
   renderWords(); renderHome(); refreshTab();
 });
 
+/* ══ 앱 설치 ══ 안드로이드(크롬)는 버튼 한 번으로 설치 창을 띄우고, 아이폰은 애플이 막아 둬서 방법을 보여줍니다 */
+let installEvt = null, installOpen = false;
+const UA = navigator.userAgent;
+const isIOS = () => /iphone|ipad|ipod/i.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const inAppBrowser = () => /KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line\/|DaumApps/i.test(UA);
+const canInstall = () => !isStandalone() && (installEvt || isIOS() || inAppBrowser());
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; renderInstall(); });
+window.addEventListener("appinstalled", () => { installEvt = null; renderInstall(); });
+function installSteps(){
+  if (inAppBrowser()) return isIOS()
+    ? `<ol><li>지금은 카카오톡 같은 앱 안이라 설치가 안 돼요.</li><li>오른쪽 아래 <b>⋯</b> 또는 <b>공유</b> → <b>Safari로 열기</b></li>
+       <li>Safari 아래쪽 <b>공유 버튼</b>(네모에 ↑) → <b>홈 화면에 추가</b> → <b>추가</b></li></ol>`
+    : `<ol><li>지금은 카카오톡 같은 앱 안이라 설치가 안 돼요.</li><li>오른쪽 위 <b>⋮</b> → <b>다른 브라우저로 열기</b> (크롬)</li>
+       <li>크롬에서 이 화면의 <b>설치</b> 버튼을 누르세요.</li></ol>`;
+  return `<ol><li>Safari 아래쪽 <b>공유 버튼</b>(네모에 ↑)을 누르세요.</li><li>목록을 올려서 <b>홈 화면에 추가</b>를 누르세요.</li>
+    <li>오른쪽 위 <b>추가</b>를 누르면 홈 화면에 앱 아이콘이 생겨요.</li></ol>`;
+}
+function renderInstall(){
+  const el = $("#hInstall");
+  el.hidden = !canInstall() || (store.get("vb.noinstall", false) && !installOpen);
+  if (el.hidden) return;
+  el.innerHTML = `<div class="tx"><b>앱으로 설치하기</b><span>${installEvt ? "버튼 한 번이면 휴대폰에 앱처럼 설치돼요."
+      : "아이폰은 애플 정책상 아래 방법으로 설치해요. 한 번만 하면 앱처럼 써요."}</span></div>
+    <button class="btn go" id="insGo" type="button">${installEvt ? "설치" : installOpen ? "접기" : "방법 보기"}</button>
+    <button class="x" id="insX" type="button" aria-label="안 보기">✕</button>
+    ${installOpen && !installEvt ? installSteps() : ""}`;
+}
+async function doInstall(){
+  if (installEvt){ installEvt.prompt(); try{ await installEvt.userChoice; }catch(e){} installEvt = null; installOpen = false; renderInstall(); }
+  else { installOpen = !installOpen; renderInstall(); }
+}
+$("#hInstall").addEventListener("click", e => {
+  if (e.target.closest("#insX")){ store.set("vb.noinstall", true); installOpen = false; renderInstall(); return; }
+  if (e.target.closest("#insGo")) doInstall();
+});
+
 /* 시작 — 한 곳에서 오류가 나도 나머지는 계속 실행됩니다 */
-[drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), renderHome,
+[drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), renderHome, renderInstall,
  () => { if (!goal) openSetup(true); }]
   .forEach(fn => { try{ fn(); }catch(e){ console.error(e); } });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=32"></script>
-<script src="sync.js?v=32"></script>
+<script src="firebase-config.js?v=33"></script>
+<script src="sync.js?v=33"></script>
 
 </body></html>

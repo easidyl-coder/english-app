@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=23"></script>
+<script src="ipa.js?v=24"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -409,7 +409,6 @@
   .stats{border-top:1px solid rgba(255,255,255,.18);border-bottom:0;margin-top:16px}
   .stat .n{font-family:"Jua",sans-serif;font-weight:400;font-size:24px}
   .stat .l{color:var(--tint)}
-  #sLeft{color:var(--honey)}
 
   nav{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;border:0;background:#fff;
     border-radius:22px 22px 0 0;box-shadow:0 -2px 12px rgba(22,24,58,.06);
@@ -613,8 +612,53 @@
   .hTile .nm{font-family:"Jua",sans-serif;font-size:19px;line-height:1.2}
   .hTile .ds{font-size:12.5px;color:var(--ink-2)}
   .hTile .tx{flex:1;display:flex;flex-direction:column;gap:2px}
-  .hLvUp{background:#fff;border-radius:20px;padding:16px;margin-top:18px;display:flex;flex-direction:column;gap:12px}
-  .hLvUp h2{font-family:"Jua",sans-serif;font-weight:400;font-size:17px;margin:0}
+  /* 홈 — 오늘 할 일 중심 */
+  #p3 .hTop{flex-direction:column;align-items:flex-start;gap:12px}
+  #p3 .hChips{justify-content:flex-start}
+  .hWho{flex:0 1 auto;min-width:0}
+  .hHello{font-family:"Jua",sans-serif;font-size:24px;line-height:1.25}
+  .hDate{font-size:13px;font-weight:600;color:var(--ink-2);margin-top:2px}
+  .hChip.fire{background:#FFF1E0;border-color:#F4D3AC;color:#9A4E14}
+  .hHero{background:linear-gradient(135deg,#2A2FA8 0%,#4D52CC 100%);position:relative;overflow:hidden}
+  .hHero::after{content:"";position:absolute;right:-50px;top:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08)}
+  .hHero::before{content:"";position:absolute;right:30px;bottom:-70px;width:120px;height:120px;border-radius:50%;background:rgba(237,190,78,.16)}
+  .hHero > *{position:relative;z-index:1}
+  .hForm{align-self:flex-start;background:rgba(255,255,255,.15);border-radius:12px;padding:6px 12px;font-weight:700;font-size:14px}
+  .hForm:empty{display:none}
+  .hGoal{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px;margin-top:16px;box-shadow:var(--shadow)}
+  .hGoalHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .hGoalHead h2{font-family:"Jua",sans-serif;font-weight:400;font-size:19px;margin:0}
+  .hGoalHead .re{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:none;border:0;cursor:pointer;padding:4px 0}
+  .hRings{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .gRing{font:inherit;color:var(--ink);background:var(--raise-2);border:0;border-radius:18px;padding:14px 8px 12px;
+    cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .gRing .rw{position:relative;width:88px;height:88px}
+  .gRing svg{width:88px;height:88px;transform:rotate(-90deg)}
+  .gRing circle{fill:none;stroke-width:9}
+  .gRing .bg{stroke:#E2E3EF}
+  .gRing .fg{stroke-linecap:round;transition:stroke-dasharray .4s}
+  .gRing .v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink-2)}
+  .gRing .v b{font-family:"Jua",sans-serif;font-weight:400;font-size:26px;color:var(--ink);margin-right:1px}
+  .gRing .l{font-weight:800;font-size:14px;margin-top:6px}
+  .gRing .s{font-size:12px;color:var(--ink-2)}
+  .gRing.ok .s{color:var(--ok);font-weight:800}
+  .hDaily{background:#FFF6DC;border:1px solid #F1DFA6;border-radius:22px;padding:16px 18px;margin-top:16px}
+  .hDaily .lab{font-size:12.5px;font-weight:800;color:#8A5A00}
+  .hDaily .en{font-size:20px;font-weight:800;line-height:1.35;margin-top:6px}
+  .hDaily .ko{font-size:13.5px;color:var(--ink-2);margin-top:2px}
+  .hDaily .row2{display:flex;gap:8px;margin-top:12px}
+  .hDaily .row2 .btn{min-height:40px;font-size:13px;padding:0 14px}
+  #p3 .hGrid{margin-top:16px}
+  /* 하루 목표 설정 */
+  body.setupOn #setup{ display:block } body.setupOn{ overflow:hidden }
+  .suGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .suOpt{font:inherit;cursor:pointer;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 4px;
+    display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink)}
+  .suOpt b{font-family:"Jua",sans-serif;font-weight:400;font-size:26px;line-height:1.1}
+  .suOpt span{font-size:12px;color:var(--ink-2)}
+  .suOpt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .suOpt[aria-pressed="true"] span{color:var(--accent)}
+  .suSave{width:100%;min-height:56px;font-size:17px;margin-top:26px}
   .hBars{display:flex;align-items:flex-end;gap:8px}
   .hBars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
   .hBars b{font-size:18px;font-weight:800}
@@ -701,7 +745,6 @@
       <div class="stat"><span class="n" id="sTotal">0</span><span class="l">누적 단어</span></div>
       <div class="stat"><span class="n" id="sSent">0</span><span class="l">문장</span></div>
       <div class="stat"><span class="n" id="sBest">0</span><span class="l">최고 연속</span></div>
-      <div class="stat"><span class="n" id="sLeft">—</span><span class="l">출발까지</span></div>
     </div>
   </header>
 </div>
@@ -721,43 +764,31 @@
   <!-- 홈 -->
   <section class="panel on" id="p3">
     <div class="hTop">
-      <div class="hLogo">영어 연습장</div>
-      <div class="hChips"><button class="hChip acct" id="hAcct" hidden>로그인</button><span class="hChip" id="hDayN">1일째</span><button class="hChip" id="hLv">Lv.?</button></div>
+      <div class="hWho"><div class="hHello" id="hHello">오늘도 영어 한 걸음</div><div class="hDate" id="hDate"></div></div>
+      <div class="hChips"><button class="hChip acct" id="hAcct" hidden>로그인</button><span class="hChip fire" id="hStreak">0일 연속</span><button class="hChip" id="hLv">Lv.?</button></div>
     </div>
     <div class="hHero">
       <div class="sub" id="hStage">Day 1</div>
-      <div class="big">오늘의 레슨 시작!</div>
-      <div class="hBarRow"><div class="hBar"><i id="hProg" style="width:0"></i></div><span id="hProgN">0/140</span></div>
-      <div class="hFoot"><span id="hLeft">칸쿤까지</span>
-        <button class="hOpen" id="hLesson" type="button">열기</button></div>
+      <div class="big" id="hTitle">오늘의 레슨</div>
+      <div class="hForm" id="hForm"></div>
+      <div class="hBarRow"><div class="hBar"><i id="hProg" style="width:0"></i></div><span id="hProgN">1/40</span></div>
+      <div class="hFoot"><span>레슨 보고 시험 통과하면 다음 Day</span>
+        <button class="hOpen" id="hLesson" type="button">레슨 열기</button></div>
     </div>
+    <div class="hGoal">
+      <div class="hGoalHead"><h2>오늘 목표</h2><button class="re" id="hGoalEdit" type="button">목표 바꾸기</button></div>
+      <div class="hRings" id="hRings"></div>
+    </div>
+    <div class="hDaily" id="hDaily"></div>
     <div class="hGrid">
-      <button class="hTile wide" data-go="0">
-        <span class="hIcon" style="background:var(--honey)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="8" height="7" rx="1.5"></rect><rect x="13" y="4" width="8" height="7" rx="1.5"></rect><rect x="3" y="14" width="18" height="6" rx="1.5"></rect></svg></span>
-        <span class="tx"><span class="nm">문장 조립 게임</span><span class="ds" id="hSent">오늘 10문장</span></span>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
+      <button class="hTile" data-go="6" type="button">
+        <span class="hIcon" style="background:var(--mint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path><path d="M12 8v4l3 2"></path></svg></span>
+        <span class="nm">복습</span><span class="ds" id="hRvN">오늘 볼 단어</span>
       </button>
-      <button class="hTile" data-go="1">
-        <span class="hIcon" style="background:var(--mint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"></path><path d="M5 18a2 2 0 0 1 2-2h12"></path></svg></span>
-        <span class="nm">단어</span><span class="ds" id="hWord">오늘 볼 단어</span>
+      <button class="hTile" id="hNote" type="button">
+        <span class="hIcon" style="background:var(--pink)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H16l4 4v11.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5z"></path><path d="M8 11h8M8 15h5"></path></svg></span>
+        <span class="nm">막혔던 말</span><span class="ds" id="hNoteN">아직 없어요</span>
       </button>
-      <button class="hTile" data-go="2">
-        <span class="hIcon" style="background:var(--pink)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 17v-4a8 8 0 0 1 16 0v4"></path><rect x="3" y="14" width="4" height="7" rx="1.5"></rect><rect x="17" y="14" width="4" height="7" rx="1.5"></rect></svg></span>
-        <span class="nm">듣기·말하기</span><span class="ds">듣고 소리 내어 말하기</span>
-      </button>
-      <button class="hTile wide" id="hNote" type="button">
-        <span class="hIcon" style="background:var(--tint-2,#E9EAF7)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H16l4 4v11.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5z"></path><path d="M8 11h8M8 15h5"></path></svg></span>
-        <span class="tx"><span class="nm">막혔던 말 메모</span><span class="ds" id="hNoteN">아직 없어요</span></span>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
-      </button>
-    </div>
-    <div class="hLvUp">
-      <h2>단어 레벨업</h2>
-      <div class="hBars">
-        <div><b id="hb1">0</b><i id="hi1" style="height:22px;background:#D5D7EC"></i><span>외우는 중</span></div>
-        <div><b id="hb2">0</b><i id="hi2" style="height:22px;background:#9296D6"></i><span>외운</span></div>
-        <div><b id="hb3">0</b><i id="hi3" style="height:22px;background:var(--accent)"></i><span>외외운</span></div>
-      </div>
     </div>
   </section>
 
@@ -912,6 +943,7 @@
 <div class="lesson" id="lesson"><div class="shell" id="lsBody"></div></div>
 <div class="lesson" id="note"><div class="shell" id="ntBody"></div></div>
 <div class="lesson" id="exam"><div class="shell" id="exBody"></div></div>
+<div class="lesson" id="setup"><div class="shell" id="suBody"></div></div>
 <div class="quiz" id="quiz">
   <div class="shell">
     <div class="gTop">
@@ -2367,7 +2399,6 @@ const SENTS = [
 ];
 /* ── 데이터 끝 ── */
 
-const DEPART = new Date("2027-01-29T00:00:00+09:00");
 const $ = s => document.querySelector(s);
 const store = {
   /* valid: 값이 형식대로 왔는지 검사하는 함수. 없거나·깨졌거나·형식이 다르면 기본값 f를 돌려줍니다. */
@@ -2397,6 +2428,12 @@ function logAct(kind){
   store.set("vb.log", actLog);
 }
 function dayTotal(k){ const d = actLog[k]; return d ? (+d.w || 0) + (+d.s || 0) + (+d.t || 0) : 0; }
+const todayLog = () => actLog[dkey()] || {};    // n: 오늘 처음 배운 새 단어 수
+
+/* ── 하루 목표 ── 처음 켤 때 정합니다. w: 하루 새 단어 수, s: 하루 문장 수 (이 기기에만 저장) */
+const GOAL_W = [5, 10, 20, 30], GOAL_S = [5, 10, 15, 20];
+let goal = store.get("vb.goal", null, x => x && typeof x === "object" && Number.isFinite(x.w) && Number.isFinite(x.s));
+const goalW = () => goal ? goal.w : 20, goalS = () => goal ? goal.s : 10;
 function streakDays(){
   const d = new Date(); let n = 0;
   if (!dayTotal(dkey(d))) d.setDate(d.getDate() - 1);          // 오늘 아직 안 했으면 어제부터 셉니다
@@ -2407,7 +2444,7 @@ function streakDays(){
 /* ── 3단계 단어장 ──
    b:1 외우는 중 · b:2 외운 단어 · b:3 외외운 단어 · 없으면 아직 안 배운 단어
    2단계는 3일 뒤, 3단계는 14일 뒤 다시 등장합니다(무한 복습). */
-const DAILY_NEW = 20, LEARN_CAP = 20;
+const LEARN_CAP = 20;
 const LVNAME = {1:"왕기초",2:"기초",3:"초급",4:"초중급",5:"중급 진입",
                 6:"중급",7:"중상급",8:"상급 진입",9:"상급",10:"최상급"};
 let myLevel = store.get("vb.level", 0, Number.isFinite);
@@ -2438,9 +2475,11 @@ const isDue = k => { const b = boxOf(k); return b >= 2 && Date.now() - stampOf(k
 function todayWords(){
   const pool = WORDS.filter(inMyLevel);                 // 내 레벨 ±1 단어만
   const due  = pool.filter(x => isDue(keyOf(x)));
-  const learn = pool.filter(x => boxOf(keyOf(x)) === 1)
+  const t0 = new Date(); t0.setHours(0, 0, 0, 0);
+  const learn = pool.filter(x => boxOf(keyOf(x)) === 1 && stampOf(keyOf(x)) < t0.getTime())   // 오늘 이미 푼 건 내일 다시
                     .sort((a,b) => stampOf(keyOf(a)) - stampOf(keyOf(b))).slice(0, LEARN_CAP);
-  const fresh = pool.filter(x => boxOf(keyOf(x)) === 0).slice(0, DAILY_NEW);
+  const fresh = pool.filter(x => boxOf(keyOf(x)) === 0)
+                    .slice(0, Math.max(0, goalW() - (+todayLog().n || 0)));                  // 새 단어는 하루 목표만큼
   const seen = new Set(), out = [];
   [...due, ...learn, ...fresh].forEach(x => {
     const k = keyOf(x); if (!seen.has(k)){ seen.add(k); out.push(x); }
@@ -2474,8 +2513,6 @@ function headStats(){
   $("#sTotal").textContent = WORDS.length;
   $("#sSent").textContent = SENTS.length;
   $("#sBest").textContent = best;
-  const left = Math.ceil((DEPART - new Date())/86400000);
-  $("#sLeft").textContent = left>0 ? "D-"+left : "출발!";
 }
 
 /* ── 탭 ── */
@@ -2547,7 +2584,6 @@ const GRAM = {
   39:{t:"대화 이어가기",f:"Actually / By the way / Anyway / How about you?",d:"할 말을 고르는 시간을 벌어주고, 대화를 끊기지 않게 해주는 연결어들입니다.",x:"침묵보다 Let me think for a second. 가 훨씬 낫습니다. 채워 넣을 말을 미리 외워두세요."},
   40:{t:"종합 - 30초 자기소개",f:"이름 → 어디서 → 무슨 일 → 왜 왔는지 → 되묻기",d:"배운 연결법을 다 써서 나를 30초 동안 소개합니다.",x:"마지막에 How about you? 로 넘기세요. 대화는 주고받아야 이어집니다."},
 };
-const START = new Date("2026-09-10T00:00:00+09:00");
 /* ── 진도 기준 Day ── 하루치를 끝내야 다음 날로 넘어갑니다 */
 const LASTDAY = 40;                               // 지금까지 만들어 둔 마지막 레슨
 let curDay = Math.min(LASTDAY, Math.max(1, store.get("vb.day", 1, Number.isFinite)));
@@ -2556,22 +2592,51 @@ function finishDay(){
   if (curDay < LASTDAY){ curDay++; store.set("vb.day", curDay); }
   renderHome();
 }
-function sinceStart(){ return Math.max(1, Math.floor((new Date() - START)/86400000) + 1); }
 function stageOf(w){ return w<=5?"1단계 문장의 뼈대":w<=11?"2단계 여행에서 살아남기":w<=17?"3단계 대화 이어가기":"4단계 자연스럽게"; }
-function renderHome(){
-  const day = curDay;
-  $("#hDayN").textContent = sinceStart() + "일째";
-  $("#hStage").textContent = "Day " + day + " · " + (GRAM[day] ? GRAM[day].t : stageOf(Math.ceil(day/7)));
-  $("#hProg").style.width = (day/LASTDAY*100) + "%";
-  $("#hProgN").textContent = day + "/" + LASTDAY;
-  const left = Math.ceil((DEPART - new Date())/86400000);
-  $("#hLeft").textContent = left > 0 ? "칸쿤까지 D-" + left : "출발!";
-  $("#hLv").textContent = myLevel ? "Lv." + myLevel : "레벨 테스트";
-  $("#hSent").textContent = deck.length ? `오늘 ${deck.length}문장 · ${correct}개 맞힘` : "오늘 10문장";
-  $("#hWord").textContent = "오늘 볼 단어 " + todayWords().length + "개";
-  const c = boxCounts(), mx = Math.max(1, c[1], c[2], c[3]);
-  [1,2,3].forEach(k => { $("#hb"+k).textContent = c[k]; $("#hi"+k).style.height = (18 + c[k]/mx*48) + "px"; });
+/* 오늘 목표 동그라미 — 누르면 이어서 공부 */
+function ringHtml(val, max, color, label, act){
+  const p = Math.min(1, val / Math.max(1, max)), C = 2 * Math.PI * 34, ok = val >= max;
+  return `<button class="gRing${ok ? " ok" : ""}" type="button" data-hgo="${act}"><span class="rw">
+    <svg viewBox="0 0 80 80" aria-hidden="true"><circle class="bg" cx="40" cy="40" r="34"></circle>
+    <circle class="fg" cx="40" cy="40" r="34" style="stroke:${color};stroke-dasharray:${(C * p).toFixed(1)} ${C.toFixed(1)}${p ? "" : ";opacity:0"}"></circle></svg>
+    <span class="v"><b>${val}</b>/${max}</span></span>
+    <span class="l">${label}</span><span class="s">${ok ? "오늘 목표 달성!" : "눌러서 이어 하기"}</span></button>`;
 }
+/* 오늘의 한 문장 — 배운 레슨과 상황별 문장 중에서 날짜마다 하나씩 */
+function dailySent(){
+  const pool = SENTS.filter(x => x.d && (x.d <= curDay || x.d > LASTDAY));
+  const d = new Date();
+  return pickBy(pool.length ? pool : SENTS, 1, d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate())[0];
+}
+function renderHome(){
+  const day = curDay, g = GRAM[day], now = new Date(), hr = now.getHours(), t = todayLog();
+  $("#hHello").textContent = hr < 5 ? "늦게까지 수고해요" : hr < 12 ? "좋은 아침이에요" : hr < 18 ? "오늘도 영어 한 걸음" : "오늘 하루도 수고했어요";
+  $("#hDate").textContent = `${now.getMonth() + 1}월 ${now.getDate()}일 ${"일월화수목금토"[now.getDay()]}요일`;
+  const st = streakDays();
+  $("#hStreak").textContent = st ? `${st}일 연속` : "오늘 첫 공부";
+  $("#hLv").textContent = myLevel ? "Lv." + myLevel : "레벨 테스트";
+  $("#hStage").textContent = `Day ${day} · 오늘의 레슨`;
+  $("#hTitle").textContent = g ? g.t : stageOf(Math.ceil(day / 7));
+  $("#hForm").textContent = g ? g.f : "";
+  $("#hProg").style.width = (day / LASTDAY * 100) + "%";
+  $("#hProgN").textContent = day + "/" + LASTDAY;
+  $("#hRings").innerHTML = ringHtml(+t.n || 0, goalW(), "var(--accent)", "새 단어", "w")
+                         + ringHtml(+t.s || 0, goalS(), "var(--honey)", "문장", "s");
+  const s = dailySent();
+  $("#hDaily").innerHTML = s ? `<div class="lab">오늘의 한 문장</div><div class="en">${esc(s.en)}</div><div class="ko">${esc(s.ko)}</div>
+    <div class="row2"><button class="btn" data-say="${esc(s.en)}">들어보기</button>
+    <button class="btn" data-say="${esc(s.en)}" data-slow="1">느리게</button></div>` : "";
+  const tw = todayWords().length;
+  $("#hRvN").textContent = tw ? `오늘 볼 단어 ${tw}개` : "오늘 복습 끝!";
+}
+$("#p3").addEventListener("click", e => {
+  if (e.target.closest("#hGoalEdit")){ openSetup(false); return; }
+  const say = e.target.closest("[data-say]");
+  if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
+  const r = e.target.closest("[data-hgo]"); if (!r) return;
+  if (r.dataset.hgo === "w"){ const tw = todayWords(); if (tw.length) startQuiz(tw, "home"); else go(6); }
+  else { newRound(0, "home"); go(0); }
+});
 document.addEventListener("click", e => {                      // 화면 안의 이동 버튼(data-go)과 뒤로(data-back)
   const t = e.target.closest(".panel [data-go]"); if (t){ go(+t.dataset.go); return; }
   if (e.target.closest(".panel [data-back]")) go(backTab);
@@ -2631,7 +2696,7 @@ function newRound(day, from){
   } else {
     const lvPool = SENTS.filter(inMyLevel);
     const pool = lvPool.length >= 4 ? lvPool : SENTS;
-    deck = shuffle([...pool]).slice(0, Math.min(10, pool.length));
+    deck = shuffle([...pool]).slice(0, Math.min(goalS(), pool.length));          // 한 판 = 하루 문장 목표
   }
   drawMode();
   idx=0; correct=0; missed=[]; streak=0;
@@ -2817,11 +2882,10 @@ function renderToday(){
   $("#tCnt").textContent = list.length;
   $("#bc1").textContent = c[1]; $("#bc2").textContent = c[2]; $("#bc3").textContent = c[3];
   $("#goToday").disabled = list.length === 0;
-  const dueN = WORDS.filter(x=>isDue(keyOf(x))).length;
-  const freshN = Math.min(DAILY_NEW, c[0]);
+  const freshN = list.filter(x => boxOf(keyOf(x)) === 0).length, learnN = list.filter(x => boxOf(keyOf(x)) === 1).length;
   $("#tSub").textContent = list.length
-    ? `새 단어 ${freshN}개 · 외우는 중 ${Math.min(LEARN_CAP,c[1])}개 · 복습할 때가 된 단어 ${dueN}개`
-    : `오늘 볼 단어가 없습니다. 남은 새 단어 ${c[0]}개는 내일 이어서 나옵니다.`;
+    ? `새 단어 ${freshN}개 · 외우는 중 ${learnN}개 · 복습할 때가 된 단어 ${list.length - freshN - learnN}개`
+    : `오늘 볼 단어를 다 봤어요. 새 단어는 내일 ${goalW()}개가 또 나와요.`;
 }
 
 $("#list").addEventListener("click", e=>{
@@ -2972,6 +3036,7 @@ function drawQ(){
 function qNext(ok){
   const x = qDeck[qi], k = keyOf(x), b = boxOf(k);
   logAct("w");
+  if (b === 0) logAct("n");                       // 처음 배운 새 단어 → 오늘 새 단어 목표에 셈
   if (ok){ if (b < 3) qUp++; setBox(k, Math.min(3, b + 1), false); }
   else { qMiss.push(x); setBox(k, 1, true); }
   qi++;
@@ -3476,11 +3541,13 @@ function openLesson(d){
 function closeLesson(){ document.body.classList.remove("lessonOn"); }
 /* 연습을 마친 뒤 돌아갈 곳: 레슨(1~40)이면 그 레슨, 상황별(101~)이면 실전 회화, "review"면 복습 탭 */
 function returnLabel(d){
+  if (d === "home") return "홈으로";
   if (d === "review") return "복습으로";
   if (d > LASTDAY) return "실전 회화로";
   return d === dayNo() ? "오늘의 레슨으로" : `Day ${d} 레슨으로`;
 }
 function returnTo(d){
+  if (d === "home"){ go(3); return; }
   if (d === "review"){ go(6); return; }
   if (d > LASTDAY){ allCat = "talk"; allOpen = d; go(4); return; }
   go(3);                                          // 레슨 아래 탭은 홈으로 두고, '오늘의 연습' 자리로 스크롤
@@ -3784,9 +3851,8 @@ const saveNotes = () => store.set("vb.notes", notes);
 function noteCount(){ return { all: notes.length, open: notes.filter(n => !n.en).length }; }
 function drawNoteTile(){
   const c = noteCount();
-  $("#hNoteN").textContent = !c.all ? "아직 없어요 · 막힌 말을 적어두세요"
-    : c.open ? `${c.all}개 · 영어 답 없는 게 ${c.open}개`
-             : `${c.all}개 · 전부 채웠어요`;
+  $("#hNoteN").textContent = !c.all ? "막힌 말을 적어두세요"
+    : c.open ? `영어 답 없는 게 ${c.open}개` : `${c.all}개 · 다 채웠어요`;
 }
 function openNote(){ renderNote(); document.body.classList.add("noteOn"); $("#note").scrollTop = 0; }
 function closeNote(){
@@ -3920,7 +3986,9 @@ function allMineHtml(){
              miss ? `${miss}개 · 한 번에 맞히면 빠져요` : "아직 없어요 · 퀴즈에서 틀린 단어가 모여요")
     + row("note", "var(--tint)", '<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H16l4 4v11.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5z"></path><path d="M8 11h8M8 15h5"></path>',
              "막혔던 말 메모", nc.all ? `${nc.all}개 · 영어 답 없는 게 ${nc.open}개` : "아직 없어요")
-    + row("got", "var(--mint)", '<path d="m5 12.5 4.5 4.5L19 7.5"></path>', "외운 단어", `외운 ${c[2]}개 · 외외운 ${c[3]}개`);
+    + row("got", "var(--mint)", '<path d="m5 12.5 4.5 4.5L19 7.5"></path>', "외운 단어", `외운 ${c[2]}개 · 외외운 ${c[3]}개`)
+    + row("goal", "var(--honey)", '<circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3.5"></circle>', "하루 목표",
+          `새 단어 ${goalW()}개 · 문장 ${goalS()}개 · 눌러서 바꾸기`);
 }
 function renderAll(){
   [...$("#allChips").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.ac === allCat));
@@ -3959,7 +4027,7 @@ $("#p4").addEventListener("click", e => {
 
 /* ══ 학습 통계 ══ */
 function renderStats(){
-  const t = actLog[dkey()] || {}, left = Math.ceil((DEPART - new Date()) / 86400000);
+  const t = todayLog();
   const c = boxCounts(), miss = WORDS.filter(x => isMissed(keyOf(x))).length;
   const days = []; for (let i = 6; i >= 0; i--){ const d = new Date(); d.setDate(d.getDate() - i); days.push(d); }
   const vals = days.map(d => dayTotal(dkey(d))), mx = Math.max(1, ...vals);
@@ -3969,10 +4037,10 @@ function renderStats(){
   $("#stBody").innerHTML = `
     <div class="stTop">
       <div class="stBig"><b>${streakDays()}</b><span>일 연속 공부 중</span></div>
-      <div class="stSide">${cell(`Day ${curDay}`, `/ ${LASTDAY} 레슨 진행 중`)}${cell(left > 0 ? "D-" + left : "출발!", "칸쿤까지")}</div>
+      <div class="stSide">${cell(`Day ${curDay}`, `/ ${LASTDAY} 레슨 진행 중`)}${cell(`${c[2] + c[3]}개`, "외운 단어")}</div>
     </div>
     <div class="stCard"><h3>오늘 한 공부</h3>
-      <div class="stRow">${cell(+t.w || 0, "단어")}${cell(+t.s || 0, "문장")}${cell(+t.t || 0, "말하기")}</div></div>
+      <div class="stRow">${cell(`${+t.n || 0}/${goalW()}`, "새 단어")}${cell(`${+t.s || 0}/${goalS()}`, "문장")}${cell(+t.w || 0, "푼 단어")}${cell(+t.t || 0, "말하기")}</div></div>
     <div class="stCard"><h3>최근 7일</h3>
       <div class="stWeek">${days.map((d, i) => `<div class="${i === 6 ? "now" : ""}"><em>${vals[i] || ""}</em>
         <i style="height:${vals[i] ? 8 + vals[i] / mx * 72 : 4}px"></i><span>${i === 6 ? "오늘" : WK[d.getDay()]}</span></div>`).join("")}</div>
@@ -4024,16 +4092,56 @@ $("#p7").addEventListener("click", e => {
   const m = e.target.closest("[data-mine]"); if (!m) return;
   if (m.dataset.mine === "miss") showWords("miss", "all");
   else if (m.dataset.mine === "note") openNote();
+  else if (m.dataset.mine === "goal") openSetup(false);
   else showWords("2", "all");
 });
 
+/* ══ 하루 목표 정하기 ══ 처음 켤 때 한 번 뜨고, 홈·내 기록에서 다시 열 수 있습니다 */
+let suPick = { w: 20, s: 10 }, suFirst = false;
+function openSetup(first){
+  suFirst = !!first; suPick = { w: goalW(), s: goalS() };
+  renderSetup();
+  document.body.classList.add("setupOn");
+  $("#setup").scrollTop = 0;
+}
+function closeSetup(){ document.body.classList.remove("setupOn"); }
+function renderSetup(){
+  const WH = {5:"가볍게", 10:"보통", 20:"꾸준히", 30:"집중해서"}, SH = {5:"가볍게", 10:"보통", 15:"꾸준히", 20:"집중해서"};
+  const opt = (k, v, hint) => `<button type="button" class="suOpt" data-su="${k}" data-v="${v}" aria-pressed="${suPick[k] === v}">
+    <b>${v}</b><span>${hint}</span></button>`;
+  $("#suBody").innerHTML = `
+    ${suFirst ? "" : `<div class="lsTop"><button class="btn" id="suX" type="button">닫기</button></div>`}
+    <div class="lsHero"${suFirst ? ' style="margin-top:8px"' : ""}><span class="d">${suFirst ? "반가워요!" : "하루 목표"}</span>
+      <span class="t">${suFirst ? "하루에 얼마나 공부할까요?" : "하루 목표 바꾸기"}</span>
+      <span class="d">나중에 홈이나 '내 기록'에서 언제든 바꿀 수 있어요.</span></div>
+    <section class="lsSec"><h2>하루에 새로 외울 단어</h2>
+      <p class="hint">새 단어는 하루에 이만큼만 나와요. 외우는 중인 단어 복습은 따로 나와요.</p>
+      <div class="suGrid">${GOAL_W.map(v => opt("w", v, WH[v])).join("")}</div></section>
+    <section class="lsSec"><h2>하루에 연습할 문장</h2>
+      <p class="hint">문장 조립 게임 한 판에 나오는 문장 수예요.</p>
+      <div class="suGrid">${GOAL_S.map(v => opt("s", v, SH[v])).join("")}</div></section>
+    <button class="btn go suSave" id="suSave" type="button">${suFirst ? "이대로 시작하기" : "저장하기"}</button>`;
+}
+$("#suBody").addEventListener("click", e => {
+  const o = e.target.closest("[data-su]");
+  if (o){ suPick[o.dataset.su] = +o.dataset.v; renderSetup(); return; }
+  if (e.target.closest("#suX")){ closeSetup(); return; }
+  if (!e.target.closest("#suSave")) return;
+  goal = { w: suPick.w, s: suPick.s };
+  store.set("vb.goal", goal);
+  closeSetup();
+  if (!deckDay) newRound();                       // 문장 수가 바뀌었으면 새 판으로
+  renderWords(); renderHome(); refreshTab();
+});
+
 /* 시작 — 한 곳에서 오류가 나도 나머지는 계속 실행됩니다 */
-[drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), renderHome]
+[drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), renderHome,
+ () => { if (!goal) openSetup(true); }]
   .forEach(fn => { try{ fn(); }catch(e){ console.error(e); } });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=23"></script>
-<script src="sync.js?v=23"></script>
+<script src="firebase-config.js?v=24"></script>
+<script src="sync.js?v=24"></script>
 
 </body></html>

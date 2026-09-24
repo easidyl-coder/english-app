@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=21"></script>
+<script src="ipa.js?v=22"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -620,6 +620,37 @@
   .hBars b{font-size:18px;font-weight:800}
   .hBars i{display:block;width:100%;border-radius:8px}
   .hBars span{font-size:12px;color:var(--ink-2)}
+  /* ═══ 전체 학습 ═══ */
+  .allHead{padding-top:22px}
+  .allHead h2{font-family:"Jua",sans-serif;font-weight:400;font-size:24px;margin:0}
+  .allHead p{margin:4px 0 0;font-size:13px;color:var(--ink-2)}
+  .allChips{display:flex;gap:8px;margin:16px 0 14px;overflow-x:auto;padding-bottom:2px}
+  .allChips button{flex:0 0 auto;font:inherit;font-size:14px;font-weight:800;height:40px;padding:0 16px;
+    border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer}
+  .allChips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .allHint{font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
+  .allSub{font-family:"Jua",sans-serif;font-weight:400;font-size:19px;margin:26px 0 0}
+  .allGo{display:flex;margin:0 0 12px} .allGo .btn{flex:1;min-height:50px}
+  .allCard{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:10px}
+  .allCard summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:10px}
+  .allCard summary::-webkit-details-marker{display:none}
+  .allCard summary .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .allCard summary b{font-size:15.5px;line-height:1.35}
+  .allCard summary small{font-size:12.5px;color:var(--ink-2)}
+  .allCard summary .tag{font-size:11.5px;font-weight:800;color:var(--accent);background:var(--accent-soft);
+    border-radius:8px;padding:2px 8px;flex:0 0 auto}
+  .allCard summary .tag.later{color:var(--ink-3);background:var(--line-2)}
+  .allCard summary::after{content:"";flex:0 0 auto;width:8px;height:8px;margin:-4px 4px 0 0;
+    border-right:2.4px solid var(--ink-3);border-bottom:2.4px solid var(--ink-3);transform:rotate(45deg)}
+  .allCard[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+  .allIn{padding:0 16px 14px}
+  .allIn .gram{box-shadow:none;border:0;padding:0;background:transparent}
+  .allIn .row2{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+  .allIn .row2 .btn{flex:1 1 auto}
+  .allS{padding:10px 0;border-top:1px solid var(--line-2)}
+  .allS .en{font-weight:800;font-size:16px;line-height:1.4}
+  .allS .ko{font-size:13px;color:var(--ink-2)}
+  .allS .row2 .btn{flex:0 0 auto;font-size:13px;padding:6px 12px;min-height:38px}
 </style>
 
 <div class="shell">
@@ -639,6 +670,7 @@
   <div class="shell navIn">
     <button id="t3" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"></path></svg>홈</button>
     <button id="t0" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="8" height="7" rx="1.5"></rect><rect x="13" y="4" width="8" height="7" rx="1.5"></rect><rect x="3" y="14" width="18" height="6" rx="1.5"></rect></svg>문장 조립</button>
+    <button id="t4" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"></rect></svg>전체 학습</button>
     <button id="t1" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"></path><path d="M5 18a2 2 0 0 1 2-2h12"></path></svg>단어</button>
     <button id="t2" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 17v-4a8 8 0 0 1 16 0v4"></path><rect x="3" y="14" width="4" height="7" rx="1.5"></rect><rect x="17" y="14" width="4" height="7" rx="1.5"></rect></svg>듣기·말하기</button>
   </div>
@@ -676,6 +708,11 @@
       <button class="hTile wide" id="hNote" type="button">
         <span class="hIcon" style="background:var(--tint-2,#E9EAF7)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H16l4 4v11.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5z"></path><path d="M8 11h8M8 15h5"></path></svg></span>
         <span class="tx"><span class="nm">막혔던 말 메모</span><span class="ds" id="hNoteN">아직 없어요</span></span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
+      </button>
+      <button class="hTile wide" data-go="4" type="button">
+        <span class="hIcon" style="background:var(--tint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"></rect></svg></span>
+        <span class="tx"><span class="nm">전체 학습</span><span class="ds">단어 · 문법 · 실전 회화 · 듣기</span></span>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
       </button>
     </div>
@@ -770,6 +807,7 @@
       <button data-f="1" aria-pressed="false">외우는 중</button>
       <button data-f="2" aria-pressed="false">외운</button>
       <button data-f="3" aria-pressed="false">외외운</button>
+      <button data-f="miss" aria-pressed="false">헷갈림</button>
     </div>
     <p class="lead">줄을 누르면 예문이 펼쳐집니다. 오른쪽 단계 배지를 누르면 단계를 직접 바꿀 수 있습니다.</p>
     <div id="list"></div>
@@ -781,6 +819,20 @@
     <div class="note" id="capNote"></div>
     <p class="lead">뜻을 보고 영어로 <b>소리 내어</b> 말해 본 다음, 들어보기로 원어민 발음과 비교하세요.</p>
     <div id="listen"></div>
+  </section>
+
+  <!-- 전체 학습 -->
+  <section class="panel" id="p4">
+    <div class="allHead"><h2>전체 학습</h2><p>오늘의 레슨과 따로, 하고 싶은 것만 골라서 연습해요.</p></div>
+    <div class="allChips" id="allChips">
+      <button type="button" data-ac="word" aria-pressed="true">단어</button>
+      <button type="button" data-ac="gram" aria-pressed="false">문법</button>
+      <button type="button" data-ac="talk" aria-pressed="false">실전 회화</button>
+      <button type="button" data-ac="listen" aria-pressed="false">듣기</button>
+    </div>
+    <div id="allBody"></div>
+    <h3 class="allSub">내 기록</h3>
+    <div class="hGrid" id="allMine"></div>
   </section>
 
 </div>
@@ -2339,13 +2391,14 @@ function headStats(){
 /* ── 탭 ── */
 function go(i){
   if (i === 3){ renderHome(); drawNoteTile(); }
-  [0,1,2,3].forEach(j => {
+  [0,1,2,3,4].forEach(j => {
     $("#t"+j).setAttribute("aria-selected", j===i);
     $("#p"+j).classList.toggle("on", j===i);
   });
   window.scrollTo(0,0);
+  if (i === 4) renderAll();                       // 화면이 보인 뒤에 그려야 펼칠 곳으로 스크롤됩니다
 }
-[0,1,2,3].forEach(i => $("#t"+i).addEventListener("click", () => go(i)));
+[0,1,2,3,4].forEach(i => $("#t"+i).addEventListener("click", () => go(i)));
 
 /* ── 홈 ── */
 /* 날짜별 오늘의 문법 */
@@ -2467,7 +2520,7 @@ function newRound(day){
   deckDay = (typeof day === "number" && day > 0) ? day : 0;
   if (deckDay){
     const own  = shuffle([...sentsOfDay(deckDay)]);
-    const prev = deckDay > 1 ? shuffle([...sentsOfDay(deckDay - 1)]).slice(0, 2) : [];
+    const prev = deckDay > 1 && deckDay <= LASTDAY ? shuffle([...sentsOfDay(deckDay - 1)]).slice(0, 2) : [];   // 상황별(101~)은 어제 복습 없음
     deck = own.concat(prev).slice(0, 10);          // 오늘 문장 + 어제 문장 2개 복습
   } else {
     const lvPool = SENTS.filter(inMyLevel);
@@ -2481,8 +2534,9 @@ function newRound(day){
   draw();
 }
 function drawMode(){
-  $("#gModeTx").textContent = deckDay ? `레슨 문장 · Day ${deckDay}${GRAM[deckDay] ? " " + GRAM[deckDay].t : ""}`
-                                      : "전체 문장에서 랜덤";
+  $("#gModeTx").textContent = deckDay > LASTDAY ? `실전 회화 · ${DAYS[deckDay] || ""}`
+    : deckDay ? `레슨 문장 · Day ${deckDay}${GRAM[deckDay] ? " " + GRAM[deckDay].t : ""}`
+    : "전체 문장에서 랜덤";
   $("#gModeBtn").textContent = deckDay ? "전체 문장으로" : "레슨 문장으로";
 }
 $("#gModeBtn").addEventListener("click", () => newRound(deckDay ? 0 : dayNo()));
@@ -2565,10 +2619,10 @@ function finishRound(){
       ${missed.length ? `<div class="missed">${missed.map(m=>
         `<div class="row"><span class="en">${m.en}</span><span class="ko">${m.ko}</span></div>`).join("")}</div>` : ""}
       <div class="qBtns"><button class="btn${deckDay ? "" : " go"}" id="gAgain">한 번 더</button>
-        ${deckDay ? `<button class="btn go" id="gBack">${lessonLabel(deckDay)}</button>` : ""}</div>
+        ${deckDay ? `<button class="btn go" id="gBack">${returnLabel(deckDay)}</button>` : ""}</div>
     </div>`;
   $("#gAgain").addEventListener("click", () => newRound(deckDay));
-  if (deckDay) $("#gBack").addEventListener("click", () => backToLesson(deckDay));
+  if (deckDay) $("#gBack").addEventListener("click", () => returnTo(deckDay));
 }
 
 /* ══ 단어 ══ */
@@ -2610,6 +2664,7 @@ function visibleWords(){
   const t = filterText.trim().toLowerCase();
   let pool = WORDS;
   if (mode === "today"){ const s = new Set(todayWords().map(keyOf)); pool = WORDS.filter(x=>s.has(keyOf(x))); }
+  else if (mode === "miss"){ pool = WORDS.filter(x => isMissed(keyOf(x))); }
   else if (mode !== "all"){ const b = +mode; pool = WORDS.filter(x => boxOf(keyOf(x)) === b); }
   if (catMode !== "all") pool = pool.filter(x => x.c === catMode);
   if (!t) return pool;
@@ -2621,7 +2676,9 @@ function renderWords(){
   items.forEach(x=>{ const g = x.d != null ? "d"+x.d : "c"+(x.c||"기타");
     if(!byDay.has(g)) byDay.set(g,[]); byDay.get(g).push(x); });
   const el = $("#list");
-  if (!items.length){ el.innerHTML = '<p class="empty">해당하는 단어가 없습니다.</p>'; }
+  if (!items.length){ el.innerHTML = mode === "miss"
+    ? '<p class="empty">헷갈린 단어가 없어요. 퀴즈에서 한 번이라도 틀린 단어가 여기에 모여요.</p>'
+    : '<p class="empty">해당하는 단어가 없습니다.</p>'; }
   else {
     const order = k => k[0]==="d" ? 10000 - (+k.slice(1))
                                   : 20000 + Math.max(0, CATS.indexOf(k.slice(1)));
@@ -2821,9 +2878,9 @@ function qFinish(){
     ${qMiss.length? `<div class="missed">${qMiss.map(m=>
       `<div class="row"><span class="en">${m.w}</span><span class="ko">${m.k}</span></div>`).join("")}</div>`:""}
     <div class="qBtns"><button class="btn" id="qAgain">한 번 더</button>
-    <button class="btn go" id="qEnd">${qFrom ? lessonLabel(qFrom) : "목록으로"}</button></div></div>`;
+    <button class="btn go" id="qEnd">${qFrom ? returnLabel(qFrom) : "목록으로"}</button></div></div>`;
   $("#qAgain").addEventListener("click", () => startQuiz(qList, qFrom));
-  $("#qEnd").addEventListener("click", () => { const d = qFrom; endQuiz(); if (d) backToLesson(d); });
+  $("#qEnd").addEventListener("click", () => { const d = qFrom; endQuiz(); if (d) returnTo(d); });
   renderWords();
 }
 function endQuiz(){ clearTimer(); document.body.classList.remove("quizOn"); }
@@ -3309,10 +3366,14 @@ function openLesson(d){
   document.getElementById("lesson").scrollTop = 0;
 }
 function closeLesson(){ document.body.classList.remove("lessonOn"); }
-function lessonLabel(d){ return d === dayNo() ? "오늘의 레슨으로" : `Day ${d} 레슨으로`; }
-/* 연습을 마치고 레슨으로 돌아옵니다. 아래 탭은 홈으로 두고, '오늘의 연습' 자리로 스크롤합니다 */
-function backToLesson(d){
-  go(3);
+/* 연습을 마친 뒤 돌아갈 곳: 레슨(1~40)이면 그 레슨, 상황별(101~)이면 전체 학습의 실전 회화 */
+function returnLabel(d){
+  if (d > LASTDAY) return "실전 회화로";
+  return d === dayNo() ? "오늘의 레슨으로" : `Day ${d} 레슨으로`;
+}
+function returnTo(d){
+  if (d > LASTDAY){ allCat = "talk"; allOpen = d; go(4); return; }
+  go(3);                                          // 레슨 아래 탭은 홈으로 두고, '오늘의 연습' 자리로 스크롤
   openLesson(d);
   const b = $("#lsBody [data-go2]");
   if (b) b.scrollIntoView({ block: "center" });
@@ -3618,7 +3679,10 @@ function drawNoteTile(){
              : `${c.all}개 · 전부 채웠어요`;
 }
 function openNote(){ renderNote(); document.body.classList.add("noteOn"); $("#note").scrollTop = 0; }
-function closeNote(){ document.body.classList.remove("noteOn"); }
+function closeNote(){
+  document.body.classList.remove("noteOn");
+  if ($("#p4").classList.contains("on")) renderAll();          // 메모 개수를 전체 학습 화면에도 맞춰 줍니다
+}
 function renderNote(){
   const list = notes.slice().sort((a,b) => b.t - a.t);
   const when = t => { const d = new Date(t); return `${d.getMonth()+1}월 ${d.getDate()}일`; };
@@ -3680,13 +3744,121 @@ $("#ntBody").addEventListener("keydown", e => {
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeNote(); });
 
+/* ══ 전체 학습 ══ 오늘의 레슨과 별개로 단어·문법·실전 회화·듣기를 골라서 봅니다 */
+let allCat = "word", allOpen = 0;                 // allOpen: 펼쳐서 보여줄 상황(101~) 번호
+const TALK = Object.keys(DAYS).map(Number).filter(d => d > LASTDAY).sort((a, b) => a - b);
+const CHEV = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>';
+const ico = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+
+function allSentHtml(x){
+  return `<div class="allS"><div class="en">${esc(x.en)}</div><div class="ko">${esc(x.ko)}</div>
+    <div class="row2"><button class="btn" data-say="${esc(x.en)}">들어보기</button>
+    <button class="btn" data-say="${esc(x.en)}" data-slow="1">느리게</button></div></div>`;
+}
+function allWordHtml(){
+  const st = {};
+  WORDS.filter(inMyLevel).forEach(x => {
+    if (!x.c) return;
+    st[x.c] = st[x.c] || { n:0, got:0 };
+    st[x.c].n++; if (boxOf(keyOf(x)) >= 2) st[x.c].got++;
+  });
+  return `<p class="allHint">분야를 누르면 그 분야 단어 목록이 열려요. 목록 위 "이 목록 퀴즈"로 바로 풀 수 있어요.</p>
+    <div class="catGrid">${CATS.filter(c => st[c]).map(c => {
+      const s = st[c], pct = Math.round(s.got / s.n * 100);
+      return `<button class="catCard" data-allcat="${esc(c)}"><span class="dot"></span><span class="nm">${esc(c)}</span>
+        <span class="num">${s.got} / ${s.n}개 외움</span><span class="pbar"><i style="width:${pct}%"></i></span></button>`;
+    }).join("")}</div>`;
+}
+function allGramHtml(){
+  const today = dayNo();
+  const days = Object.keys(GRAM).map(Number).filter(d => d <= LASTDAY).sort((a, b) => a - b);
+  return `<p class="allHint">레슨 ${days.length}개의 문법을 한곳에 모았어요. 눌러서 펼쳐 보세요.</p>` + days.map(d => {
+    const g = GRAM[d], done = d <= today;
+    return `<details class="allCard"><summary><span class="tx"><b>Day ${d} · ${esc(g.t)}</b><small>${esc(g.f)}</small></span>
+      <span class="tag${done ? "" : " later"}">${d === today ? "오늘" : done ? "배움" : "예정"}</span></summary>
+      <div class="allIn"><div class="gram"><p style="margin-top:0">${esc(g.d)}</p>
+        <div class="miss"><b>자주 하는 실수</b>${esc(g.x)}</div></div>
+        ${done ? `<div class="row2"><button class="btn" data-alllesson="${d}">Day ${d} 레슨 보기</button></div>` : ""}</div></details>`;
+  }).join("");
+}
+function allTalkHtml(){
+  return `<p class="allHint">여행에서 바로 쓰는 상황별 문장이에요. 레슨 순서와 상관없이 골라서 연습하세요.</p>` + TALK.map(d => {
+    const ss = SENTS.filter(x => x.d === d), ws = WORDS.filter(x => x.d === d);
+    return `<details class="allCard" data-sit="${d}"${d === allOpen ? " open" : ""}><summary><span class="tx">
+      <b>${esc(DAYS[d])}</b><small>문장 ${ss.length}개 · 단어 ${ws.length}개</small></span></summary>
+      <div class="allIn"><div class="row2">
+        ${ss.length ? `<button class="btn go" data-sitsent="${d}">문장 조립하기</button>` : ""}
+        ${ws.length ? `<button class="btn" data-sitquiz="${d}">단어 빈칸 퀴즈</button>` : ""}</div>
+        ${ss.map(allSentHtml).join("")}</div></details>`;
+  }).join("");
+}
+function allListenHtml(){
+  const today = dayNo(), ss = sentsOfDay(today);
+  return `<p class="allHint">뜻을 보고 먼저 소리 내어 말한 뒤, 들어보기로 원어민 발음과 비교하세요.
+      ${spoke.n ? `오늘 ${spoke.n}문장 말했어요.` : ""}</p>
+    <div class="allGo"><button class="btn go" data-allgo="2">듣기·말하기 열기</button></div>
+    <details class="allCard" open><summary><span class="tx"><b>오늘 레슨 문장 듣기</b>
+      <small>Day ${today} · ${ss.length}문장</small></span></summary>
+      <div class="allIn">${ss.map(allSentHtml).join("")}</div></details>`;
+}
+function allMineHtml(){
+  const miss = WORDS.filter(x => isMissed(keyOf(x))).length, c = boxCounts(), nc = noteCount();
+  const row = (key, bg, icon, nm, ds) => `<button class="hTile wide" type="button" data-mine="${key}">
+    <span class="hIcon" style="background:${bg}">${ico(icon)}</span>
+    <span class="tx"><span class="nm">${nm}</span><span class="ds">${ds}</span></span>${CHEV}</button>`;
+  return row("miss", "var(--pink)", '<path d="M6 6l12 12M18 6 6 18"></path>', "헷갈린 단어",
+             miss ? `${miss}개 · 한 번에 맞히면 빠져요` : "아직 없어요 · 퀴즈에서 틀린 단어가 모여요")
+    + row("note", "var(--tint)", '<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H16l4 4v11.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5z"></path><path d="M8 11h8M8 15h5"></path>',
+             "막혔던 말 메모", nc.all ? `${nc.all}개 · 영어 답 없는 게 ${nc.open}개` : "아직 없어요")
+    + row("got", "var(--mint)", '<path d="m5 12.5 4.5 4.5L19 7.5"></path>', "외운 단어", `외운 ${c[2]}개 · 외외운 ${c[3]}개`);
+}
+function renderAll(){
+  [...$("#allChips").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.ac === allCat));
+  try{
+    $("#allBody").innerHTML = allCat === "gram" ? allGramHtml() : allCat === "talk" ? allTalkHtml()
+                            : allCat === "listen" ? allListenHtml() : allWordHtml();
+    $("#allMine").innerHTML = allMineHtml();
+  }catch(e){ $("#allBody").innerHTML = '<p class="allHint">불러오는 중 오류가 났어요. 화면 아래 빨간 글씨를 캡처해서 보여주세요.</p>'; throw e; }
+  if (allOpen){
+    const el = $(`#allBody [data-sit="${allOpen}"]`);
+    if (el) el.scrollIntoView({ block: "start" });
+    allOpen = 0;
+  }
+}
+/* 단어 탭을 원하는 필터·분야로 열어 줍니다 */
+function showWords(f, cat){
+  mode = f; catMode = cat; filterText = ""; $("#q").value = "";
+  [...$("#filters").children].forEach(x => x.setAttribute("aria-pressed", x.dataset.f === f));
+  go(1); renderWords();
+  $("#filters").scrollIntoView({ block: "center" });
+}
+$("#p4").addEventListener("click", e => {
+  const ch = e.target.closest("[data-ac]");
+  if (ch){ allCat = ch.dataset.ac; renderAll(); return; }
+  const say = e.target.closest("[data-say]");
+  if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
+  const cat = e.target.closest("[data-allcat]");
+  if (cat){ showWords("all", cat.dataset.allcat); return; }
+  const ls = e.target.closest("[data-alllesson]");
+  if (ls){ openLesson(+ls.dataset.alllesson); return; }
+  const ss = e.target.closest("[data-sitsent]");
+  if (ss){ newRound(+ss.dataset.sitsent); go(0); return; }
+  const sq = e.target.closest("[data-sitquiz]");
+  if (sq){ const d = +sq.dataset.sitquiz; go(1); renderWords(); startQuiz(wordsOfDay(d), d); return; }
+  if (e.target.closest("[data-allgo]")){ LPOOL = renderListen(); go(2); return; }
+  const m = e.target.closest("[data-mine]"); if (!m) return;
+  if (m.dataset.mine === "miss") showWords("miss", "all");
+  else if (m.dataset.mine === "note") openNote();
+  else showWords("2", "all");
+});
+
 /* 시작 — 한 곳에서 오류가 나도 나머지는 계속 실행됩니다 */
 [drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), renderHome]
   .forEach(fn => { try{ fn(); }catch(e){ console.error(e); } });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=21"></script>
-<script src="sync.js?v=21"></script>
+<script src="firebase-config.js?v=22"></script>
+<script src="sync.js?v=22"></script>
 
 </body></html>

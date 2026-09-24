@@ -27,7 +27,7 @@
   function label(){
     if (!btn) return;
     btn.disabled = false;
-    btn.textContent = user ? ((user.displayName || user.email || "내 계정").split(" ")[0]) : "로그인";
+    btn.textContent = user ? "내 계정" : "로그인";          // 이름·이메일은 화면에 띄우지 않음 (캡처해 공유할 때 개인정보가 보이지 않게)
   }
 
   const obj = v => v && typeof v === "object" && !Array.isArray(v) ? v : {};

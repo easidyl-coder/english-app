@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
-<title>서인의 영어 연습장</title>
+<title>영어 연습장</title>
 <script>
 /* 화면 어디서든 오류가 나면 아래에 빨간 글씨로 보여줍니다 (캡처해서 보여줄 수 있게). */
 (function(){
@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=30"></script>
+<script src="ipa.js?v=31"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -587,6 +587,10 @@
   .lvIntro .btn{ width:100%; min-height:56px; font-size:17px; margin-top:22px }
   .lvIntro .lvWait{ font-size:12.5px; color:var(--ink-2); text-align:center; margin:10px 0 0 }
   .lvResult .who{ font-size:14px; font-weight:800; color:var(--accent); margin:0 0 6px }
+  .lvPlace{ background:var(--accent-soft); border-radius:18px; padding:14px 16px; margin:0 0 14px; display:flex; flex-direction:column; gap:4px }
+  .lvPlace b{ font-size:15px; color:var(--accent) }
+  .lvPlace span{ font-size:13px; color:var(--ink-2); line-height:1.55 }
+  .lvPlace .btn{ align-self:flex-start; margin-top:8px; min-height:40px; font-size:13px; padding:0 14px }
   .lvCount{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:55vh; gap:10px }
   .lvCount b{ font-family:"Jua",sans-serif; font-weight:400; font-size:110px; line-height:1; color:var(--accent);
     animation:lvPop .8s ease-out }
@@ -775,7 +779,7 @@
 <div class="shell">
   <header>
     <p class="eyebrow">칸쿤 · LA 여행 영어</p>
-    <h1>서인의 영어 연습장</h1>
+    <h1>영어 연습장</h1>
     <div class="stats">
       <div class="stat"><span class="n" id="sTotal">0</span><span class="l">누적 단어</span></div>
       <div class="stat"><span class="n" id="sSent">0</span><span class="l">문장</span></div>
@@ -893,6 +897,7 @@
       <button data-f="3" aria-pressed="false">외외운</button>
       <button data-f="miss" aria-pressed="false">헷갈림</button>
     </div>
+    <p class="lead" id="wLvNote" hidden></p>
     <p class="lead">줄을 누르면 예문이 펼쳐집니다. 오른쪽 단계 배지를 누르면 단계를 직접 바꿀 수 있습니다.</p>
     <div id="list"></div>
 
@@ -1023,10 +1028,10 @@ const DAYS = {
   110: "처음 만난 사람과 스몰토크"
 };
 const WORDS = [
-  {d:1,lv:1,c:"사람·관계",w:"name",k:"이름",p:"네임",ex:"My name is Seoin.",exk:"제 이름은 서인이에요."},
+  {d:1,lv:1,c:"사람·관계",w:"name",k:"이름",p:"네임",ex:"My name is Mina.",exk:"제 이름은 미나예요."},
   {d:1,lv:1,c:"말·표현",w:"from",k:"~에서 온",p:"프롬",ex:"I'm from Korea.",exk:"저는 한국에서 왔어요."},
   {d:1,lv:1,c:"여행·교통",w:"Korea",k:"한국",p:"코리아",ex:"I'm from Korea.",exk:"저는 한국에서 왔어요."},
-  {d:1,lv:3,c:"사람·관계",w:"director",k:"감독",p:"디렉터",ex:"I'm a video director.",exk:"저는 영상 감독이에요."},
+  {d:1,lv:3,c:"사람·관계",w:"director",k:"감독",p:"디렉터",ex:"He's a movie director.",exk:"그는 영화감독이에요."},
   {d:1,lv:1,c:"사람·관계",w:"teacher",k:"선생님",p:"티처",ex:"I'm a teacher.",exk:"저는 선생님이에요."},
   {d:1,lv:1,c:"사람·관계",w:"student",k:"학생",p:"스튜던트",ex:"I'm a student.",exk:"저는 학생이에요."},
   {d:1,lv:1,c:"감정·상태",w:"hungry",k:"배고픈",p:"헝그리",ex:"I'm hungry.",exk:"저 배고파요."},
@@ -1055,8 +1060,8 @@ const WORDS = [
   {d:2,lv:1,c:"성질·정도",w:"very",k:"아주, 매우",p:"베리",ex:"You're very kind.",exk:"아주 친절하시네요."},
   {d:3,lv:1,c:"말·표현",w:"he",k:"그(남자)",p:"히",ex:"He's my husband.",exk:"그는 제 남편이에요."},
   {d:3,lv:1,c:"말·표현",w:"she",k:"그녀(여자)",p:"쉬",ex:"She's my friend.",exk:"그녀는 제 친구예요."},
-  {d:3,lv:1,c:"말·표현",w:"his",k:"그의",p:"히즈",ex:"His name is Dylan.",exk:"그의 이름은 딜런이에요."},
-  {d:3,lv:1,c:"말·표현",w:"her",k:"그녀의",p:"허",ex:"Her name is Seoin.",exk:"그녀의 이름은 서인이에요."},
+  {d:3,lv:1,c:"말·표현",w:"his",k:"그의",p:"히즈",ex:"His name is Tom.",exk:"그의 이름은 톰이에요."},
+  {d:3,lv:1,c:"말·표현",w:"her",k:"그녀의",p:"허",ex:"Her name is Mina.",exk:"그녀의 이름은 미나예요."},
   {d:3,lv:1,c:"사람·관계",w:"friend",k:"친구",p:"프렌드",ex:"He's my friend.",exk:"그는 제 친구예요."},
   {d:3,lv:1,c:"사람·관계",w:"brother",k:"형·오빠·남동생",p:"브라더",ex:"He's my brother.",exk:"그는 제 동생이에요."},
   {d:3,lv:1,c:"사람·관계",w:"sister",k:"누나·언니·여동생",p:"시스터",ex:"She's my sister.",exk:"그녀는 제 동생이에요."},
@@ -1965,7 +1970,7 @@ const SENTS = [
   {d:1,lv:1,c:"사람·관계",en:"I'm from Korea.",ko:"저는 한국에서 왔어요."},
   {d:1,lv:1,c:"사람·관계",en:"I'm not busy.",ko:"저 안 바빠요."},
   {d:1,lv:1,c:"사람·관계",en:"I'm a teacher.",ko:"저는 선생님이에요."},
-  {d:1,lv:2,c:"사람·관계",en:"I'm a video director.",ko:"저는 영상 감독이에요."},
+  {d:1,lv:2,c:"사람·관계",en:"I'm an office worker.",ko:"저는 회사원이에요."},
   {d:1,lv:1,c:"사람·관계",en:"I'm not hungry.",ko:"저 배 안 고파요."},
   {d:2,lv:1,c:"사람·관계",en:"You're right.",ko:"맞아요."},
   {d:2,lv:1,c:"사람·관계",en:"You're welcome.",ko:"천만에요."},
@@ -1977,8 +1982,8 @@ const SENTS = [
   {d:2,lv:2,c:"사람·관계",en:"You're so lucky.",ko:"정말 운이 좋으시네요."},
   {d:3,lv:1,c:"사람·관계",en:"He's my friend.",ko:"그는 제 친구예요."},
   {d:3,lv:1,c:"사람·관계",en:"She's my sister.",ko:"그녀는 제 동생이에요."},
-  {d:3,lv:1,c:"사람·관계",en:"His name is Dylan.",ko:"그의 이름은 딜런이에요."},
-  {d:3,lv:1,c:"사람·관계",en:"Her name is Seoin.",ko:"그녀의 이름은 서인이에요."},
+  {d:3,lv:1,c:"사람·관계",en:"His name is Tom.",ko:"그의 이름은 톰이에요."},
+  {d:3,lv:1,c:"사람·관계",en:"Her name is Mina.",ko:"그녀의 이름은 미나예요."},
   {d:3,lv:1,c:"사람·관계",en:"He's very tall.",ko:"그는 키가 아주 커요."},
   {d:3,lv:2,c:"사람·관계",en:"She's so smart.",ko:"그녀는 정말 똑똑해요."},
   {d:3,lv:2,c:"사람·관계",en:"She's my boss.",ko:"그녀는 제 상사예요."},
@@ -2431,7 +2436,7 @@ const SENTS = [
   {d:39,lv:3,c:"말·표현",en:"Anyway, let's talk about tomorrow.",ko:"아무튼, 내일 얘기를 해요."},
   {d:39,lv:3,c:"말·표현",en:"Really? That's interesting.",ko:"정말요? 흥미롭네요."},
   {d:39,lv:3,c:"말·표현",en:"Let me think for a second.",ko:"잠깐만 생각해 볼게요."},
-  {d:40,lv:3,c:"사람·관계",en:"Hi, I'm Seoin. Nice to meet you.",ko:"안녕하세요, 서인이라고 합니다. 반가워요."},
+  {d:40,lv:3,c:"사람·관계",en:"Hi, I'm Mina. Nice to meet you.",ko:"안녕하세요, 미나라고 합니다. 반가워요."},
   {d:40,lv:3,c:"사람·관계",en:"I'm from Korea, and I live in Seoul.",ko:"한국에서 왔고, 서울에 살아요."},
   {d:40,lv:3,c:"사람·관계",en:"I make videos for a living.",ko:"영상 만드는 일을 해요."},
   {d:40,lv:3,c:"사람·관계",en:"I usually shoot ads and interviews.",ko:"보통 광고랑 인터뷰를 촬영해요."},
@@ -2889,6 +2894,7 @@ function visibleWords(){
   if (mode === "today"){ const s = new Set(todayWords().map(keyOf)); pool = WORDS.filter(x=>s.has(keyOf(x))); }
   else if (mode === "miss"){ pool = WORDS.filter(x => isMissed(keyOf(x))); }
   else if (mode !== "all"){ const b = +mode; pool = WORDS.filter(x => boxOf(keyOf(x)) === b); }
+  if (!t && (mode === "all" || mode === "0")) pool = pool.filter(inMyLevel);   // 레벨이 있으면 내 레벨 ±1만 (찾기는 전체)
   if (catMode !== "all") pool = pool.filter(x => x.c === catMode);
   if (!t) return pool;
   return pool.filter(x => x.w.toLowerCase().includes(t) || x.k.includes(t));
@@ -2925,6 +2931,10 @@ function renderWords(){
     }).join("");
   }
   headStats(); renderToday(); renderCats();
+  const nt = $("#wLvNote"), lvOn = myLevel && !filterText.trim() && (mode === "all" || mode === "0");
+  nt.hidden = !lvOn;
+  if (lvOn){ const L = Math.round(myLevel);
+    nt.textContent = `내 레벨(${lvShow(myLevel)})에 맞는 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)} 단어만 보여요. 다른 단어는 위 찾기로 검색하세요.`; }
   if ($("#p3").classList.contains("on")) renderHome();
 }
 
@@ -3386,26 +3396,44 @@ function finishLevelTest(){
   const lv = tail.length ? Math.round(tail.reduce((a, b) => a + b, 0) / tail.length * 10) / 10 : 1;
   const L = Math.round(lv);
   myLevel = lv; store.set("vb.level", lv);
+  const oldDay = curDay, want = placeDay(lv), moved = want > curDay;      // 레슨은 앞으로만 옮김 (진도가 줄지 않게)
+  if (moved){ curDay = want; store.set("vb.day", curDay); }
   const n = WORDS.filter(inMyLevel).length, ns = SENTS.filter(inMyLevel).length;
   const hit = tLog.filter(r => r.ok).length;
   $("#qBar").style.width = "100%";
   $("#qCount").textContent = "";
-  const who = window.appUser && window.appUser.name ? window.appUser.name.split(" ")[0] : "";
+  const saved = loggedIn();
   $("#qBody").innerHTML = `
     <div class="lvResult">
-      ${who ? `<p class="who">${esc(who)}님의 레벨</p>` : ""}
+      <p class="who">내 레벨</p>
       <p class="big">${lvShow(lv)}</p>
       <p class="nm">레벨 ${lvShow(lv)} · ${LVNAME[L]}</p>
-      <p class="ds">${who ? "구글 계정에 저장했어요. " : ""}${tLog.length}문제 중 ${hit}개 맞혔어요. 이제 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)}에 맞춰
+      <p class="ds">${saved ? "구글 계정에 저장했어요. " : ""}${tLog.length}문제 중 ${hit}개 맞혔어요. 이제 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)}에 맞춰
         단어 ${n}개와 문장 ${ns}개가 나옵니다.</p>
     </div>
+    <div class="lvPlace" id="lvPlace">${placeHtml(moved, oldDay)}</div>
     ${lvPathSvg()}
     ${analysisHTML(L)}
     <div class="qBtns" style="margin-top:26px"><button class="btn go" id="lvDone">시작하기</button></div>`;
   bindPlan();
   $("#lvDone").addEventListener("click", ()=>{
-    endQuiz(); renderLevel(); renderWords(); newRound(); LPOOL = renderListen();
+    endQuiz(); renderLevel(); renderWords(); newRound(); LPOOL = renderListen(); renderHome();
   });
+  $("#lvPlace").addEventListener("click", e => {                 // 옮긴 레슨을 원래 Day로 되돌리기
+    if (!e.target.closest("#lvUndoDay")) return;
+    curDay = oldDay; store.set("vb.day", curDay);
+    $("#lvPlace").innerHTML = placeHtml(false, oldDay);
+  });
+}
+/* 레벨에 맞는 레슨 시작 Day — 레슨은 문법 순서라서, 이미 아는 부분은 건너뛰고 시작합니다 */
+const PLACE = [[2.5, 1, "be동사부터"], [3.5, 8, "일반동사부터"], [4.5, 15, "조동사부터"], [5.5, 22, "과거형부터"], [99, 31, "문장 길게 말하기부터"]];
+function placeDay(lv){ return PLACE.find(p => lv < p[0])[1]; }
+function placeHtml(moved, oldDay){
+  const g = GRAM[curDay], p = PLACE.find(x => x[1] === placeDay(myLevel));
+  return `<b>오늘의 레슨 · Day ${curDay}${g ? " " + esc(g.t) : ""}</b>
+    <span>${moved ? `레벨에 맞춰 ${p[2]} 시작하도록 Day ${oldDay}에서 Day ${curDay}로 옮겼어요. 앞 레슨은 레슨 '목록'에서 언제든 볼 수 있어요.`
+                  : `지금 진도(Day ${curDay})를 그대로 이어가요.`}</span>
+    ${moved ? `<button class="btn" id="lvUndoDay" type="button">원래대로 Day ${oldDay}부터 하기</button>` : ""}`;
 }
 
 /* ══ 테스트 결과 분석 ══ */
@@ -3861,12 +3889,21 @@ function returnTo(d){
   const b = $("#lsBody [data-go2]");
   if (b) b.scrollIntoView({ block: "center" });
 }
+/* 레슨 문장은 레벨 1~3이라 레벨 4 이상에겐 쉽다 → 내 레벨 ±1 문장 4개를 Day마다 골라 덧붙인다 */
+function levelChallenge(day, own){
+  const L = Math.round(myLevel || 0);
+  if (L < 4 || day > LASTDAY) return [];
+  const skip = new Set(own.map(x => x.en));
+  const pool = SENTS.filter(x => x.lv != null && x.lv >= 4 && Math.abs(x.lv - L) <= 1 && !skip.has(x.en));
+  return pickBy(pool, 4, day * 31 + L);
+}
 function renderLesson(day){
   const today = dayNo(), isToday = day === today, g = GRAM[day];
   const todayS = sentsOfDay(day);
   const yestS  = day > 1 ? sentsOfDay(day - 1).slice(0, 3) : [];
   const tw     = wordsOfDay(day);
   const yw     = day > 1 ? wordsOfDay(day - 1).slice(0, 5) : [];
+  const challenge = levelChallenge(day, todayS);
   let no = 0; const N = () => ++no;              // 섹션 번호는 있는 것만 세어서 붙입니다
   const wCard = x => `<div class="lsCard"><div class="lsW"><b>${esc(x.w)}</b>
       ${ipaOf(x.w) ? `<span class="ipa">[${esc(ipaOf(x.w))}]</span>` : ""}
@@ -3916,6 +3953,10 @@ function renderLesson(day){
     <section class="lsSec"><h2>${N()}. 오늘의 단어 ${tw.length}개</h2>
       <p class="hint">예문과 함께 소리 내어 읽으면 더 오래 남아요.</p>
       ${tw.map(wCard).join("")}</section>
+
+    ${challenge.length ? `<section class="lsSec"><h2>${N()}. 내 레벨 도전 문장</h2>
+      <p class="hint">레벨 ${lvShow(myLevel)}에 맞춘 문장이에요. 오늘 배운 문법을 떠올리며 소리 내어 읽어 보세요.</p>
+      ${challenge.map(sCard).join("")}</section>` : ""}
 
     ${isToday ? `<section class="lsSec"><h2>${N()}. 오늘의 연습</h2>
       <div class="lsDo">
@@ -4450,7 +4491,7 @@ $("#suBody").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=30"></script>
-<script src="sync.js?v=30"></script>
+<script src="firebase-config.js?v=31"></script>
+<script src="sync.js?v=31"></script>
 
 </body></html>

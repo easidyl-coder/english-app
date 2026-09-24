@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=20"></script>
+<script src="ipa.js?v=21"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -2564,11 +2564,11 @@ function finishRound(){
       <p class="lab">${missed.length? "틀린 문장은 아래에서 다시 보세요." : "전부 맞히셨습니다."}</p>
       ${missed.length ? `<div class="missed">${missed.map(m=>
         `<div class="row"><span class="en">${m.en}</span><span class="ko">${m.ko}</span></div>`).join("")}</div>` : ""}
-      <div class="qBtns"><button class="btn go" id="gAgain">한 번 더</button>
-        ${deckDay ? `<button class="btn" id="gBack">Day ${deckDay} 레슨으로</button>` : ""}</div>
+      <div class="qBtns"><button class="btn${deckDay ? "" : " go"}" id="gAgain">한 번 더</button>
+        ${deckDay ? `<button class="btn go" id="gBack">${lessonLabel(deckDay)}</button>` : ""}</div>
     </div>`;
   $("#gAgain").addEventListener("click", () => newRound(deckDay));
-  if (deckDay) $("#gBack").addEventListener("click", () => openLesson(deckDay));
+  if (deckDay) $("#gBack").addEventListener("click", () => backToLesson(deckDay));
 }
 
 /* ══ 단어 ══ */
@@ -2685,8 +2685,11 @@ $("#tHide").addEventListener("click", e=>{
 
 /* 단어 퀴즈 */
 let qDeck=[], qi=0, qMiss=[], qUp=0;
+let qList = null, qFrom = 0;                      // qFrom: 레슨에서 시작했으면 그 Day (끝나면 레슨으로 돌아감)
 const MISS_MAX = 10;                              // 한 번 퀴즈에 섞어 넣는 헷갈린 단어 최대 개수
-function startQuiz(list){
+function startQuiz(list, fromDay){
+  qList = Array.isArray(list) && list.length ? list : null;
+  qFrom = typeof fromDay === "number" ? fromDay : 0;
   const pool = Array.isArray(list) && list.length ? list : visibleWords();
   if(!pool.length) return;
   const base = Array.isArray(list) && list.length ? [...pool] : shuffle([...pool]).slice(0, Math.min(20, pool.length));
@@ -2818,9 +2821,9 @@ function qFinish(){
     ${qMiss.length? `<div class="missed">${qMiss.map(m=>
       `<div class="row"><span class="en">${m.w}</span><span class="ko">${m.k}</span></div>`).join("")}</div>`:""}
     <div class="qBtns"><button class="btn" id="qAgain">한 번 더</button>
-    <button class="btn go" id="qEnd">목록으로</button></div></div>`;
-  $("#qAgain").addEventListener("click", startQuiz);
-  $("#qEnd").addEventListener("click", endQuiz);
+    <button class="btn go" id="qEnd">${qFrom ? lessonLabel(qFrom) : "목록으로"}</button></div></div>`;
+  $("#qAgain").addEventListener("click", () => startQuiz(qList, qFrom));
+  $("#qEnd").addEventListener("click", () => { const d = qFrom; endQuiz(); if (d) backToLesson(d); });
   renderWords();
 }
 function endQuiz(){ clearTimer(); document.body.classList.remove("quizOn"); }
@@ -3306,6 +3309,14 @@ function openLesson(d){
   document.getElementById("lesson").scrollTop = 0;
 }
 function closeLesson(){ document.body.classList.remove("lessonOn"); }
+function lessonLabel(d){ return d === dayNo() ? "오늘의 레슨으로" : `Day ${d} 레슨으로`; }
+/* 연습을 마치고 레슨으로 돌아옵니다. 아래 탭은 홈으로 두고, '오늘의 연습' 자리로 스크롤합니다 */
+function backToLesson(d){
+  go(3);
+  openLesson(d);
+  const b = $("#lsBody [data-go2]");
+  if (b) b.scrollIntoView({ block: "center" });
+}
 function renderLesson(day){
   const today = dayNo(), isToday = day === today, g = GRAM[day];
   const todayS = sentsOfDay(day);
@@ -3396,7 +3407,7 @@ $("#lsBody").addEventListener("click", e => {
   const g = e.target.closest("[data-go2]"); if (!g) return;
   closeLesson();
   if (g.dataset.go2 === "sent"){ newRound(LSDAY || dayNo()); go(0); }
-  else if (g.dataset.go2 === "quiz"){ go(1); renderWords(); startQuiz(wordsOfDay(LSDAY || dayNo())); }
+  else if (g.dataset.go2 === "quiz"){ go(1); renderWords(); startQuiz(wordsOfDay(LSDAY || dayNo()), LSDAY || dayNo()); }
   else { LPOOL = renderListen(); go(2); }
 });
 $("#hLesson").addEventListener("click", () => openLesson());
@@ -3675,7 +3686,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeNote();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=20"></script>
-<script src="sync.js?v=20"></script>
+<script src="firebase-config.js?v=21"></script>
+<script src="sync.js?v=21"></script>
 
 </body></html>

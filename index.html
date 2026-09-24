@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=19"></script>
+<script src="ipa.js?v=20"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -2282,11 +2282,15 @@ if (!boxes || typeof boxes !== "object" || Array.isArray(boxes)){
 const saveBoxes = () => store.set("vb.box", boxes);
 const boxOf = k => (boxes[k] && boxes[k].b) || 0;
 const stampOf = k => (boxes[k] && boxes[k].t) || 0;
-function setBox(k, b){
+/* missed: true = 헷갈린 단어로 표시(m:1), false = 표시 지우기, 안 넘기면 원래대로 둠 */
+function setBox(k, b, missed){
+  const keep = !!(boxes[k] && boxes[k].m);
   b = Math.round(b);
   boxes[k] = {b: Math.max(0, Math.min(3, b)), t: Date.now()};   // 0단계도 시간을 남겨야 기기 간에 맞춰집니다
+  if (missed === undefined ? keep : missed) boxes[k].m = 1;
   saveBoxes();
 }
+const isMissed = k => !!(boxes[k] && boxes[k].m);
 const isDue = k => { const b = boxOf(k); return b >= 2 && Date.now() - stampOf(k) >= WAIT[b]; };
 
 function todayWords(){
@@ -2433,6 +2437,26 @@ function speak(text, rate){
 }
 if (hasTTS) speechSynthesis.onvoiceschanged = ()=>{};
 
+/* 정답 소리 — 파일 없이 '딩동' 두 음을 만듭니다. 누른 순간에 불러야 휴대폰에서 소리가 납니다 */
+let actx = null;
+function ding(){
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    if (!actx) actx = new AC();
+    if (actx.state === "suspended") actx.resume();
+    const t = actx.currentTime;
+    [[880, 0], [1318.5, 0.09]].forEach(([f, d]) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t + d);
+      g.gain.exponentialRampToValueAtTime(0.25, t + d + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.28);
+      o.connect(g); g.connect(actx.destination);
+      o.start(t + d); o.stop(t + d + 0.3);
+    });
+  }catch(e){}
+}
+
 /* ══ 문장 조립 ══ */
 let deck=[], idx=0, picked=[], bankWords=[], streak=0, correct=0, missed=[], locked=false;
 
@@ -2515,7 +2539,7 @@ $("#gCheck").addEventListener("click", () => {
   locked = true;
   $("#gSlot").className = "slot " + (ok?"right":"wrong");
   if (ok){
-    correct++; streak++;
+    correct++; streak++; ding();
     if (streak>best){ best=streak; store.set("vb.best",best); headStats(); }
     $("#gAns").innerHTML = '<span style="color:var(--ok);font-weight:600">맞았습니다</span>';
     speak(s.en, 1);
@@ -2661,10 +2685,14 @@ $("#tHide").addEventListener("click", e=>{
 
 /* 단어 퀴즈 */
 let qDeck=[], qi=0, qMiss=[], qUp=0;
+const MISS_MAX = 10;                              // 한 번 퀴즈에 섞어 넣는 헷갈린 단어 최대 개수
 function startQuiz(list){
   const pool = Array.isArray(list) && list.length ? list : visibleWords();
   if(!pool.length) return;
-  qDeck = Array.isArray(list) && list.length ? shuffle([...pool]) : shuffle([...pool]).slice(0, Math.min(20, pool.length));
+  const base = Array.isArray(list) && list.length ? [...pool] : shuffle([...pool]).slice(0, Math.min(20, pool.length));
+  const have = new Set(base.map(keyOf));
+  const again = shuffle(WORDS.filter(x => isMissed(keyOf(x)) && !have.has(keyOf(x)))).slice(0, MISS_MAX);
+  qDeck = shuffle(base.concat(again));
   qi=0; qMiss=[]; qUp=0;
   document.body.classList.add("quizOn");
   drawQ();
@@ -2721,7 +2749,7 @@ function drawQ(){
     : "<u>&nbsp;</u>";
 
   $("#qBody").innerHTML = `
-    <p class="qPrompt">이 뜻에 맞는 영어를 빈칸에 적어보세요</p>
+    <p class="qPrompt">${isMissed(keyOf(x)) ? "헷갈렸던 단어 · 한 번에 맞히면 다시 안 나와요" : "이 뜻에 맞는 영어를 빈칸에 적어보세요"}</p>
     <p class="qMean">${esc(x.k)}</p>
     <p class="qCloze">${line}</p>
     <p class="qClozeKo">${cloze ? esc(x.exk) : "&nbsp;"}</p>
@@ -2754,6 +2782,7 @@ function drawQ(){
     const ok = judgeEn(typed, x.w, cloze && cloze.token);
     if (ok){
       passed = true;
+      ding();
       $("#qHint").hidden = true;
       $("#qShow").textContent = "다음";
       $("#qA").className = "qAns";
@@ -2775,8 +2804,8 @@ function drawQ(){
 
 function qNext(ok){
   const x = qDeck[qi], k = keyOf(x), b = boxOf(k);
-  if (ok){ if (b < 3) qUp++; setBox(k, Math.min(3, b + 1)); }
-  else { qMiss.push(x); setBox(k, 1); }
+  if (ok){ if (b < 3) qUp++; setBox(k, Math.min(3, b + 1), false); }
+  else { qMiss.push(x); setBox(k, 1, true); }
   qi++;
   qi<qDeck.length ? drawQ() : qFinish();
 }
@@ -2785,7 +2814,7 @@ function qFinish(){
   const got = qDeck.length - qMiss.length;
   $("#qBody").innerHTML = `
     <div class="done"><p class="score">${got} / ${qDeck.length}</p>
-    <p class="lab">${qUp}개가 다음 단계로 올라갔습니다.${qMiss.length? " 헷갈린 단어는 1단계로 돌아갑니다." : ""}</p>
+    <p class="lab">${qUp}개가 다음 단계로 올라갔습니다.${qMiss.length? " 헷갈린 단어는 1단계로 돌아가고, 한 번에 맞힐 때까지 다음 퀴즈에 다시 나와요." : ""}</p>
     ${qMiss.length? `<div class="missed">${qMiss.map(m=>
       `<div class="row"><span class="en">${m.w}</span><span class="ko">${m.k}</span></div>`).join("")}</div>`:""}
     <div class="qBtns"><button class="btn" id="qAgain">한 번 더</button>
@@ -3476,6 +3505,9 @@ function examCheckWord(x){
   const ok = judgeEn(typed, x.w) === true;
   if (ok){
     examLocked = true;
+    ding();
+    const k = keyOf(x);
+    if (examWrong === 0 && isMissed(k)) setBox(k, boxOf(k), false);   // 한 번에 맞히면 헷갈린 단어에서 빠짐
     $("#exJ").innerHTML = '<span class="good">정답입니다! · 엔터를 누르면 다음 문제</span>';
     speak(x.w, 1);
     const btn = $("#exCheck");
@@ -3483,6 +3515,7 @@ function examCheckWord(x){
     $("#exIn").focus();                      // 입력칸을 그대로 두어야 키보드가 안 내려갑니다
   } else {
     examWrong++;
+    if (examWrong === 1) setBox(keyOf(x), boxOf(keyOf(x)), true);    // 헷갈린 단어로 표시 → 다음 퀴즈에 다시 나옴
     shakeEl($("#exType"));
     $("#exIn").focus();
     $("#exJ").innerHTML = '<span class="miss">다시 적어보세요</span>';
@@ -3500,6 +3533,7 @@ function examCheckSent(x){
   const made = examPicked.map(p=>p.w).join(" ");
   if (made === x.en){
     examLocked = true;
+    ding();
     $("#exSlot").className = "slot right";
     speak(x.en, 1);
     const btn = $("#exCheck");
@@ -3641,7 +3675,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeNote();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=19"></script>
-<script src="sync.js?v=19"></script>
+<script src="firebase-config.js?v=20"></script>
+<script src="sync.js?v=20"></script>
 
 </body></html>

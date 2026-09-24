@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=17"></script>
+<script src="ipa.js?v=18"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -2754,11 +2754,11 @@ function drawQ(){
     const ok = judgeEn(typed, x.w, cloze && cloze.token);
     if (ok){
       passed = true;
-      $("#qT").hidden = true;
+      $("#qHint").hidden = true;
+      $("#qShow").textContent = "다음";
       $("#qA").className = "qAns";
-      $("#qJ").innerHTML = '<span class="good">맞았습니다</span>';
-      $("#qB").innerHTML = '<button class="btn go" id="qNextBtn">다음</button>';
-      $("#qNextBtn").addEventListener("click", ()=>qNext(wrong === 0));
+      $("#qJ").innerHTML = '<span class="good">맞았습니다 · 엔터를 누르면 다음 문제</span>';
+      $("#qIn").focus();                     // 입력칸을 그대로 두어야 키보드가 안 내려갑니다
     } else {
       wrong++;
       shakeEl($("#qT"));
@@ -2767,8 +2767,9 @@ function drawQ(){
       if (wrong >= 2) $("#qA").className = "qAns faint";
     }
   }
-  $("#qShow").addEventListener("click", check);
-  $("#qIn").addEventListener("keydown", e => { if (e.key === "Enter") check(); });
+  const submit = () => passed ? qNext(wrong === 0) : check();
+  $("#qShow").addEventListener("click", submit);
+  $("#qIn").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); submit(); } });
   $("#qIn").focus();
 }
 
@@ -3475,11 +3476,11 @@ function examCheckWord(x){
   const ok = judgeEn(typed, x.w) === true;
   if (ok){
     examLocked = true;
-    $("#exIn").disabled = true;
-    $("#exJ").innerHTML = '<span class="good">정답입니다!</span>';
+    $("#exJ").innerHTML = '<span class="good">정답입니다! · 엔터를 누르면 다음 문제</span>';
     speak(x.w, 1);
     const btn = $("#exCheck");
     if (btn){ btn.textContent = "다음"; btn.dataset.next = "1"; }
+    $("#exIn").focus();                      // 입력칸을 그대로 두어야 키보드가 안 내려갑니다
   } else {
     examWrong++;
     shakeEl($("#exType"));
@@ -3556,7 +3557,7 @@ $("#exBody").addEventListener("click", e => {
   if (e.target.closest("#exCheck")){ examSubmit(); return; }
 });
 $("#exBody").addEventListener("keydown", e => {
-  if (e.key === "Enter" && e.target.id === "exIn") examSubmit();
+  if (e.key === "Enter" && e.target.id === "exIn"){ e.preventDefault(); examSubmit(); }
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeExam(); });
 
@@ -3640,7 +3641,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeNote();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=17"></script>
-<script src="sync.js?v=17"></script>
+<script src="firebase-config.js?v=18"></script>
+<script src="sync.js?v=18"></script>
 
 </body></html>

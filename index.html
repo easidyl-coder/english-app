@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=27"></script>
+<script src="ipa.js?v=28"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -221,7 +221,7 @@
   .lbtns{display:flex;gap:7px;flex-wrap:wrap}
   .lbtns .btn{font-size:13.5px;padding:8px 12px}
   .lrow .en.hid{filter:blur(7px);cursor:pointer}
-  .lrow.done{opacity:.55}
+  .lrow.done{border-color:#A9CDBB}                /* 흐리게 하지 않음 — 결과를 보고 '다시 말하기'를 누를 수 있게 */
   .lrow.done .ko::after{content:" ✓";color:var(--ok);font-weight:800}
   .btn.say{border-color:var(--accent);color:var(--accent)}
   .lcount{background:var(--mint);border-radius:14px;padding:11px 14px;margin-bottom:14px;
@@ -900,16 +900,16 @@
   <section class="panel" id="p2">
     <div class="subTop"><button class="btn" type="button" data-back>‹ 뒤로</button><h2>듣기·말하기</h2></div>
     <div class="note" id="capNote"></div>
+    <p class="lead">뜻을 보고 영어로 <b>소리 내어</b> 말해 본 다음, 들어보기로 원어민 발음과 비교하세요.</p>
+    <div id="listen"></div>
     <div class="micTest" id="micTest">
       <h3>마이크 테스트</h3>
-      <p class="lead" id="micMsg">이 휴대폰에서 마이크와 영어 음성 인식이 되는지 확인해요. 버튼을 누르면 허용 창이 떠요.</p>
+      <p class="lead" id="micMsg">'말하기'가 잘 안 되면 여기서 마이크와 영어 음성 인식을 확인해 보세요.</p>
       <div class="micBar" id="micBar"><i></i></div>
       <div class="lbtns"><button class="btn go" id="micGo" type="button">1. 마이크 허용·테스트</button>
         <button class="btn" id="srGo" type="button">2. 영어 음성 인식</button></div>
       <div id="micOut"></div>
     </div>
-    <p class="lead">뜻을 보고 영어로 <b>소리 내어</b> 말해 본 다음, 들어보기로 원어민 발음과 비교하세요.</p>
-    <div id="listen"></div>
   </section>
 
   <!-- 전체 학습 -->
@@ -3517,10 +3517,13 @@ $("#bkLoad").addEventListener("click", ()=>{
 $("#qX").addEventListener("click", endQuiz);
 document.addEventListener("keydown", e=>{ if(e.key==="Escape") endQuiz(); });
 
-/* ══ 듣기·말하기 ══ 마이크 없이, 스스로 말해 보고 확인하는 방식입니다 */
-$("#capNote").innerHTML = hasTTS
-  ? "뜻만 보고 <b>먼저 말해 본 뒤</b> 영어를 확인하세요. 소리 내어 말하는 게 핵심이에요."
-  : "이 브라우저는 소리 재생을 지원하지 않습니다.";
+/* ══ 듣기·말하기 ══ '말하기'를 누르고 영어로 말하면 음성 인식으로 단어마다 맞았는지 보여줍니다.
+   음성 인식이 없거나 막힌 기기에서는 예전처럼 '말했어요'(스스로 확인) 버튼을 씁니다. */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let srBlocked = false;                          // 권한 거부 등으로 이 기기에서 안 되면 true → '말했어요'로
+$("#capNote").innerHTML = !hasTTS ? "이 브라우저는 소리 재생을 지원하지 않습니다."
+  : SR ? "뜻만 보고 <b>말하기</b>를 누른 뒤 영어로 말해 보세요. 맞은 단어는 초록, 틀린 단어는 빨강으로 보여줘요."
+       : "뜻만 보고 <b>먼저 말해 본 뒤</b> 영어를 확인하세요. 소리 내어 말하는 게 핵심이에요.";
 
 const today0 = () => new Date().toISOString().slice(0,10);
 let spoke;
@@ -3544,7 +3547,8 @@ function renderListen(){
         <button class="btn go" data-a="play" data-i="${i}">들어보기</button>
         <button class="btn" data-a="slow" data-i="${i}">느리게</button>
         <button class="btn" data-a="peek" data-i="${i}">영어 보기</button>
-        <button class="btn say" data-a="done" data-i="${i}">말했어요</button>
+        ${SR && !srBlocked ? `<button class="btn mic" data-a="rec" data-i="${i}">말하기</button>`
+                           : `<button class="btn say" data-a="done" data-i="${i}">말했어요</button>`}
       </div>
       <p class="heard" id="lh${i}"></p>
     </div>`).join("");
@@ -3552,6 +3556,98 @@ function renderListen(){
   return pool;
 }
 let LPOOL = renderListen();
+
+/* ── 말한 문장 채점 ── 줄임말·숫자를 풀어서 비교하고, 문장 단어를 순서대로 들린 말에서 찾는다 */
+const CONTR = {"i'm":"i am","you're":"you are","we're":"we are","they're":"they are","he's":"he is","she's":"she is",
+  "it's":"it is","that's":"that is","there's":"there is","what's":"what is","where's":"where is","how's":"how is",
+  "who's":"who is","let's":"let us","i'll":"i will","you'll":"you will","we'll":"we will","it'll":"it will",
+  "they'll":"they will","i've":"i have","you've":"you have","we've":"we have","i'd":"i would","you'd":"you would",
+  "don't":"do not","doesn't":"does not","didn't":"did not","can't":"can not","cannot":"can not","won't":"will not",
+  "isn't":"is not","aren't":"are not","wasn't":"was not","weren't":"were not","haven't":"have not","hasn't":"has not",
+  "couldn't":"could not","wouldn't":"would not","shouldn't":"should not","ok":"okay"};
+const NUMW = ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve",
+  "thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"];
+function normWords(t){
+  return String(t).toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9' ]/g, " ").split(/\s+/).filter(Boolean)
+    .flatMap(w => (CONTR[w] || w).split(" "))
+    .map(w => { const n = NUMW.indexOf(w); return n >= 0 ? String(n) : w.replace(/^'+|'+$/g, ""); })
+    .filter(Boolean);
+}
+function scoreSpeech(target, heard){
+  const h = normWords(heard), toks = target.split(" ");
+  const parts = [];                             // 문장 단어를 풀어 쓴 조각들 (조각마다 원래 단어 번호)
+  toks.forEach((tok, ti) => normWords(tok).forEach(w => parts.push({ w, ti })));
+  const n = parts.length, m = h.length;         // 가장 길게 순서대로 겹치는 부분(LCS)으로 맞은 조각을 찾는다
+  const L = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+  for (let a = n - 1; a >= 0; a--) for (let b = m - 1; b >= 0; b--)
+    L[a][b] = parts[a].w === h[b] ? L[a + 1][b + 1] + 1 : Math.max(L[a + 1][b], L[a][b + 1]);
+  const hitPart = new Array(n).fill(false);
+  for (let a = 0, b = 0; a < n && b < m; ){
+    if (parts[a].w === h[b]){ hitPart[a] = true; a++; b++; }
+    else if (L[a + 1][b] >= L[a][b + 1]) a++; else b++;
+  }
+  const marks = toks.map((tok, ti) => {
+    const mine = parts.map((p, k) => p.ti === ti ? hitPart[k] : null).filter(v => v !== null);
+    return { tok, ok: mine.length > 0 && mine.every(Boolean) };
+  });
+  const hit = hitPart.filter(Boolean).length;
+  return { pct: n ? Math.round(hit / n * 100) : 0, marks };
+}
+let recNow = null;                              // 지금 듣고 있는 음성 인식 (한 번에 하나)
+function stopRec(){ if (recNow){ try{ recNow.abort(); }catch(e){} recNow = null; } }
+function markSpoken(i){
+  const row = $("#lr" + i);
+  if (row.classList.contains("done")) return;
+  row.classList.add("done");
+  spoke.n++; store.set("vb.spoke", spoke); drawCount(); logAct("t");
+}
+function listenSay(i, btn){
+  const s = LPOOL[i], out = $("#lh" + i);
+  if (recNow){ const same = btn.classList.contains("on"); stopRec(); if (same) return; }   // 듣는 중에 다시 누르면 멈춤
+  document.querySelectorAll('#listen .btn.mic.on').forEach(b => { b.classList.remove("on"); b.textContent = "다시 말하기"; });
+  if (hasTTS) speechSynthesis.cancel();         // 앱 소리가 마이크로 들어가지 않게
+  let rec; try{ rec = new SR(); }catch(e){ out.innerHTML = '<span class="err">음성 인식을 시작하지 못했어요.</span>'; return; }
+  rec.lang = "en-US"; rec.interimResults = true; rec.maxAlternatives = 3;
+  let best = null, got = false;
+  btn.classList.add("on"); btn.textContent = "듣는 중… (누르면 멈춤)";
+  out.innerHTML = '<span class="sc" style="color:var(--accent)">영어로 말해 보세요</span>';
+  rec.onresult = e => {
+    const r = e.results[e.results.length - 1];
+    if (!r.isFinal){ out.innerHTML = `<span class="sc" style="color:var(--accent)">듣는 중</span><b>${esc(r[0].transcript)}</b>`; return; }
+    got = true;
+    for (let k = 0; k < r.length; k++){
+      const sc = scoreSpeech(s.en, r[k].transcript);
+      if (!best || sc.pct > best.pct) best = Object.assign(sc, { heard: r[k].transcript });
+    }
+  };
+  rec.onerror = e => {
+    got = true;
+    if (e.error === "not-allowed" || e.error === "service-not-allowed"){
+      srBlocked = true;
+      out.innerHTML = `<span class="err">이 기기에서 음성 인식을 쓸 수 없어요 (${esc(e.error)}). 스스로 확인하는 '말했어요'로 바꿀게요.</span>
+        <button class="btn say" data-a="done" data-i="${i}" style="margin-top:8px">말했어요</button>`;
+    } else if (e.error === "no-speech") out.innerHTML = '<span class="err">말소리를 못 들었어요. 다시 눌러 말해 보세요.</span>';
+    else if (e.error === "aborted") out.innerHTML = '<span class="err">멈췄어요. 다시 누르면 들어요.</span>';
+    else out.innerHTML = `<span class="err">잘 못 들었어요 (${esc(e.error)}). 다시 해 보세요.</span>`;
+  };
+  rec.onend = () => {
+    if (recNow === rec) recNow = null;
+    btn.classList.remove("on"); btn.textContent = "다시 말하기";
+    if (!best){ if (!got) out.innerHTML = '<span class="err">말소리를 못 들었어요. 다시 눌러 말해 보세요.</span>'; return; }
+    const en = $("#ls" + i);
+    en.classList.remove("hid");
+    en.innerHTML = best.marks.map(m => `<span class="${m.ok ? "hit" : "mis"}">${esc(m.tok)}</span>`).join(" ");
+    const good = best.pct >= 60;
+    const msg = best.pct >= 90 ? "완벽해요!" : good ? "좋아요! 빨간 단어만 다시 연습해요." : "조금 더! 들어보기로 듣고 다시 해 봐요.";
+    out.innerHTML = `<span class="sc" style="color:${good ? "var(--ok)" : "var(--warn)"}">${best.pct}% · ${msg}</span>
+      들린 말: <b>${esc(best.heard)}</b>`;
+    if (best.pct >= 90) ding();
+    if (good) markSpoken(i);
+  };
+  recNow = rec;
+  try{ rec.start(); }catch(e){ recNow = null; btn.classList.remove("on"); btn.textContent = "말하기";
+    out.innerHTML = '<span class="err">음성 인식을 시작하지 못했어요. 잠시 뒤 다시 눌러 주세요.</span>'; }
+}
 
 $("#listen").addEventListener("click", e=>{
   const b = e.target.closest("[data-a]"); if(!b) return;
@@ -3565,21 +3661,18 @@ $("#listen").addEventListener("click", e=>{
     const btn = $(`#lr${i} [data-a="peek"].btn`);
     if (btn) btn.textContent = en.classList.contains("hid") ? "영어 보기" : "영어 가리기";
   }
+  else if (act === "rec") listenSay(i, b);
   else if (act === "done"){
-    const row = $("#lr"+i);
-    if (row.classList.contains("done")) return;
-    row.classList.add("done");
+    if ($("#lr"+i).classList.contains("done")) return;
+    markSpoken(i);
     $("#ls"+i).classList.remove("hid");
     $("#lh"+i).innerHTML = '<span class="sc" style="color:var(--ok)">잘했어요!</span>들어보기로 한 번 더 비교해 보세요.';
-    spoke.n++; store.set("vb.spoke", spoke); drawCount(); logAct("t");
     speak(s.en, 1);
   }
 });
 
-/* ══ 마이크 테스트 ══ 이 기기에서 마이크·영어 음성 인식이 되는지 확인만 합니다.
-   말하기 연습은 그대로 '말했어요' 방식 — 아이폰 홈 화면 앱에서 음성 인식이 막혀 있던 적이 있어서입니다.
+/* ══ 마이크 테스트 ══ 이 기기에서 마이크·영어 음성 인식이 되는지 확인합니다 (말하기가 안 될 때 원인 찾기용).
    두 단계 모두 버튼을 누른 그 순간에 시작해야 허용 창이 뜹니다. */
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const isStandalone = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
 const micRes = {};
 function micReport(){
@@ -4313,7 +4406,7 @@ $("#suBody").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=27"></script>
-<script src="sync.js?v=27"></script>
+<script src="firebase-config.js?v=28"></script>
+<script src="sync.js?v=28"></script>
 
 </body></html>

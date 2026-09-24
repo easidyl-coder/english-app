@@ -2769,6 +2769,7 @@ function drawQ(){
   }
   $("#qShow").addEventListener("click", check);
   $("#qIn").addEventListener("keydown", e => { if (e.key === "Enter") check(); });
+  $("#qIn").focus();
 }
 
 function qNext(ok){

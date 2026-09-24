@@ -5,7 +5,41 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
 <title>서인의 영어 연습장</title>
-<script src="ipa.js?v=14"></script>
+<script>
+/* 화면 어디서든 오류가 나면 아래에 빨간 글씨로 보여줍니다 (캡처해서 보여줄 수 있게). */
+(function(){
+  var box;
+  function ensureBox(){
+    if (box) return box;
+    box = document.createElement("div");
+    box.id = "errBox";
+    box.style.cssText = "display:none;position:fixed;left:0;right:0;bottom:0;z-index:99999;"
+      + "background:#B4432C;color:#fff;font:12px/1.5 monospace;padding:10px 34px 10px 12px;"
+      + "max-height:40vh;overflow:auto;white-space:pre-wrap;";
+    box.addEventListener("click", function(){ box.style.display = "none"; });
+    (document.body || document.documentElement).appendChild(box);
+    return box;
+  }
+  function show(msg){
+    try{
+      var b = ensureBox();
+      b.style.display = "block";
+      var line = document.createElement("div");
+      line.textContent = msg;
+      b.appendChild(line);
+    }catch(e){}
+  }
+  window.onerror = function(msg, src, line, col){
+    show("오류: " + msg + " (" + (src||"") + ":" + (line||"") + ") · 눌러서 닫기");
+    return false;
+  };
+  window.addEventListener("unhandledrejection", function(e){
+    var r = e && e.reason;
+    show("오류(비동기): " + (r && r.message ? r.message : r) + " · 눌러서 닫기");
+  });
+})();
+</script>
+<script src="ipa.js?v=15"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -88,6 +122,7 @@
   .slot.right{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
   .slot.wrong{border-style:solid;border-color:var(--bad);background:var(--bad-soft);animation:shake .32s}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .shakeMe{animation:shake .32s}
   .slot .hint{color:var(--ink-3);font-size:13.5px;margin:auto;align-self:center}
 
   .bank{display:flex;flex-wrap:wrap;gap:7px;min-height:40px}
@@ -155,6 +190,7 @@
   .qAns .ex{font-size:13.5px;color:var(--ink-2);margin:8px 0 0}
   .qAns .ex i{font-family:"Gothic A1",sans-serif;font-style:italic;font-size:15px}
   .qAns.veiled{filter:blur(9px);user-select:none;pointer-events:none}
+  .qAns.faint{filter:blur(3px);opacity:.7;user-select:none}
   .qPrompt{font-size:13px;color:var(--ink-3);text-align:center;margin:26px 0 0;letter-spacing:.04em}
   .qMean{font-size:24px;font-weight:500;text-align:center;margin:5px 0 0;line-height:1.4;text-wrap:balance}
   .qCloze{font-family:"Gothic A1",sans-serif;font-size:26px;font-weight:600;text-align:center;
@@ -495,6 +531,7 @@
   .lsDo{ display:grid; gap:10px }
   .lsDo .btn{ min-height:54px; font-size:16px; border-radius:18px }
   body.noteOn #note{ display:block } body.noteOn{ overflow:hidden }
+  body.examOn #exam{ display:block } body.examOn{ overflow:hidden }
   .ntAdd{ display:flex; gap:8px; margin:14px 0 6px }
   .ntAdd input{ flex:1; min-width:0; font:inherit; font-size:15px; padding:0 14px; min-height:50px;
     border:1px solid var(--line); border-radius:16px; background:#fff; color:var(--ink) }
@@ -751,6 +788,7 @@
 
 <div class="lesson" id="lesson"><div class="shell" id="lsBody"></div></div>
 <div class="lesson" id="note"><div class="shell" id="ntBody"></div></div>
+<div class="lesson" id="exam"><div class="shell" id="exBody"></div></div>
 <div class="quiz" id="quiz">
   <div class="shell">
     <div class="gTop">
@@ -2209,10 +2247,20 @@ const SENTS = [
 const DEPART = new Date("2027-01-29T00:00:00+09:00");
 const $ = s => document.querySelector(s);
 const store = {
-  get(k,f){ try{ const v=localStorage.getItem(k); return v===null?f:JSON.parse(v); }catch(e){ return f; } },
+  /* valid: 값이 형식대로 왔는지 검사하는 함수. 없거나·깨졌거나·형식이 다르면 기본값 f를 돌려줍니다. */
+  get(k,f,valid){
+    try{
+      const v = localStorage.getItem(k);
+      if (v === null) return f;
+      const p = JSON.parse(v);
+      if (p === null || p === undefined) return f;
+      if (valid && !valid(p)) return f;
+      return p;
+    }catch(e){ return f; }
+  },
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} if (window.onStoreSet) window.onStoreSet(k); }
 };
-let best = store.get("vb.best",0);
+let best = store.get("vb.best", 0, Number.isFinite);
 
 /* ── 3단계 단어장 ──
    b:1 외우는 중 · b:2 외운 단어 · b:3 외외운 단어 · 없으면 아직 안 배운 단어
@@ -2220,13 +2268,15 @@ let best = store.get("vb.best",0);
 const DAILY_NEW = 20, LEARN_CAP = 20;
 const LVNAME = {1:"왕기초",2:"기초",3:"초급",4:"초중급",5:"중급 진입",
                 6:"중급",7:"중상급",8:"상급 진입",9:"상급",10:"최상급"};
-let myLevel = store.get("vb.level", 0);
+let myLevel = store.get("vb.level", 0, Number.isFinite);
 const inMyLevel = x => !myLevel || x.lv == null || (x.lv >= myLevel - 1 && x.lv <= myLevel + 1);
 const WAIT = {2: 3*86400000, 3: 14*86400000};
-let boxes = store.get("vb.box", null);
-if (!boxes || typeof boxes !== "object"){
+let boxes = store.get("vb.box", null, x => x && typeof x === "object" && !Array.isArray(x));
+if (!boxes || typeof boxes !== "object" || Array.isArray(boxes)){
   boxes = {};
-  (store.get("vb.star",[]) || []).forEach(k => { boxes[k] = {b:1, t:0}; });
+  try{
+    (store.get("vb.star", [], Array.isArray) || []).forEach(k => { boxes[k] = {b:1, t:0}; });
+  }catch(e){}
   store.set("vb.box", boxes);
 }
 const saveBoxes = () => store.set("vb.box", boxes);
@@ -2340,7 +2390,7 @@ const GRAM = {
 const START = new Date("2026-09-10T00:00:00+09:00");
 /* ── 진도 기준 Day ── 하루치를 끝내야 다음 날로 넘어갑니다 */
 const LASTDAY = 40;                               // 지금까지 만들어 둔 마지막 레슨
-let curDay = Math.min(LASTDAY, Math.max(1, store.get("vb.day", 1)));
+let curDay = Math.min(LASTDAY, Math.max(1, store.get("vb.day", 1, Number.isFinite)));
 function dayNo(){ return curDay; }
 function finishDay(){
   if (curDay < LASTDAY){ curDay++; store.set("vb.day", curDay); }
@@ -2621,6 +2671,14 @@ function startQuiz(list){
 }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+/* 틀렸을 때 살짝 흔드는 효과 — 같은 클래스를 뗐다 붙여서 애니메이션을 다시 튼다 */
+function shakeEl(el){
+  if (!el) return;
+  el.classList.remove("shakeMe");
+  void el.offsetWidth;
+  el.classList.add("shakeMe");
+}
+
 /* 적은 영어가 맞는지 본다. 대소문자·마침표·앞뒤 공백은 무시한다. */
 function judgeEn(input, w, token){
   const norm = s => String(s).toLowerCase().replace(/[^a-z0-9']/g, "");
@@ -2681,32 +2739,36 @@ function drawQ(){
     </div>
     <div class="qBtns" id="qB"></div>`;
 
-  let hinted = 0, done = false;
+  let hinted = 0, wrong = 0, passed = false;
 
   $("#qHint").addEventListener("click", ()=>{
-    if (done) return;
+    if (passed) return;
     hinted = Math.min(x.w.length - 1, hinted + 1);
     $("#qJ").innerHTML = `<span class="typed">${esc(x.w.slice(0, hinted))}…</span>`;
   });
 
-  function reveal(){
-    if (done) return; done = true;
+  function check(){
+    if (passed) return;
     const typed = $("#qIn").value.trim();
+    if (!typed) return;
     const ok = judgeEn(typed, x.w, cloze && cloze.token);
-    $("#qT").hidden = true;
-    $("#qA").classList.remove("veiled");
-    if (ok === true) $("#qJ").innerHTML = '<span class="good">맞았습니다</span>';
-    else if (ok === false) $("#qJ").innerHTML = `<span class="miss">적으신 답</span> <span class="typed">${esc(typed)}</span>`;
-    else $("#qJ").innerHTML = "";
-    const k = keyOf(x), b = boxOf(k), nb = Math.min(3, b + 1);
-    const goLab = b >= 3 ? "알겠어요 · 3단계 유지" : `알겠어요 → ${nb}단계`;
-    $("#qB").innerHTML = '<button class="btn" id="qNo">아직 헷갈려요</button>'
-      + `<button class="btn go" id="qYes">${goLab}</button>`;
-    $("#qYes").addEventListener("click", ()=>qNext(true));
-    $("#qNo").addEventListener("click", ()=>qNext(false));
+    if (ok){
+      passed = true;
+      $("#qT").hidden = true;
+      $("#qA").className = "qAns";
+      $("#qJ").innerHTML = '<span class="good">맞았습니다</span>';
+      $("#qB").innerHTML = '<button class="btn go" id="qNextBtn">다음</button>';
+      $("#qNextBtn").addEventListener("click", ()=>qNext(wrong === 0));
+    } else {
+      wrong++;
+      shakeEl($("#qT"));
+      $("#qIn").value = ""; $("#qIn").focus();
+      $("#qJ").innerHTML = `<span class="miss">다시 적어보세요</span>`;
+      if (wrong >= 2) $("#qA").className = "qAns faint";
+    }
   }
-  $("#qShow").addEventListener("click", reveal);
-  $("#qIn").addEventListener("keydown", e => { if (e.key === "Enter") reveal(); });
+  $("#qShow").addEventListener("click", check);
+  $("#qIn").addEventListener("keydown", e => { if (e.key === "Enter") check(); });
 }
 
 function qNext(ok){
@@ -3121,8 +3183,11 @@ $("#capNote").innerHTML = hasTTS
   : "이 브라우저는 소리 재생을 지원하지 않습니다.";
 
 const today0 = () => new Date().toISOString().slice(0,10);
-let spoke = store.get("vb.spoke", {d:"", n:0});
-if (spoke.d !== today0()) spoke = {d: today0(), n: 0};
+let spoke;
+try{
+  spoke = store.get("vb.spoke", {d:"", n:0}, x => x && typeof x === "object" && typeof x.n === "number");
+  if (spoke.d !== today0()) spoke = {d: today0(), n: 0};
+}catch(e){ spoke = {d: today0(), n: 0}; }
 function drawCount(){
   $("#lCount").textContent = spoke.n ? `오늘 ${spoke.n}문장 소리 내어 말했어요.`
                                      : "오늘 아직 안 하셨어요. 한 문장부터 시작해 보세요.";
@@ -3201,7 +3266,11 @@ function wordsOfDay(d){                          // 그날 배우는 단어 — 
 }
 function openLesson(d){
   LSDAY = d || dayNo();
-  renderLesson(LSDAY);
+  try{ renderLesson(LSDAY); }
+  catch(e){
+    $("#lsBody").innerHTML = `<div class="lsTop"><button class="btn" id="lsX">닫기</button></div>
+      <p class="lead">레슨을 불러오는 중 오류가 났어요. 화면 아래 빨간 글씨를 캡처해서 보여주세요.</p>`;
+  }
   document.body.classList.add("lessonOn");
   document.getElementById("lesson").scrollTop = 0;
 }
@@ -3274,7 +3343,7 @@ function renderLesson(day){
         오늘 본 문장 중 하나를 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요.`
         : "오늘 본 문장 중 하나를 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요."}</div>
       ${isToday ? (day < LASTDAY
-        ? `<button class="btn go done" id="lsDone">오늘 레슨 끝 · Day ${day + 1}로</button>`
+        ? `<button class="btn go done" id="lsExam">레슨 시험 보기</button>`
         : `<div class="lsEnd" style="margin-top:10px">여기까지가 지금 준비된 마지막 레슨이에요. 수고하셨습니다!</div>`) : ""}
     </section>`;
 }
@@ -3286,8 +3355,8 @@ $("#lsBody").addEventListener("click", e => {
   if (e.target.closest("#lsPrev")){ LSDAY = Math.max(1, LSDAY - 1); renderLesson(LSDAY); lsTop0(); return; }
   if (e.target.closest("#lsNext")){ LSDAY = Math.min(today, LSDAY + 1); renderLesson(LSDAY); lsTop0(); return; }
   if (e.target.closest("#lsAll")){ const b = $("#lsPick"); b.hidden = !b.hidden; return; }
-  if (e.target.closest("#lsDone")){
-    finishDay(); LSDAY = dayNo(); renderLesson(LSDAY); lsTop0(); return;
+  if (e.target.closest("#lsExam")){
+    openExam(today); return;
   }
   const dd = e.target.closest("[data-day]");
   if (dd){ LSDAY = +dd.dataset.day; renderLesson(LSDAY); lsTop0(); return; }
@@ -3302,8 +3371,197 @@ $("#lsBody").addEventListener("click", e => {
 $("#hLesson").addEventListener("click", () => openLesson());
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeLesson(); });
 
+/* ══ 레슨 시험 ══ 그날 단어(최대 8개) → 그날 문장(최대 8개). 맞혀야만 다음 문제로 넘어갑니다 */
+let examDay = 0, examDeck = [], examIdx = 0, examWrong = 0, examHinted = 0, examLocked = false;
+let examPicked = [], examBank = [], examMissed = [];
+
+function openExam(d){
+  examDay = d || dayNo();
+  const words = wordsOfDay(examDay).slice(0, 8).map(x => ({ type:"word", x }));
+  const sents = sentsOfDay(examDay).slice(0, 8).map(x => ({ type:"sent", x }));
+  examDeck = words.concat(sents);
+  examIdx = 0; examMissed = [];
+  document.body.classList.add("examOn");
+  document.getElementById("exam").scrollTop = 0;
+  renderExamSafe();
+}
+function closeExam(){ document.body.classList.remove("examOn"); }
+function renderExamSafe(){
+  try{ renderExam(); }
+  catch(e){
+    $("#exBody").innerHTML = `<div class="lsTop"><button class="btn" id="exX">닫기</button></div>
+      <p class="lead">시험을 불러오는 중 오류가 났어요. 화면 아래 빨간 글씨를 캡처해서 보여주세요.</p>`;
+  }
+}
+function examWordHtml(x){
+  return `
+    <div class="prompt"><p class="day">단어 시험</p><p class="ko">${esc(x.k)}</p></div>
+    <div style="text-align:center;margin:0 0 14px"><button class="btn" id="exSay">들어보기</button></div>
+    <div class="qType" id="exType">
+      <input type="text" id="exIn" placeholder="영어 스펠링" autocomplete="off"
+        autocapitalize="off" autocorrect="off" spellcheck="false">
+      <button class="btn" id="exHint">힌트</button>
+    </div>
+    <p class="qJudge" id="exJ"></p>
+    <p class="qAns" id="exReveal" style="display:none;text-align:center;font-size:22px;font-weight:700;color:var(--ink-3);opacity:.55;letter-spacing:.04em"></p>
+    <div class="qBtns"><button class="btn go" id="exCheck">확인</button></div>`;
+}
+function examSentHtml(x){
+  return `
+    <div class="prompt"><p class="day">문장 시험</p><p class="ko">${esc(x.ko)}</p></div>
+    <div class="slot" id="exSlot"></div>
+    <p class="lead" id="exReveal" style="display:none;text-align:center"></p>
+    <div class="bank" id="exBank"></div>
+    <div class="qBtns"><button class="btn go" id="exCheck">확인</button></div>`;
+}
+function renderExamSlot(){
+  const el = $("#exSlot"); if (!el) return;
+  el.className = "slot";
+  el.innerHTML = examPicked.length
+    ? examPicked.map((p,k)=>`<button class="chip" data-exslot="${k}">${esc(p.w)}</button>`).join("")
+    : '<span class="hint">아래 단어를 순서대로 누르세요</span>';
+}
+function renderExamBank(){
+  const el = $("#exBank"); if (!el) return;
+  el.innerHTML = examBank.map((b,k)=>{
+    const used = examPicked.some(p=>p.k===k);
+    return `<button class="chip${used?" used":""}" data-exbank="${k}"${used?" disabled":""}>${esc(b.w)}</button>`;
+  }).join("");
+}
+function renderExam(){
+  examWrong = 0; examHinted = 0; examLocked = false; examPicked = [];
+  if (examIdx >= examDeck.length){ renderExamDone(); return; }
+  const item = examDeck[examIdx];
+  const top = `<div class="lsTop"><button class="btn" id="exX">닫기</button>
+      <span class="gMeta">Day ${examDay} 시험 · ${examIdx+1} / ${examDeck.length}</span></div>
+    <div class="gProg" style="margin-bottom:16px"><i style="width:${(examIdx/examDeck.length*100)}%"></i></div>`;
+  if (item.type === "word"){
+    $("#exBody").innerHTML = top + examWordHtml(item.x);
+    const inp = $("#exIn"); if (inp) inp.focus();
+  } else {
+    const words = item.x.en.split(" ");
+    examBank = shuffle(words.map((w,i)=>({w,i})));
+    if (examBank.length>1 && examBank.every((b,k)=>b.i===k)) examBank = shuffle(examBank);
+    $("#exBody").innerHTML = top + examSentHtml(item.x);
+    renderExamSlot(); renderExamBank();
+  }
+}
+function renderExamDone(){
+  const missedHtml = examMissed.length
+    ? `<div class="missed">${examMissed.map(m => m.type === "word"
+        ? `<div class="row"><span class="en">${esc(m.x.w)}</span><span class="ko">${esc(m.x.k)}</span></div>`
+        : `<div class="row"><span class="en">${esc(m.x.en)}</span><span class="ko">${esc(m.x.ko)}</span></div>`
+      ).join("")}</div>`
+    : "";
+  $("#exBody").innerHTML = `
+    <div class="lsTop"><button class="btn" id="exX">닫기</button>
+      <span class="gMeta">Day ${examDay} 시험 결과</span></div>
+    <div class="done">
+      <p class="score">통과!</p>
+      <p class="lab">${examMissed.length ? `틀렸던 문제 ${examMissed.length}개를 다시 보세요.` : "한 번에 다 맞혔어요!"}</p>
+      ${missedHtml}
+      <div class="qBtns"><button class="btn go" id="exNext">Day ${examDay+1}로 가기</button></div>
+    </div>`;
+}
+function examNoteMiss(){
+  const item = examDeck[examIdx];
+  if (item && !examMissed.includes(item)) examMissed.push(item);
+}
+function examCheckWord(x){
+  if (examLocked) return;
+  const typed = $("#exIn").value.trim();
+  if (!typed) return;
+  const ok = judgeEn(typed, x.w) === true;
+  if (ok){
+    examLocked = true;
+    $("#exIn").disabled = true;
+    $("#exJ").innerHTML = '<span class="good">정답입니다!</span>';
+    speak(x.w, 1);
+    const btn = $("#exCheck");
+    if (btn){ btn.textContent = "다음"; btn.dataset.next = "1"; }
+  } else {
+    examWrong++;
+    shakeEl($("#exType"));
+    $("#exIn").value = ""; $("#exIn").focus();
+    $("#exJ").innerHTML = '<span class="miss">다시 적어보세요</span>';
+    examNoteMiss();
+    if (examWrong >= 2){
+      const rv = $("#exReveal");
+      rv.style.display = "block";
+      rv.textContent = x.w;
+    }
+  }
+}
+function examCheckSent(x){
+  if (examLocked) return;
+  if (!examPicked.length) return;
+  const made = examPicked.map(p=>p.w).join(" ");
+  if (made === x.en){
+    examLocked = true;
+    $("#exSlot").className = "slot right";
+    speak(x.en, 1);
+    const btn = $("#exCheck");
+    if (btn){ btn.textContent = "다음"; btn.dataset.next = "1"; }
+  } else {
+    examWrong++;
+    $("#exSlot").className = "slot wrong";
+    examNoteMiss();
+    if (examWrong >= 2){
+      const rv = $("#exReveal");
+      rv.style.display = "block";
+      rv.innerHTML = `<span class="lab">정답 순서</span><br>${esc(x.en)}`;
+    }
+    setTimeout(()=>{ examPicked = []; renderExamSlot(); renderExamBank(); }, 350);
+  }
+}
+function examSubmit(){
+  const item = examDeck[examIdx]; if (!item) return;
+  const btn = $("#exCheck");
+  if (btn && btn.dataset.next === "1"){ examIdx++; renderExamSafe(); return; }
+  if (item.type === "word") examCheckWord(item.x); else examCheckSent(item.x);
+}
+$("#exBody").addEventListener("click", e => {
+  if (e.target.closest("#exX")){ closeExam(); return; }
+  const item = examDeck[examIdx];
+  if (e.target.closest("#exSay")){ if (item) speak(item.x.w, 1); return; }
+  if (e.target.closest("#exHint")){
+    if (!item || item.type !== "word" || examLocked) return;
+    examHinted = Math.min(item.x.w.length - 1, examHinted + 1);
+    $("#exJ").innerHTML = `<span class="typed">${esc(item.x.w.slice(0, examHinted))}…</span>`;
+    return;
+  }
+  if (e.target.closest("#exNext")){
+    finishDay();
+    LSDAY = dayNo();
+    closeExam();
+    try{ renderLesson(LSDAY); }catch(err){}
+    lsTop0();
+    return;
+  }
+  const bankBtn = e.target.closest("[data-exbank]");
+  if (bankBtn && item && item.type === "sent" && !examLocked){
+    const k = +bankBtn.dataset.exbank;
+    if (examPicked.some(p=>p.k===k)) return;
+    examPicked.push({ k, w: examBank[k].w });
+    renderExamSlot(); renderExamBank();
+    return;
+  }
+  const slotBtn = e.target.closest("[data-exslot]");
+  if (slotBtn && item && item.type === "sent" && !examLocked){
+    examPicked.splice(+slotBtn.dataset.exslot, 1);
+    renderExamSlot(); renderExamBank();
+    return;
+  }
+  if (e.target.closest("#exCheck")){ examSubmit(); return; }
+});
+$("#exBody").addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.id === "exIn") examSubmit();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeExam(); });
+
 /* ══ 막혔던 말 메모 ══ 영어로 뭐라 하는지 몰랐던 순간을 바로 적어 둡니다 */
-let notes = store.get("vb.notes", []);
+let notes;
+try{ notes = store.get("vb.notes", [], Array.isArray); }catch(e){ notes = []; }
 const saveNotes = () => store.set("vb.notes", notes);
 function noteCount(){ return { all: notes.length, open: notes.filter(n => !n.en).length }; }
 function drawNoteTile(){
@@ -3375,18 +3633,13 @@ $("#ntBody").addEventListener("keydown", e => {
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeNote(); });
 
-/* 시작 */
-drawNoteTile();
-headStats();
-renderLevel();
-renderWords();
-fillBackup();
-newRound();
-renderHome();
+/* 시작 — 한 곳에서 오류가 나도 나머지는 계속 실행됩니다 */
+[drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), renderHome]
+  .forEach(fn => { try{ fn(); }catch(e){ console.error(e); } });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=14"></script>
-<script src="sync.js?v=14"></script>
+<script src="firebase-config.js?v=15"></script>
+<script src="sync.js?v=15"></script>
 
 </body></html>

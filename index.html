@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=26"></script>
+<script src="ipa.js?v=27"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -570,6 +570,13 @@
   .micBox b{ display:block; margin-bottom:4px; font-size:13.5px }
   .micBox ol{ margin:6px 0 0; padding-left:18px } .micBox li{ margin:2px 0 }
   .micBox .again{ margin-top:10px; min-height:40px; font-size:13px; padding:0 14px }
+  /* 레벨 테스트 — 맞히면 ▲ 틀리면 ▼ */
+  .qOut .up{ color:var(--ok); font-weight:800 } .qOut .down{ color:var(--bad); font-weight:800 }
+  .lvPath{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:14px; margin:0 0 18px; box-shadow:var(--shadow) }
+  .lvPath .lab{ font-size:13px; font-weight:800; color:var(--ink-2); margin:0 0 8px }
+  .lvPath svg{ width:100%; height:auto; display:block }
+  .lvPath .gl{ stroke:var(--line); stroke-width:1; stroke-dasharray:3 4 }
+  .lvPath text{ font-size:9px; fill:var(--ink-3) }
   /* 레벨 테스트 시작 화면 · 카운트다운 */
   .lvIntro{ padding:26px 2px 10px }
   .lvIntro .kick{ color:var(--accent); font-weight:800; font-size:13px; margin:0 }
@@ -2482,7 +2489,8 @@ const LEARN_CAP = 20;
 const LVNAME = {1:"왕기초",2:"기초",3:"초급",4:"초중급",5:"중급 진입",
                 6:"중급",7:"중상급",8:"상급 진입",9:"상급",10:"최상급"};
 let myLevel = store.get("vb.level", 0, Number.isFinite);
-const inMyLevel = x => !myLevel || x.lv == null || (x.lv >= myLevel - 1 && x.lv <= myLevel + 1);
+const inMyLevel = x => { if (!myLevel || x.lv == null) return true;            // 레벨은 4.6처럼 소수 — 반올림한 레벨 ±1
+  const L = Math.round(myLevel); return x.lv >= L - 1 && x.lv <= L + 1; };
 const WAIT = {2: 3*86400000, 3: 14*86400000};
 let boxes = store.get("vb.box", null, x => x && typeof x === "object" && !Array.isArray(x));
 if (!boxes || typeof boxes !== "object" || Array.isArray(boxes)){
@@ -2528,10 +2536,10 @@ function boxCounts(){
 
 function renderLevel(){
   if (myLevel){
-    $("#lvNum").textContent = myLevel;
-    $("#lvName").textContent = `레벨 ${myLevel} / 10`;
+    $("#lvNum").textContent = lvShow(myLevel);
+    $("#lvName").textContent = `레벨 ${lvShow(myLevel)} / 10`;
     const n = WORDS.filter(inMyLevel).length, ns = SENTS.filter(inMyLevel).length;
-    $("#lvDesc").textContent = `${LVNAME[myLevel]} · 단어 ${n}개 · 문장 ${ns}개`;
+    $("#lvDesc").textContent = `${LVNAME[Math.round(myLevel)]} · 단어 ${n}개 · 문장 ${ns}개`;
     $("#lvGo").textContent = "레벨 다시 테스트";
     $("#lvRing").style.setProperty("--p", (myLevel / 10 * 360) + "deg");
   } else {
@@ -2648,7 +2656,7 @@ function renderHome(){
   $("#hDate").textContent = `${now.getMonth() + 1}월 ${now.getDate()}일 ${"일월화수목금토"[now.getDay()]}요일`;
   const st = streakDays();
   $("#hStreak").textContent = st ? `${st}일 연속` : "오늘 첫 공부";
-  $("#hLv").textContent = myLevel ? "Lv." + myLevel : "레벨 테스트";
+  $("#hLv").textContent = myLevel ? "Lv." + lvShow(myLevel) : "레벨 테스트";
   $("#hStage").textContent = `Day ${day} · 오늘의 레슨`;
   $("#hTitle").textContent = g ? g.t : stageOf(Math.ceil(day / 7));
   $("#hForm").textContent = g ? g.f : "";
@@ -3090,14 +3098,14 @@ function qFinish(){
   $("#qEnd").addEventListener("click", () => { const d = qFrom; endQuiz(); if (d) returnTo(d); });
   renderWords();
 }
-function endQuiz(){ clearTimer(); clearInterval(tCountdown); document.body.classList.remove("quizOn"); refreshTab(); }
+function endQuiz(){ clearTimer(); clearInterval(tCountdown); tRun++; document.body.classList.remove("quizOn"); refreshTab(); }
 /* ══ 레벨 테스트 ══
-   레벨 5에서 시작해 위아래로 좁힌다(이분 탐색). 한 단계는 5문제(단어 3 + 문장 2),
-   4개 이상 맞히면 통과. 한 번 실패하면 같은 레벨을 한 번 더 준다.
-   보기는 같은 분야 단어로 채우고, 문제마다 제한 시간이 있다. */
-const TEST_PER_LV = 5, TEST_PASS = 4;
-const SEC_WORD = 10, SEC_SENT = 15;
-let tLv, tQs, tIdx, tHit, tRetry, tLog, tLo, tHi, tBest;
+   한 문제씩 맞히면 레벨이 올라가고 틀리면 내려간다(계단식). 처음엔 1씩 움직이다가
+   오르내림이 바뀔 때마다 폭을 줄여 소수점 한 자리까지 좁힌다. 문제는 지금 레벨(반올림)의
+   단어·문장에서 내고, 마지막 6문제 동안의 레벨 평균이 최종 레벨. 문제마다 제한 시간이 있다. */
+const TEST_N = 18, SEC_WORD = 10, SEC_SENT = 15;
+let tLv, tTheta, tStart, tStep, tDir, tHist, tI, tUsed, tLog, tRun = 0;
+const lvShow = v => (Math.round(v * 10) / 10).toFixed(1);
 
 /* 문장 빈칸에 쓰는 문법어 묶음 — 같은 묶음 안에서 헷갈리는 것만 보기로 낸다 */
 const FUNCG = [
@@ -3157,8 +3165,8 @@ function startTimer(sec, onOut){
 /* 시작하기 전에 설명 → 3·2·1 카운트다운 → 첫 문제 (문제마다 제한 시간이 있어서 준비할 틈을 줍니다) */
 let tCountdown = null;
 function startLevelTest(){
-  tLo = 1; tHi = 10; tBest = 0; tRetry = false; tLog = [];
-  tLv = 5;
+  tStart = tTheta = myLevel ? Math.min(10, Math.max(1, myLevel)) : 3;   // 처음이면 3, 다시 보면 지난 레벨에서 시작
+  tStep = 1; tDir = 0; tHist = []; tI = 0; tUsed = new Set(); tLog = []; tRun++;
   clearTimer(); clearInterval(tCountdown);
   document.body.classList.add("quizOn");
   $("#qBar").style.width = "0";
@@ -3168,7 +3176,8 @@ function startLevelTest(){
       <p class="kick">레벨 테스트</p>
       <h2>내 영어 레벨을 찾아볼게요</h2>
       <ul>
-        <li><b>5문제씩</b> 풀면서 레벨을 좁혀 가요. 보통 2~4분 걸려요.</li>
+        <li><b>${TEST_N}문제</b>를 풀어요. <b>맞히면 레벨이 올라가고, 틀리면 내려가요.</b>
+          레벨 ${lvShow(tStart)}에서 시작하고, 보통 3~4분 걸려요.</li>
         <li>단어는 <b>${SEC_WORD}초</b>, 문장은 <b>${SEC_SENT}초</b> 안에 골라야 해요.</li>
         <li>모르면 찍지 말고 <b>'모르겠어요'</b>를 눌러 주세요. 그래야 레벨이 정확하게 나와요.</li>
       </ul>
@@ -3184,45 +3193,34 @@ function lvCountdown(){
   tCountdown = setInterval(() => {
     if (--n > 0){ show(); return; }
     clearInterval(tCountdown); tCountdown = null;
-    loadLevelSet();
+    nextLevelQ();
   }, 800);
 }
-function loadLevelSet(){
-  const wp = WORDS.filter(x => x.lv === tLv);
-  const sp = SENTS.filter(x => x.lv === tLv);
-  if (wp.length < 4){ tHi = tLv - 1; tRetry = false; stepRange(); return; }
-  const qs = shuffle([...wp]).slice(0, 3).map(x => ({ t:"w", x }));
-  if (sp.length >= 4) shuffle([...sp]).slice(0, 2).forEach(x => qs.push({ t:"s", x }));
-  else shuffle([...wp]).slice(3, 5).forEach(x => qs.push({ t:"w", x }));
-  tQs = shuffle(qs); tIdx = 0; tHit = 0;
-  drawLevelQ();
-}
-/* 한 단계가 끝난 뒤 범위를 좁힌다 */
-function nextStage(){
-  if (tHit >= TEST_PASS){
-    tBest = Math.max(tBest, tLv);
-    tLo = tLv + 1; tRetry = false;
-  } else if (!tRetry){
-    tRetry = true; loadLevelSet(); return;      // 같은 레벨 한 번 더
-  } else {
-    tHi = tLv - 1; tRetry = false;
-  }
-  stepRange();
-}
-function stepRange(){
-  if (tLo > tHi || tHi < 1){ finishLevelTest(); return; }
-  tLv = Math.floor((tLo + tHi) / 2);
-  loadLevelSet();
-}
-
-function drawLevelQ(){
-  const q = tQs[tIdx];
-  const range = tHi - tLo + 1;
-  const base = 1 - range / 10;
-  $("#qBar").style.width = Math.min(100, Math.max(5,
-    (base + (tIdx / tQs.length) * (range / 10) * 0.6) * 100)) + "%";
-  $("#qCount").textContent = `레벨 ${tLv}` + (tRetry ? " 재확인" : "") + ` · ${tIdx + 1}/${tQs.length}`;
+/* 지금 레벨(반올림)에서 아직 안 낸 문제를 하나 고른다. 세 문제마다 한 번은 문장 */
+function nextLevelQ(){
+  if (tI >= TEST_N){ finishLevelTest(); return; }
+  tLv = Math.min(10, Math.max(1, Math.round(tTheta)));
+  const one = a => a[Math.floor(Math.random() * a.length)];
+  const sp = SENTS.filter(x => x.lv === tLv && !tUsed.has("s|" + x.en));
+  const wp = WORDS.filter(x => x.lv === tLv && !tUsed.has("w|" + keyOf(x)));
+  let q = null;
+  if (tI % 3 === 2 && sp.length) q = { t:"s", x: one(sp) };
+  else if (wp.length) q = { t:"w", x: one(wp) };
+  else if (sp.length) q = { t:"s", x: one(sp) };
+  if (!q){ finishLevelTest(); return; }
+  tUsed.add(q.t === "s" ? "s|" + q.x.en : "w|" + keyOf(q.x));
+  $("#qBar").style.width = (tI / TEST_N * 100) + "%";
+  $("#qCount").textContent = `레벨 ${lvShow(tTheta)} · ${tI + 1}/${TEST_N}`;
   q.t === "w" ? drawTestWord(q.x) : drawTestSent(q.x);
+}
+/* 맞히면 올리고 틀리면 내린다. 오르내림이 바뀌면 움직이는 폭을 줄여 점점 세밀하게 */
+function lvAnswered(ok){
+  const dir = ok ? 1 : -1;
+  if (tDir && dir !== tDir) tStep = Math.max(0.3, tStep * 0.7);
+  tDir = dir;
+  tTheta = Math.min(10, Math.max(1, Math.round((tTheta + dir * tStep) * 10) / 10));
+  tHist.push(tTheta); tI++;
+  return tTheta;
 }
 
 /* 같은 분야·비슷한 레벨에서 헷갈리는 보기를 뽑는다 */
@@ -3263,13 +3261,12 @@ function bindOpts(right, rec, sec){
     const idk = $("#qIdk"); if (idk) idk.disabled = true;
     const ok = picked === right;
     if (rec) tLog.push(Object.assign({ lv: tLv, ok, picked, why: why || null }, rec));
-    if (ok) tHit++;
-    if (why === "time") $("#qOut").textContent = "시간 초과";
-    else if (why === "idk") $("#qOut").textContent = "모르겠다고 답하셨습니다";
-    setTimeout(() => {
-      tIdx++;
-      tIdx < tQs.length ? drawLevelQ() : nextStage();
-    }, why ? 950 : 620);
+    const now = lvAnswered(ok);
+    const msg = why === "time" ? "시간 초과" : why === "idk" ? "모르겠어요" : ok ? "맞았어요" : "틀렸어요";
+    $("#qOut").innerHTML = `<span class="${ok ? "up" : "down"}">${msg} · 레벨 ${ok ? "▲" : "▼"} ${lvShow(now)}</span>`;
+    $("#qCount").textContent = `레벨 ${lvShow(now)} · ${tI}/${TEST_N}`;
+    const run = tRun;                           // 중간에 닫았으면 다음 문제를 내지 않음
+    setTimeout(() => { if (run === tRun) nextLevelQ(); }, why ? 1000 : 750);
   };
   box.addEventListener("click", e => {
     const b = e.target.closest(".opt"); if (!b) return;
@@ -3327,21 +3324,39 @@ function drawTestSent(s){
     bindOpts(s.en, { kind:"pick", c:s.c, en:s.en, ko:s.ko }, SEC_SENT);
   }
 }
+/* 레벨이 어떻게 움직였는지 작은 선 그래프 (점: 초록 맞힘 · 빨강 틀림) */
+function lvPathSvg(){
+  const pts = [tStart, ...tHist], W = 300, H = 96, n = pts.length;
+  const xy = pts.map((v, i) => [8 + i / Math.max(1, n - 1) * (W - 16), H - 10 - (v - 1) / 9 * (H - 20)]);
+  const line = xy.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+  return `<div class="lvPath"><p class="lab">레벨이 이렇게 움직였어요</p>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="레벨 변화 그래프">
+      <line x1="8" x2="${W - 8}" y1="10" y2="10" class="gl"></line><line x1="8" x2="${W - 8}" y1="${H - 10}" y2="${H - 10}" class="gl"></line>
+      <text x="${W - 8}" y="8" text-anchor="end">10</text><text x="${W - 8}" y="${H - 1}" text-anchor="end">1</text>
+      <polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></polyline>
+      ${xy.slice(1).map((p, i) => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.6"
+        fill="${tLog[i] && tLog[i].ok ? "var(--ok)" : "var(--bad)"}"></circle>`).join("")}
+    </svg></div>`;
+}
 function finishLevelTest(){
   clearTimer();
-  const lv = Math.max(1, tBest || 1);
+  const tail = tHist.slice(-6);
+  const lv = tail.length ? Math.round(tail.reduce((a, b) => a + b, 0) / tail.length * 10) / 10 : 1;
+  const L = Math.round(lv);
   myLevel = lv; store.set("vb.level", lv);
   const n = WORDS.filter(inMyLevel).length, ns = SENTS.filter(inMyLevel).length;
+  const hit = tLog.filter(r => r.ok).length;
   $("#qBar").style.width = "100%";
   $("#qCount").textContent = "";
   $("#qBody").innerHTML = `
     <div class="lvResult">
-      <p class="big">${lv}</p>
-      <p class="nm">레벨 ${lv} · ${LVNAME[lv]}</p>
-      <p class="ds">이제 레벨 ${Math.max(1,lv-1)}~${Math.min(10,lv+1)}에 맞춰
+      <p class="big">${lvShow(lv)}</p>
+      <p class="nm">레벨 ${lvShow(lv)} · ${LVNAME[L]}</p>
+      <p class="ds">${tLog.length}문제 중 ${hit}개 맞혔어요. 이제 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)}에 맞춰
         단어 ${n}개와 문장 ${ns}개가 나옵니다.</p>
     </div>
-    ${analysisHTML(lv)}
+    ${lvPathSvg()}
+    ${analysisHTML(L)}
     <div class="qBtns" style="margin-top:26px"><button class="btn go" id="lvDone">시작하기</button></div>`;
   bindPlan();
   $("#lvDone").addEventListener("click", ()=>{
@@ -4204,7 +4219,7 @@ function renderStats(){
     <div class="stCard"><h3>단어장</h3>
       <div class="stRow">${cell(c[1], "외우는 중")}${cell(c[2], "외운")}${cell(c[3], "외외운")}${cell(miss, "헷갈림")}</div></div>
     <div class="stCard"><h3>누적</h3>
-      <div class="stRow">${cell(myLevel ? "Lv." + myLevel : "-", "레벨")}${cell(best, "문장 최고 연속")}${cell(studied, "공부한 날")}</div></div>`;
+      <div class="stRow">${cell(myLevel ? "Lv." + lvShow(myLevel) : "-", "레벨")}${cell(best, "문장 최고 연속")}${cell(studied, "공부한 날")}</div></div>`;
 }
 
 /* ══ 복습 ══ 오늘의 단어(간격 반복) · 헷갈린 단어 · 지난 레슨 · 채울 메모 */
@@ -4298,7 +4313,7 @@ $("#suBody").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=26"></script>
-<script src="sync.js?v=26"></script>
+<script src="firebase-config.js?v=27"></script>
+<script src="sync.js?v=27"></script>
 
 </body></html>

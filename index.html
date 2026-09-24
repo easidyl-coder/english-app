@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=28"></script>
+<script src="ipa.js?v=29"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -585,6 +585,8 @@
   .lvIntro li{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px 14px;
     font-size:14px; line-height:1.55; box-shadow:var(--shadow) }
   .lvIntro .btn{ width:100%; min-height:56px; font-size:17px; margin-top:22px }
+  .lvIntro .lvWait{ font-size:12.5px; color:var(--ink-2); text-align:center; margin:10px 0 0 }
+  .lvResult .who{ font-size:14px; font-weight:800; color:var(--accent); margin:0 0 6px }
   .lvCount{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:55vh; gap:10px }
   .lvCount b{ font-family:"Jua",sans-serif; font-weight:400; font-size:110px; line-height:1; color:var(--accent);
     animation:lvPop .8s ease-out }
@@ -2535,6 +2537,13 @@ function boxCounts(){
 }
 
 function renderLevel(){
+  const needLogin = loginOn() && !loggedIn();
+  renderLevelCard();
+  $("#lvGo").textContent = needLogin ? (myLevel ? "로그인하고 다시 테스트" : "로그인하고 레벨 테스트")
+                                     : (myLevel ? "레벨 다시 테스트" : "레벨 테스트 시작");
+  if (!myLevel && needLogin) $("#lvDesc").textContent = "구글 로그인하면 레벨 테스트를 볼 수 있어요";
+}
+function renderLevelCard(){
   if (myLevel){
     $("#lvNum").textContent = lvShow(myLevel);
     $("#lvName").textContent = `레벨 ${lvShow(myLevel)} / 10`;
@@ -3098,7 +3107,7 @@ function qFinish(){
   $("#qEnd").addEventListener("click", () => { const d = qFrom; endQuiz(); if (d) returnTo(d); });
   renderWords();
 }
-function endQuiz(){ clearTimer(); clearInterval(tCountdown); tRun++; document.body.classList.remove("quizOn"); refreshTab(); }
+function endQuiz(){ clearTimer(); clearInterval(tCountdown); tRun++; lvGateOpen = false; document.body.classList.remove("quizOn"); refreshTab(); }
 /* ══ 레벨 테스트 ══
    한 문제씩 맞히면 레벨이 올라가고 틀리면 내려간다(계단식). 처음엔 1씩 움직이다가
    오르내림이 바뀔 때마다 폭을 줄여 소수점 한 자리까지 좁힌다. 문제는 지금 레벨(반올림)의
@@ -3164,7 +3173,40 @@ function startTimer(sec, onOut){
 
 /* 시작하기 전에 설명 → 3·2·1 카운트다운 → 첫 문제 (문제마다 제한 시간이 있어서 준비할 틈을 줍니다) */
 let tCountdown = null;
+/* ── 레벨 테스트는 로그인해야 볼 수 있음 ── 레벨이 구글 계정에 저장돼 어느 기기에서든 내 레벨로 문제가 나옵니다.
+   로그인 기능이 꺼져 있으면(firebase-config.js 비움) 막지 않습니다. 로그인 상태는 sync.js가 알려 줍니다. */
+const loginOn = () => !!window.FIREBASE_CONFIG;
+const loggedIn = () => !!window.appUser;
+let lvGateOpen = false;
+function showLvGate(){
+  lvGateOpen = true;
+  clearTimer(); clearInterval(tCountdown); tRun++;
+  document.body.classList.add("quizOn");
+  $("#qBar").style.width = "0";
+  $("#qCount").textContent = "";
+  $("#qBody").innerHTML = `
+    <div class="lvIntro">
+      <p class="kick">레벨 테스트</p>
+      <h2>로그인하고 레벨 테스트를 볼 수 있어요</h2>
+      <ul>
+        <li>내 레벨이 <b>구글 계정에 저장</b>돼서, 어느 휴대폰에서 열어도 그대로 나와요.</li>
+        <li>레벨이 정해지면 오늘의 단어·문장 조립·듣기가 <b>내 레벨에 맞는 난이도</b>로 나와요.</li>
+      </ul>
+      <button class="btn go" id="lvLogin" type="button">구글로 로그인</button>
+      <p class="lvWait" id="lvWait">로그인이 끝나면 바로 레벨 테스트로 넘어가요.</p>
+    </div>`;
+  $("#lvLogin").addEventListener("click", () => {
+    if (window.appSignIn) window.appSignIn();
+    else alert("로그인을 준비하고 있어요. 인터넷 연결을 확인하고 잠시 뒤 다시 눌러 주세요.");
+  });
+}
+window.addEventListener("authchange", () => {
+  renderLevel(); renderHome();
+  if (lvGateOpen && loggedIn() && document.body.classList.contains("quizOn")) startLevelTest();   // 로그인 끝나면 이어서
+});
 function startLevelTest(){
+  if (loginOn() && !loggedIn()){ showLvGate(); return; }
+  lvGateOpen = false;
   tStart = tTheta = myLevel ? Math.min(10, Math.max(1, myLevel)) : 3;   // 처음이면 3, 다시 보면 지난 레벨에서 시작
   tStep = 1; tDir = 0; tHist = []; tI = 0; tUsed = new Set(); tLog = []; tRun++;
   clearTimer(); clearInterval(tCountdown);
@@ -3348,11 +3390,13 @@ function finishLevelTest(){
   const hit = tLog.filter(r => r.ok).length;
   $("#qBar").style.width = "100%";
   $("#qCount").textContent = "";
+  const who = window.appUser && window.appUser.name ? window.appUser.name.split(" ")[0] : "";
   $("#qBody").innerHTML = `
     <div class="lvResult">
+      ${who ? `<p class="who">${esc(who)}님의 레벨</p>` : ""}
       <p class="big">${lvShow(lv)}</p>
       <p class="nm">레벨 ${lvShow(lv)} · ${LVNAME[L]}</p>
-      <p class="ds">${tLog.length}문제 중 ${hit}개 맞혔어요. 이제 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)}에 맞춰
+      <p class="ds">${who ? "구글 계정에 저장했어요. " : ""}${tLog.length}문제 중 ${hit}개 맞혔어요. 이제 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)}에 맞춰
         단어 ${n}개와 문장 ${ns}개가 나옵니다.</p>
     </div>
     ${lvPathSvg()}
@@ -4406,7 +4450,7 @@ $("#suBody").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=28"></script>
-<script src="sync.js?v=28"></script>
+<script src="firebase-config.js?v=29"></script>
+<script src="sync.js?v=29"></script>
 
 </body></html>

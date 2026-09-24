@@ -75,17 +75,24 @@
     if (k === "vb.box" || k === "vb.level" || k === "vb.best") push();
   };
 
+  /* 로그인 상태를 앱 화면(index.html)에 알려 줍니다: window.appUser, 'authchange' 이벤트 */
+  const fire = () => window.dispatchEvent(new Event("authchange"));
+
   function start(){
     firebase.initializeApp(cfg);
     auth = firebase.auth(); db = firebase.firestore();
-    auth.onAuthStateChanged(u => { user = u; label(); if (u) pull(); });
+    auth.onAuthStateChanged(u => {
+      user = u;
+      window.appUser = u ? { uid: u.uid, name: u.displayName || "", email: u.email || "" } : null;
+      label();
+      if (u) pull().finally(fire); else fire();          // 서버 기록(레벨 포함)을 합친 뒤에 알림
+    });
     auth.getRedirectResult().catch(() => {});
     label();
   }
 
-  if (btn) btn.addEventListener("click", async () => {
-    if (!auth) return;
-    if (user){ if (confirm("로그아웃할까요? 이 기기에 저장된 진도는 그대로 남아요.")) auth.signOut(); return; }
+  async function signIn(){
+    if (!auth){ alert("로그인을 준비하고 있어요. 인터넷 연결을 확인하고 잠시 뒤 다시 눌러 주세요."); return; }
     const p = new firebase.auth.GoogleAuthProvider();
     try { await auth.signInWithPopup(p); }
     catch(e){
@@ -93,6 +100,13 @@
         auth.signInWithRedirect(p);
       else if (e && e.code !== "auth/popup-closed-by-user") alert("로그인하지 못했어요: " + (e.message || e));
     }
+  }
+  window.appSignIn = signIn;
+
+  if (btn) btn.addEventListener("click", () => {
+    if (!auth) return;
+    if (user){ if (confirm("로그아웃할까요? 이 기기에 저장된 진도는 그대로 남아요.")) auth.signOut(); return; }
+    signIn();
   });
 
   if (btn){ btn.hidden = false; btn.textContent = "…"; btn.disabled = true; }

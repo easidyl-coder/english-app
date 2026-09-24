@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
 <title>서인의 영어 연습장</title>
-<script src="ipa.js?v=12"></script>
+<script src="ipa.js?v=13"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -494,6 +494,26 @@
   .lsEx{ font-size:13px; color:var(--ink-2); margin-top:5px }
   .lsDo{ display:grid; gap:10px }
   .lsDo .btn{ min-height:54px; font-size:16px; border-radius:18px }
+  body.noteOn #note{ display:block } body.noteOn{ overflow:hidden }
+  .ntAdd{ display:flex; gap:8px; margin:14px 0 6px }
+  .ntAdd input{ flex:1; min-width:0; font:inherit; font-size:15px; padding:0 14px; min-height:50px;
+    border:1px solid var(--line); border-radius:16px; background:#fff; color:var(--ink) }
+  .ntAdd input::placeholder{ color:var(--ink-3) }
+  .ntAdd .btn{ min-height:50px; padding:0 18px; background:var(--honey); border-color:var(--honey) }
+  .ntEmpty{ background:#fff; border:1px dashed var(--line); border-radius:18px; padding:22px 18px;
+    text-align:center; font-size:13.5px; line-height:1.7; color:var(--ink-2); margin-top:12px }
+  .ntCard{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:14px 16px;
+    box-shadow:var(--shadow); margin-bottom:10px }
+  .ntCard.has{ border-color:var(--ok, #2E9E6B) }
+  .ntCard .q{ font-size:15.5px; font-weight:700; line-height:1.5 }
+  .ntCard .a{ font-family:"Gothic A1",sans-serif; font-size:17px; font-weight:700; color:var(--accent);
+    margin-top:7px; line-height:1.45 }
+  .ntCard .when{ font-size:11.5px; color:var(--ink-3); margin-top:6px }
+  .ntCard .row2{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap }
+  .ntCard .row2 .btn{ font-size:13px; padding:7px 12px; min-height:40px }
+  .ntCard .ed{ display:flex; gap:8px; margin-top:10px }
+  .ntCard .ed input{ flex:1; min-width:0; font:inherit; font-size:15px; padding:0 12px; min-height:44px;
+    border:1px solid var(--line); border-radius:14px; background:var(--ground); color:var(--ink) }
   .gram{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:var(--shadow) }
   .gram .f{ font-family:"Gothic A1",sans-serif; font-size:19px; font-weight:800; color:var(--accent);
     background:var(--tint-2, #E9EAF7); border-radius:12px; padding:10px 12px; text-align:center; letter-spacing:-.2px }
@@ -611,6 +631,11 @@
         <span class="hIcon" style="background:var(--pink)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 17v-4a8 8 0 0 1 16 0v4"></path><rect x="3" y="14" width="4" height="7" rx="1.5"></rect><rect x="17" y="14" width="4" height="7" rx="1.5"></rect></svg></span>
         <span class="nm">듣기·말하기</span><span class="ds">듣고 소리 내어 말하기</span>
       </button>
+      <button class="hTile wide" id="hNote" type="button">
+        <span class="hIcon" style="background:var(--tint-2,#E9EAF7)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H16l4 4v11.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5z"></path><path d="M8 11h8M8 15h5"></path></svg></span>
+        <span class="tx"><span class="nm">막혔던 말 메모</span><span class="ds" id="hNoteN">아직 없어요</span></span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
+      </button>
     </div>
     <div class="hLvUp">
       <h2>단어 레벨업</h2>
@@ -718,6 +743,7 @@
 
 
 <div class="lesson" id="lesson"><div class="shell" id="lsBody"></div></div>
+<div class="lesson" id="note"><div class="shell" id="ntBody"></div></div>
 <div class="quiz" id="quiz">
   <div class="shell">
     <div class="gTop">
@@ -2090,6 +2116,86 @@ const SENTS = [
   {d:30,lv:3,c:"여행·교통",en:"I have nothing to declare.",ko:"신고할 것 없어요."},
   {d:30,lv:3,c:"여행·교통",en:"It's my first time here.",ko:"여기 처음이에요."},
   {d:30,lv:3,c:"여행·교통",en:"Thank you, have a good day.",ko:"감사합니다, 좋은 하루 되세요."},
+  {d:31,lv:3,c:"말·표현",en:"It was good, but it was expensive.",ko:"좋았는데 비쌌어요."},
+  {d:31,lv:3,c:"말·표현",en:"I'm tired, so I'll go back early.",ko:"피곤해서 일찍 들어갈게요."},
+  {d:31,lv:3,c:"말·표현",en:"We went to the beach and had lunch.",ko:"해변에 가서 점심을 먹었어요."},
+  {d:31,lv:3,c:"말·표현",en:"I like it, but it's too big.",ko:"마음에 드는데 너무 커요."},
+  {d:31,lv:3,c:"말·표현",en:"She called me, so I came here.",ko:"그녀가 전화해서 여기 왔어요."},
+  {d:31,lv:3,c:"말·표현",en:"It's cheap and it tastes good.",ko:"싸고 맛도 좋아요."},
+  {d:31,lv:3,c:"말·표현",en:"I wanted to go, but I was busy.",ko:"가고 싶었는데 바빴어요."},
+  {d:31,lv:3,c:"말·표현",en:"We're hungry, so let's eat first.",ko:"배고프니까 먼저 먹어요."},
+  {d:32,lv:3,c:"말·표현",en:"I'm tired because I worked late.",ko:"늦게까지 일해서 피곤해요."},
+  {d:32,lv:3,c:"말·표현",en:"We stayed inside because it rained.",ko:"비가 와서 안에 있었어요."},
+  {d:32,lv:3,c:"말·표현",en:"Call me when you arrive.",ko:"도착하면 전화해 주세요."},
+  {d:32,lv:3,c:"말·표현",en:"I was happy because the food was great.",ko:"음식이 훌륭해서 좋았어요."},
+  {d:32,lv:3,c:"말·표현",en:"When I was young, I lived in Busan.",ko:"어릴 때 부산에 살았어요."},
+  {d:32,lv:3,c:"말·표현",en:"I can't go because I have work.",ko:"일이 있어서 못 가요."},
+  {d:32,lv:3,c:"말·표현",en:"Let me know when it's ready.",ko:"준비되면 알려 주세요."},
+  {d:32,lv:3,c:"말·표현",en:"She left because she was sick.",ko:"아파서 먼저 갔어요."},
+  {d:33,lv:3,c:"말·표현",en:"I think it's closed.",ko:"닫은 것 같아요."},
+  {d:33,lv:3,c:"말·표현",en:"I think this is better.",ko:"이게 더 나은 것 같아요."},
+  {d:33,lv:3,c:"말·표현",en:"I know what you mean.",ko:"무슨 말인지 알아요."},
+  {d:33,lv:3,c:"말·표현",en:"I don't think we need it.",ko:"그건 필요 없을 것 같아요."},
+  {d:33,lv:3,c:"말·표현",en:"I hope you like it.",ko:"마음에 드셨으면 좋겠어요."},
+  {d:33,lv:3,c:"말·표현",en:"I heard the beach is beautiful.",ko:"해변이 예쁘다고 들었어요."},
+  {d:33,lv:3,c:"말·표현",en:"I'm not sure it's open today.",ko:"오늘 여는지 잘 모르겠어요."},
+  {d:33,lv:3,c:"말·표현",en:"I think we should go now.",ko:"이제 가야 할 것 같아요."},
+  {d:34,lv:3,c:"시간·숫자",en:"I usually get up at six.",ko:"저는 보통 6시에 일어나요."},
+  {d:34,lv:3,c:"시간·숫자",en:"We always eat breakfast here.",ko:"저희는 항상 여기서 아침을 먹어요."},
+  {d:34,lv:3,c:"시간·숫자",en:"I never drink coffee at night.",ko:"저는 밤에 커피를 절대 안 마셔요."},
+  {d:34,lv:3,c:"시간·숫자",en:"She sometimes works on weekends.",ko:"그녀는 가끔 주말에 일해요."},
+  {d:34,lv:3,c:"시간·숫자",en:"I often shoot outdoors.",ko:"저는 자주 야외에서 촬영해요."},
+  {d:34,lv:3,c:"시간·숫자",en:"We rarely go out on Mondays.",ko:"저희는 월요일엔 거의 안 나가요."},
+  {d:34,lv:3,c:"시간·숫자",en:"I usually finish around seven.",ko:"보통 7시쯤 끝나요."},
+  {d:34,lv:3,c:"시간·숫자",en:"He's always late in the morning.",ko:"그는 아침에 항상 늦어요."},
+  {d:35,lv:3,c:"여행·교통",en:"We stayed at a hotel in Cancun.",ko:"저희는 칸쿤의 호텔에 묵었어요."},
+  {d:35,lv:3,c:"여행·교통",en:"I met her at the airport last night.",ko:"어젯밤 공항에서 그녀를 만났어요."},
+  {d:35,lv:3,c:"여행·교통",en:"The shop is next to the bank.",ko:"그 가게는 은행 옆에 있어요."},
+  {d:35,lv:3,c:"여행·교통",en:"We had dinner with my wife on the beach.",ko:"해변에서 아내와 저녁을 먹었어요."},
+  {d:35,lv:3,c:"여행·교통",en:"I left my bag in the taxi.",ko:"택시에 가방을 두고 내렸어요."},
+  {d:35,lv:3,c:"여행·교통",en:"There's a market near the hotel.",ko:"호텔 근처에 시장이 있어요."},
+  {d:35,lv:3,c:"여행·교통",en:"We walked from the station to the hotel.",ko:"역에서 호텔까지 걸어갔어요."},
+  {d:35,lv:3,c:"여행·교통",en:"I'll wait for you in front of the gate.",ko:"게이트 앞에서 기다릴게요."},
+  {d:36,lv:3,c:"동작·행동",en:"I came here to see the beach.",ko:"해변을 보러 여기 왔어요."},
+  {d:36,lv:3,c:"동작·행동",en:"We stopped to take some photos.",ko:"사진 좀 찍으려고 멈췄어요."},
+  {d:36,lv:3,c:"동작·행동",en:"I need a minute to think.",ko:"생각할 시간이 조금 필요해요."},
+  {d:36,lv:3,c:"동작·행동",en:"She went out to buy some water.",ko:"물을 사러 나갔어요."},
+  {d:36,lv:3,c:"동작·행동",en:"I'm here to pick up my order.",ko:"주문한 걸 찾으러 왔어요."},
+  {d:36,lv:3,c:"동작·행동",en:"We're saving money to travel.",ko:"여행하려고 돈을 모으고 있어요."},
+  {d:36,lv:3,c:"동작·행동",en:"I called to ask about the price.",ko:"가격을 물어보려고 전화했어요."},
+  {d:36,lv:3,c:"동작·행동",en:"It's a good place to relax.",ko:"쉬기에 좋은 곳이에요."},
+  {d:37,lv:3,c:"사람·관계",en:"The guy who took our photo was kind.",ko:"우리 사진 찍어준 사람이 친절했어요."},
+  {d:37,lv:3,c:"사람·관계",en:"That's the restaurant I told you about.",ko:"제가 말씀드린 그 식당이에요."},
+  {d:37,lv:3,c:"사람·관계",en:"I know a place that serves good tacos.",ko:"타코 맛있는 집을 알아요."},
+  {d:37,lv:3,c:"사람·관계",en:"The woman who works here speaks Korean.",ko:"여기서 일하는 분이 한국어를 해요."},
+  {d:37,lv:3,c:"사람·관계",en:"This is the bag I bought yesterday.",ko:"이게 어제 산 가방이에요."},
+  {d:37,lv:3,c:"사람·관계",en:"The hotel we stayed at was clean.",ko:"저희가 묵은 호텔은 깨끗했어요."},
+  {d:37,lv:3,c:"사람·관계",en:"He's the friend I came with.",ko:"같이 온 친구예요."},
+  {d:37,lv:3,c:"사람·관계",en:"That's the one I want.",ko:"그게 제가 원하는 거예요."},
+  {d:38,lv:3,c:"말·표현",en:"If it rains, we'll stay inside.",ko:"비가 오면 안에 있을게요."},
+  {d:38,lv:3,c:"말·표현",en:"If you're busy, we can go later.",ko:"바쁘시면 나중에 가도 돼요."},
+  {d:38,lv:3,c:"말·표현",en:"Let me know if you need help.",ko:"도움이 필요하면 말씀해 주세요."},
+  {d:38,lv:3,c:"말·표현",en:"If it's too expensive, I'll take the other one.",ko:"너무 비싸면 다른 걸로 할게요."},
+  {d:38,lv:3,c:"말·표현",en:"We'll leave early if the traffic is bad.",ko:"길이 막히면 일찍 나갈게요."},
+  {d:38,lv:3,c:"말·표현",en:"If you have time, let's get coffee.",ko:"시간 되시면 커피 한잔해요."},
+  {d:38,lv:3,c:"말·표현",en:"Call me if anything changes.",ko:"뭔가 바뀌면 전화 주세요."},
+  {d:38,lv:3,c:"말·표현",en:"If that's okay, I'll pay by card.",ko:"괜찮으시면 카드로 낼게요."},
+  {d:39,lv:3,c:"말·표현",en:"Actually, I changed my mind.",ko:"사실은 마음이 바뀌었어요."},
+  {d:39,lv:3,c:"말·표현",en:"By the way, where are you from?",ko:"그런데, 어디서 오셨어요?"},
+  {d:39,lv:3,c:"말·표현",en:"How about you?",ko:"당신은요?"},
+  {d:39,lv:3,c:"말·표현",en:"That sounds great.",ko:"좋은데요."},
+  {d:39,lv:3,c:"말·표현",en:"I see what you mean.",ko:"무슨 말인지 알겠어요."},
+  {d:39,lv:3,c:"말·표현",en:"Anyway, let's talk about tomorrow.",ko:"아무튼, 내일 얘기를 해요."},
+  {d:39,lv:3,c:"말·표현",en:"Really? That's interesting.",ko:"정말요? 흥미롭네요."},
+  {d:39,lv:3,c:"말·표현",en:"Let me think for a second.",ko:"잠깐만 생각해 볼게요."},
+  {d:40,lv:3,c:"사람·관계",en:"Hi, I'm Seoin. Nice to meet you.",ko:"안녕하세요, 서인이라고 합니다. 반가워요."},
+  {d:40,lv:3,c:"사람·관계",en:"I'm from Korea, and I live in Seoul.",ko:"한국에서 왔고, 서울에 살아요."},
+  {d:40,lv:3,c:"사람·관계",en:"I make videos for a living.",ko:"영상 만드는 일을 해요."},
+  {d:40,lv:3,c:"사람·관계",en:"I usually shoot ads and interviews.",ko:"보통 광고랑 인터뷰를 촬영해요."},
+  {d:40,lv:3,c:"사람·관계",en:"I came here on vacation with my wife.",ko:"아내와 휴가로 왔어요."},
+  {d:40,lv:3,c:"사람·관계",en:"We're staying for ten days, so we have time.",ko:"10일 머물러서 시간은 있어요."},
+  {d:40,lv:3,c:"사람·관계",en:"I want to see the beach and try the food.",ko:"해변도 보고 음식도 먹어보고 싶어요."},
+  {d:40,lv:3,c:"사람·관계",en:"How about you? What do you do?",ko:"당신은요? 무슨 일 하세요?"},
 ];
 /* ── 데이터 끝 ── */
 
@@ -2171,7 +2277,7 @@ function headStats(){
 
 /* ── 탭 ── */
 function go(i){
-  if (i === 3) renderHome();
+  if (i === 3){ renderHome(); drawNoteTile(); }
   [0,1,2,3].forEach(j => {
     $("#t"+j).setAttribute("aria-selected", j===i);
     $("#p"+j).classList.toggle("on", j===i);
@@ -2213,10 +2319,20 @@ const GRAM = {
   28:{t:"22~27 복습",f:"과거와 비교 섞어 쓰기",d:"겪은 일을 말하고, 더 나은 걸 고르는 연습.",x:"어제 한 일을 세 문장으로 말해 보세요."},
   29:{t:"1~28 총정리",f:"배운 패턴 전부",d:"속사포로 뱉어 보며 굳히는 날.",x:"막히는 문장은 그 날짜 레슨으로 돌아가 다시 보세요."},
   30:{t:"실전 - 입국 심사",f:"묻는 말에 한 문장으로 답하기",d:"칸쿤 공항에서 실제로 받게 될 질문들입니다.",x:"길게 말할 필요 없어요. 짧고 분명하게 한 문장이면 충분합니다."},
+  31:{t:"and / but / so 로 잇기",f:"문장 + , and / but / so + 문장",d:"짧은 문장 두 개를 그냥 이어 붙입니다. and(그리고), but(그런데), so(그래서).",x:"한 번에 긴 문장을 만들려 하지 마세요. 짧게 뱉고 나서 뒤에 덧붙이는 게 실제 말하는 방식입니다."},
+  32:{t:"because / when",f:"문장 + because(왜냐면) / when(~할 때) + 문장",d:"이유와 시점을 붙이면 문장이 자연스럽게 두 배가 됩니다.",x:"because 뒤에는 주어+동사가 꼭 옵니다. because tired (X) → because I was tired."},
+  33:{t:"I think / I know + 문장",f:"I think (that) + 주어 + 동사",d:"앞에 I think 만 붙여도 문장이 길어지고, 단정을 피할 수 있어 훨씬 부드러워집니다.",x:"that 은 생략해도 됩니다. I think it's closed. 가 가장 흔한 형태예요."},
+  34:{t:"얼마나 자주 / 언제",f:"빈도부사(usually, always, often, never) + 동사",d:"동사 앞에 한 단어만 끼워도 정보가 늘어납니다. be동사일 때만 뒤에 옵니다.",x:"I get usually up (X) → I usually get up. 빈도부사는 일반동사 바로 앞입니다."},
+  35:{t:"전치사구로 늘리기",f:"동사 + 어디서 + 누구와 + 언제",d:"한 문장 뒤에 장소·사람·시간을 순서대로 붙여 나갑니다.",x:"한국어 순서(어제 해변에서)와 반대입니다. 영어는 장소 → 시간 순서로 붙이세요."},
+  36:{t:"~하려고 (이유)",f:"to + 동사원형",d:"행동의 목적을 뒤에 붙입니다. 여행에서 이유를 설명할 때 계속 씁니다.",x:"for see (X) → to see. 동사가 오면 for 가 아니라 to 입니다."},
+  37:{t:"who / that 으로 설명 붙이기",f:"명사 + who(사람) / that(사물) + 동사",d:"명사 뒤에 설명을 매다는 방법. 이게 되면 문장 길이가 확 늘어납니다.",x:"설명은 꾸미는 명사 바로 뒤에 붙입니다. 멀리 떨어지면 무슨 말인지 모릅니다."},
+  38:{t:"만약 ~라면",f:"If + 주어 + 동사, 주어 + will/can + 동사",d:"조건을 앞에 붙입니다. 부탁이나 제안을 부드럽게 만들 때도 좋습니다.",x:"If it will rain (X) → If it rains. if 절 안에서는 미래도 현재형으로 씁니다."},
+  39:{t:"대화 이어가기",f:"Actually / By the way / Anyway / How about you?",d:"할 말을 고르는 시간을 벌어주고, 대화를 끊기지 않게 해주는 연결어들입니다.",x:"침묵보다 Let me think for a second. 가 훨씬 낫습니다. 채워 넣을 말을 미리 외워두세요."},
+  40:{t:"종합 - 30초 자기소개",f:"이름 → 어디서 → 무슨 일 → 왜 왔는지 → 되묻기",d:"배운 연결법을 다 써서 나를 30초 동안 소개합니다.",x:"마지막에 How about you? 로 넘기세요. 대화는 주고받아야 이어집니다."},
 };
 const START = new Date("2026-09-10T00:00:00+09:00");
 /* ── 진도 기준 Day ── 하루치를 끝내야 다음 날로 넘어갑니다 */
-const LASTDAY = 30;                               // 지금까지 만들어 둔 마지막 레슨
+const LASTDAY = 40;                               // 지금까지 만들어 둔 마지막 레슨
 let curDay = Math.min(LASTDAY, Math.max(1, store.get("vb.day", 1)));
 function dayNo(){ return curDay; }
 function finishDay(){
@@ -3162,7 +3278,81 @@ $("#lsBody").addEventListener("click", e => {
 $("#hLesson").addEventListener("click", () => openLesson());
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeLesson(); });
 
+/* ══ 막혔던 말 메모 ══ 영어로 뭐라 하는지 몰랐던 순간을 바로 적어 둡니다 */
+let notes = store.get("vb.notes", []);
+const saveNotes = () => store.set("vb.notes", notes);
+function noteCount(){ return { all: notes.length, open: notes.filter(n => !n.en).length }; }
+function drawNoteTile(){
+  const c = noteCount();
+  $("#hNoteN").textContent = !c.all ? "아직 없어요 · 막힌 말을 적어두세요"
+    : c.open ? `${c.all}개 · 영어 답 없는 게 ${c.open}개`
+             : `${c.all}개 · 전부 채웠어요`;
+}
+function openNote(){ renderNote(); document.body.classList.add("noteOn"); $("#note").scrollTop = 0; }
+function closeNote(){ document.body.classList.remove("noteOn"); }
+function renderNote(){
+  const list = notes.slice().sort((a,b) => b.t - a.t);
+  const when = t => { const d = new Date(t); return `${d.getMonth()+1}월 ${d.getDate()}일`; };
+  $("#ntBody").innerHTML = `
+    <div class="lsTop"><button class="btn" id="ntX">닫기</button>
+      <span class="gMeta">${notes.length}개</span></div>
+    <div class="lsHero">
+      <span class="d">내 표현 노트</span>
+      <span class="t">막혔던 말 메모</span>
+      <span class="d">영어로 뭐라 하지? 싶었던 순간을 바로 적어 두세요.</span>
+    </div>
+    <div class="ntAdd">
+      <input id="ntNew" type="text" placeholder="예) 조금 짜게 해주세요" autocomplete="off">
+      <button class="btn" id="ntSave" type="button">담기</button>
+    </div>
+    ${list.length ? list.map(n => `
+      <div class="ntCard ${n.en ? "has" : ""}" data-id="${n.t}">
+        <div class="q">${esc(n.ko)}</div>
+        ${n.en ? `<div class="a">${esc(n.en)}</div>` : ""}
+        <div class="when">${when(n.t)}</div>
+        ${n.en
+          ? `<div class="row2"><button class="btn" data-nt="say">들어보기</button>
+               <button class="btn" data-nt="edit">고치기</button>
+               <button class="btn" data-nt="del">지우기</button></div>`
+          : `<div class="ed"><input type="text" placeholder="영어로 적어보기" autocomplete="off" data-nt-in="1">
+               <button class="btn" data-nt="fill">저장</button></div>
+             <div class="row2"><button class="btn" data-nt="del">지우기</button></div>`}
+      </div>`).join("")
+    : `<div class="ntEmpty">아직 비어 있어요.<br>
+        말이 막혔던 순간에 <b>한국어 그대로</b> 적어 두세요.<br>
+        영어 답은 나중에 채워 넣으면 됩니다.</div>`}`;
+}
+function addNote(ko){
+  ko = (ko || "").trim(); if (!ko) return;
+  notes.push({ t: Date.now(), ko, en: "" });
+  saveNotes(); drawNoteTile(); renderNote();
+}
+$("#hNote").addEventListener("click", openNote);
+$("#ntBody").addEventListener("click", e => {
+  if (e.target.closest("#ntX")){ closeNote(); return; }
+  if (e.target.closest("#ntSave")){ addNote($("#ntNew").value); return; }
+  const b = e.target.closest("[data-nt]"); if (!b) return;
+  const card = b.closest(".ntCard"), id = +card.dataset.id;
+  const n = notes.find(x => x.t === id); if (!n) return;
+  const act = b.dataset.nt;
+  if (act === "say"){ speak(n.en, 1); return; }
+  if (act === "del"){ notes = notes.filter(x => x.t !== id); saveNotes(); drawNoteTile(); renderNote(); return; }
+  if (act === "edit"){ n.en = ""; saveNotes(); renderNote(); return; }
+  if (act === "fill"){
+    const v = card.querySelector("[data-nt-in]").value.trim();
+    if (!v) return;
+    n.en = v; saveNotes(); drawNoteTile(); renderNote(); speak(v, 1);
+  }
+});
+$("#ntBody").addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  if (e.target.id === "ntNew"){ addNote(e.target.value); return; }
+  if (e.target.matches("[data-nt-in]")){ e.target.closest(".ntCard").querySelector('[data-nt="fill"]').click(); }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeNote(); });
+
 /* 시작 */
+drawNoteTile();
 headStats();
 renderLevel();
 renderWords();
@@ -3172,7 +3362,7 @@ renderHome();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=12"></script>
-<script src="sync.js?v=12"></script>
+<script src="firebase-config.js?v=13"></script>
+<script src="sync.js?v=13"></script>
 
 </body></html>

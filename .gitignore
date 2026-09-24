@@ -1,0 +1,8 @@
+# 옛 백업 — GitHub에 올리지 않음
+_backup/
+*.bak
+*.bak[0-9]*
+
+# Claude Code 작업 안내서·설정 — 내 컴퓨터에만 둠 (저장소가 공개라서)
+CLAUDE.md
+.claude/

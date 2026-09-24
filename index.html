@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=16"></script>
+<script src="ipa.js?v=17"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -2762,7 +2762,7 @@ function drawQ(){
     } else {
       wrong++;
       shakeEl($("#qT"));
-      $("#qIn").value = ""; $("#qIn").focus();
+      $("#qIn").focus();
       $("#qJ").innerHTML = `<span class="miss">다시 적어보세요</span>`;
       if (wrong >= 2) $("#qA").className = "qAns faint";
     }
@@ -3483,7 +3483,7 @@ function examCheckWord(x){
   } else {
     examWrong++;
     shakeEl($("#exType"));
-    $("#exIn").value = ""; $("#exIn").focus();
+    $("#exIn").focus();
     $("#exJ").innerHTML = '<span class="miss">다시 적어보세요</span>';
     examNoteMiss();
     if (examWrong >= 2){
@@ -3640,7 +3640,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeNote();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=16"></script>
-<script src="sync.js?v=16"></script>
+<script src="firebase-config.js?v=17"></script>
+<script src="sync.js?v=17"></script>
 
 </body></html>

@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=24"></script>
+<script src="ipa.js?v=25"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -570,6 +570,18 @@
   .micBox b{ display:block; margin-bottom:4px; font-size:13.5px }
   .micBox ol{ margin:6px 0 0; padding-left:18px } .micBox li{ margin:2px 0 }
   .micBox .again{ margin-top:10px; min-height:40px; font-size:13px; padding:0 14px }
+  /* 마이크 테스트 */
+  .micTest{ background:#fff; border:1px solid var(--line); border-radius:20px; padding:16px; box-shadow:var(--shadow); margin:14px 0 4px }
+  .micTest h3{ font-family:"Jua",sans-serif; font-weight:400; font-size:18px; margin:0 }
+  .micTest .lead{ margin:6px 0 12px; font-size:13.5px }
+  .micBar{ height:12px; border-radius:6px; background:#E2E3EF; overflow:hidden; margin-bottom:12px }
+  .micBar i{ display:block; height:100%; width:0; background:var(--ok); border-radius:6px; transition:width .08s }
+  .micTest .lbtns .btn{ flex:1 1 auto }
+  #micOut{ margin-top:10px }
+  .mRow{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:9px 0;
+    border-top:1px solid var(--line-2); font-size:13.5px }
+  .mRow span{ color:var(--ink-2); flex:0 0 auto }
+  .mRow b{ text-align:right } .mRow b.ok{ color:var(--ok) } .mRow b.no{ color:var(--bad) }
   .lsNav{ display:flex; align-items:center; gap:8px; margin-bottom:12px }
   .lsNav .btn{ min-height:42px; padding:0 12px; font-size:13px }
   .lsNav .now{ flex:1; text-align:center; font-weight:800; font-size:14px; color:var(--ink-2) }
@@ -867,6 +879,14 @@
   <section class="panel" id="p2">
     <div class="subTop"><button class="btn" type="button" data-back>‹ 뒤로</button><h2>듣기·말하기</h2></div>
     <div class="note" id="capNote"></div>
+    <div class="micTest" id="micTest">
+      <h3>마이크 테스트</h3>
+      <p class="lead" id="micMsg">이 휴대폰에서 마이크와 영어 음성 인식이 되는지 확인해요. 버튼을 누르면 허용 창이 떠요.</p>
+      <div class="micBar" id="micBar"><i></i></div>
+      <div class="lbtns"><button class="btn go" id="micGo" type="button">1. 마이크 허용·테스트</button>
+        <button class="btn" id="srGo" type="button">2. 영어 음성 인식</button></div>
+      <div id="micOut"></div>
+    </div>
     <p class="lead">뜻을 보고 영어로 <b>소리 내어</b> 말해 본 다음, 들어보기로 원어민 발음과 비교하세요.</p>
     <div id="listen"></div>
   </section>
@@ -3500,6 +3520,99 @@ $("#listen").addEventListener("click", e=>{
   }
 });
 
+/* ══ 마이크 테스트 ══ 이 기기에서 마이크·영어 음성 인식이 되는지 확인만 합니다.
+   말하기 연습은 그대로 '말했어요' 방식 — 아이폰 홈 화면 앱에서 음성 인식이 막혀 있던 적이 있어서입니다.
+   두 단계 모두 버튼을 누른 그 순간에 시작해야 허용 창이 뜹니다. */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const isStandalone = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+const micRes = {};
+function micReport(){
+  const rows = [["실행 환경", isStandalone() ? "홈 화면 앱" : "브라우저", null]];
+  if (micRes.mic) rows.push(["마이크", ...micRes.mic]);
+  if (micRes.level) rows.push(["소리 크기", ...micRes.level]);
+  if (micRes.sr) rows.push(["영어 음성 인식", ...micRes.sr]);
+  $("#micOut").innerHTML = rows.map(([k, v, ok]) =>
+    `<div class="mRow"><span>${k}</span><b class="${ok === true ? "ok" : ok === false ? "no" : ""}">${esc(v)}</b></div>`).join("");
+}
+function meter(stream, ms, onLevel){
+  return new Promise(res => {
+    try{
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!actx) actx = new AC();
+      if (actx.state === "suspended") actx.resume();
+      const src = actx.createMediaStreamSource(stream), an = actx.createAnalyser();
+      an.fftSize = 512; src.connect(an);
+      const buf = new Uint8Array(an.fftSize), end = Date.now() + ms; let peak = 0;
+      const tick = () => {
+        an.getByteTimeDomainData(buf);
+        let sum = 0; for (let i = 0; i < buf.length; i++){ const v = (buf[i] - 128) / 128; sum += v * v; }
+        const rms = Math.sqrt(sum / buf.length); peak = Math.max(peak, rms); onLevel(rms);
+        if (Date.now() < end) requestAnimationFrame(tick); else { src.disconnect(); res(peak); }
+      };
+      tick();
+    }catch(e){ res(-1); }
+  });
+}
+async function micTest(){
+  const btn = $("#micGo"), bar = $("#micBar i");
+  if (btn.disabled) return;
+  delete micRes.level;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    micRes.mic = ["이 브라우저는 지원 안 함", false]; micReport(); return;
+  }
+  btn.disabled = true;
+  $("#micMsg").textContent = "허용 창이 뜨면 '허용'을 눌러 주세요.";
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    micRes.mic = ["허용됨", true]; micReport();
+    $("#micMsg").textContent = "아무 말이나 해 보세요. 막대가 움직이면 잘 들리는 거예요. (4초)";
+    const peak = await meter(stream, 4000, v => { bar.style.width = Math.min(100, v * 400) + "%"; });
+    stream.getTracks().forEach(t => t.stop());
+    bar.style.width = "0";
+    micRes.level = peak < 0 ? ["측정 못 함", null] : peak > 0.03 ? ["잘 들려요", true] : ["소리가 거의 안 들려요", false];
+    $("#micMsg").textContent = "마이크 확인 끝. 이제 '2. 영어 음성 인식'을 눌러 보세요.";
+  }catch(e){
+    const n = e && e.name;
+    micRes.mic = [n === "NotAllowedError" ? "거부됨 — 휴대폰 설정에서 이 앱(또는 Safari)의 마이크를 허용해 주세요"
+                : n === "NotFoundError" ? "마이크를 못 찾았어요" : "사용 못 함 (" + (n || e) + ")", false];
+    $("#micMsg").textContent = "마이크를 쓸 수 없어요. 아래 결과를 캡처해서 보여주세요.";
+  }
+  micReport();
+  btn.disabled = false; btn.textContent = "1. 다시 테스트";
+}
+const SR_ERR = {
+  "not-allowed": "권한 거부 — 설정에서 마이크·음성 인식을 허용해 주세요",
+  "service-not-allowed": "이 환경에서는 음성 인식을 막아 뒀어요 (아이폰 홈 화면 앱에서 흔해요)",
+  "no-speech": "말소리를 못 들었어요 — 다시 해 보세요",
+  "audio-capture": "마이크를 못 찾았어요",
+  "network": "인터넷 연결이 필요해요",
+  "aborted": "중간에 멈췄어요"
+};
+function srTest(){
+  const btn = $("#srGo");
+  if (btn.disabled) return;
+  if (!SR){ micRes.sr = ["이 브라우저는 지원 안 함", false]; micReport(); return; }
+  let rec, to = null, done = false;
+  const finish = r => {
+    if (done) return; done = true; clearTimeout(to);
+    micRes.sr = r; micReport();
+    btn.disabled = false; btn.textContent = "2. 다시 해 보기";
+    $("#micMsg").textContent = r[1] ? "음성 인식이 돼요! 결과를 캡처해서 보여주세요." : "음성 인식이 안 됐어요. 결과를 캡처해서 보여주세요.";
+  };
+  try{ rec = new SR(); }catch(e){ finish(["시작 못 함", false]); return; }
+  rec.lang = "en-US"; rec.interimResults = false; rec.maxAlternatives = 1;
+  rec.onresult = e => finish([`됨 · "${e.results[0][0].transcript}"`, true]);
+  rec.onerror = e => finish([`안 됨 · ${SR_ERR[e.error] || e.error || "오류"}`, false]);
+  rec.onend = () => finish(["안 됨 · 아무 말도 못 들었어요", false]);
+  btn.disabled = true;
+  $("#micMsg").textContent = "영어로 한 문장 말해 보세요. 예) I'm ready. (8초)";
+  to = setTimeout(() => { try{ rec.stop(); }catch(e){} finish(["안 됨 · 시간 초과", false]); }, 8000);
+  try{ rec.start(); }catch(e){ finish([`안 됨 · ${e.message || "시작 못 함"}`, false]); }
+}
+$("#micGo").addEventListener("click", micTest);
+$("#srGo").addEventListener("click", srTest);
+micReport();
+
 /* ══ 오늘의 레슨 ══ 그날 분량을 앱이 직접 만들어 보여줍니다 */
 const ipaOf = w => (window.IPA && window.IPA[w]) || "";
 function pickBy(arr, n, seed){
@@ -3988,7 +4101,9 @@ function allMineHtml(){
              "막혔던 말 메모", nc.all ? `${nc.all}개 · 영어 답 없는 게 ${nc.open}개` : "아직 없어요")
     + row("got", "var(--mint)", '<path d="m5 12.5 4.5 4.5L19 7.5"></path>', "외운 단어", `외운 ${c[2]}개 · 외외운 ${c[3]}개`)
     + row("goal", "var(--honey)", '<circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3.5"></circle>', "하루 목표",
-          `새 단어 ${goalW()}개 · 문장 ${goalS()}개 · 눌러서 바꾸기`);
+          `새 단어 ${goalW()}개 · 문장 ${goalS()}개 · 눌러서 바꾸기`)
+    + row("mic", "var(--tint)", '<rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path>', "마이크 테스트",
+          "이 휴대폰에서 마이크·음성 인식이 되는지 확인");
 }
 function renderAll(){
   [...$("#allChips").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.ac === allCat));
@@ -4093,6 +4208,7 @@ $("#p7").addEventListener("click", e => {
   if (m.dataset.mine === "miss") showWords("miss", "all");
   else if (m.dataset.mine === "note") openNote();
   else if (m.dataset.mine === "goal") openSetup(false);
+  else if (m.dataset.mine === "mic"){ go(2); $("#micTest").scrollIntoView({ block: "center" }); }
   else showWords("2", "all");
 });
 
@@ -4141,7 +4257,7 @@ $("#suBody").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=24"></script>
-<script src="sync.js?v=24"></script>
+<script src="firebase-config.js?v=25"></script>
+<script src="sync.js?v=25"></script>
 
 </body></html>

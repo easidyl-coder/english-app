@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=22"></script>
+<script src="ipa.js?v=23"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -651,6 +651,46 @@
   .allS .en{font-weight:800;font-size:16px;line-height:1.4}
   .allS .ko{font-size:13px;color:var(--ink-2)}
   .allS .row2 .btn{flex:0 0 auto;font-size:13px;padding:6px 12px;min-height:38px}
+  #p4 .lvHero{margin-top:14px}
+  /* 아래 탭에 없는 화면(문장 조립·단어장·듣기) 맨 위 뒤로 가기 */
+  .subTop{display:flex;align-items:center;gap:12px;padding-top:18px;margin-bottom:4px}
+  .subTop h2{font-family:"Jua",sans-serif;font-weight:400;font-size:22px;margin:0}
+  .subTop .btn{min-height:40px;padding:0 14px}
+  /* ═══ 학습 통계 ═══ */
+  .stTop{display:flex;gap:12px;margin-top:14px}
+  .stBig{flex:1;background:var(--accent);color:#fff;border-radius:22px;padding:18px;
+    display:flex;flex-direction:column;justify-content:center}
+  .stBig b{font-family:"Jua",sans-serif;font-weight:400;font-size:44px;line-height:1}
+  .stBig span{font-size:13px;font-weight:700;color:var(--tint);margin-top:6px}
+  .stSide{flex:1;display:flex;flex-direction:column;gap:12px}
+  .stSide div{flex:1;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center}
+  .stSide b{font-family:"Jua",sans-serif;font-weight:400;font-size:21px;line-height:1.15}
+  .stSide span{font-size:12px;color:var(--ink-2)}
+  .stCard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-top:12px}
+  .stCard h3{font-family:"Jua",sans-serif;font-weight:400;font-size:17px;margin:0 0 12px}
+  .stRow{display:flex}
+  .stRow div{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .stRow b{font-family:"Jua",sans-serif;font-weight:400;font-size:24px;line-height:1.15}
+  .stRow span{font-size:12px;color:var(--ink-2)}
+  .stWeek{display:flex;align-items:flex-end;gap:6px;height:118px}
+  .stWeek div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%}
+  .stWeek i{display:block;width:100%;max-width:28px;border-radius:8px;background:#D5D7EC}
+  .stWeek .now i{background:var(--accent)}
+  .stWeek em{font-style:normal;font-size:11px;font-weight:800;color:var(--ink-2);min-height:14px}
+  .stWeek span{font-size:11.5px;color:var(--ink-2)}
+  .stWeek .now span{color:var(--accent);font-weight:800}
+  .stNote{font-size:12px;color:var(--ink-3);margin:10px 0 0}
+  /* ═══ 복습 ═══ */
+  .rvCard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-top:12px}
+  .rvCard.main{background:var(--accent);border-color:var(--accent);color:#fff}
+  .rvCard h3{font-family:"Jua",sans-serif;font-weight:400;font-size:18px;margin:0}
+  .rvCard .n{font-family:"Jua",sans-serif;font-size:40px;line-height:1.1;margin-top:6px}
+  .rvCard .n small{font-size:15px;margin-left:3px}
+  .rvCard p{margin:4px 0 0;font-size:13px;color:var(--ink-2)}
+  .rvCard.main p{color:var(--tint)}
+  .rvCard .row2{display:flex;gap:8px;margin-top:12px}
+  .rvCard .row2 .btn{flex:1;min-height:48px}
 </style>
 
 <div class="shell">
@@ -669,10 +709,10 @@
 <nav>
   <div class="shell navIn">
     <button id="t3" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"></path></svg>홈</button>
-    <button id="t0" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="8" height="7" rx="1.5"></rect><rect x="13" y="4" width="8" height="7" rx="1.5"></rect><rect x="3" y="14" width="18" height="6" rx="1.5"></rect></svg>문장 조립</button>
+    <button id="t5" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg>학습 통계</button>
     <button id="t4" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"></rect></svg>전체 학습</button>
-    <button id="t1" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"></path><path d="M5 18a2 2 0 0 1 2-2h12"></path></svg>단어</button>
-    <button id="t2" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 17v-4a8 8 0 0 1 16 0v4"></path><rect x="3" y="14" width="4" height="7" rx="1.5"></rect><rect x="17" y="14" width="4" height="7" rx="1.5"></rect></svg>듣기·말하기</button>
+    <button id="t6" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path><path d="M12 8v4l3 2"></path></svg>복습</button>
+    <button id="t7" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"></path></svg>내 기록</button>
   </div>
 </nav>
 
@@ -710,11 +750,6 @@
         <span class="tx"><span class="nm">막혔던 말 메모</span><span class="ds" id="hNoteN">아직 없어요</span></span>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
       </button>
-      <button class="hTile wide" data-go="4" type="button">
-        <span class="hIcon" style="background:var(--tint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"></rect></svg></span>
-        <span class="tx"><span class="nm">전체 학습</span><span class="ds">단어 · 문법 · 실전 회화 · 듣기</span></span>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
-      </button>
     </div>
     <div class="hLvUp">
       <h2>단어 레벨업</h2>
@@ -728,6 +763,7 @@
 
   <!-- 문장 조립 -->
   <section class="panel" id="p0">
+    <div class="subTop"><button class="btn" type="button" data-back>‹ 뒤로</button><h2>문장 조립</h2></div>
     <div class="gMode"><span id="gModeTx">전체 문장에서 랜덤</span>
       <button class="btn" id="gModeBtn" type="button">레슨 문장으로</button></div>
     <div id="gameWrap">
@@ -753,15 +789,7 @@
 
   <!-- 단어 -->
   <section class="panel" id="p1">
-    <div class="lvHero" id="lvCard">
-      <p class="kick">내 레벨</p>
-      <div class="lvTop">
-        <div class="lvRing" id="lvRing"><b id="lvNum">?</b></div>
-        <div class="t"><b id="lvName">레벨을 아직 모릅니다</b>
-          <span id="lvDesc">단어와 문장을 함께 보는 테스트입니다</span></div>
-      </div>
-      <button class="btn go" id="lvGo">레벨 테스트</button>
-    </div>
+    <div class="subTop"><button class="btn" type="button" data-back>‹ 뒤로</button><h2>단어장</h2></div>
 
     <div class="catWrap">
       <div class="catHead"><h2>분야별로 보기</h2>
@@ -785,16 +813,6 @@
       <p class="tSub" id="tSub"></p>
     </div>
 
-    <details class="backup">
-      <summary>진도 백업 · 복원</summary>
-      <p class="lead" style="margin-top:8px">아래 글자를 통째로 복사해 메모장에 보관해 두세요. 기기를 바꾸거나 기록이 지워졌을 때 여기에 붙여넣고 복원하면 단계가 되살아납니다.</p>
-      <textarea id="bkText" spellcheck="false"></textarea>
-      <div class="lbtns">
-        <button class="btn" id="bkCopy">복사</button>
-        <button class="btn" id="bkLoad">붙여넣은 내용으로 복원</button>
-      </div>
-      <p class="bmsg" id="bkMsg"></p>
-    </details>
     <div class="bar">
       <input type="search" id="q" placeholder="단어나 뜻으로 찾기" autocomplete="off">
       <button class="btn" id="tHide" aria-pressed="false">뜻 가리기</button>
@@ -816,6 +834,7 @@
 
   <!-- 듣기·말하기 -->
   <section class="panel" id="p2">
+    <div class="subTop"><button class="btn" type="button" data-back>‹ 뒤로</button><h2>듣기·말하기</h2></div>
     <div class="note" id="capNote"></div>
     <p class="lead">뜻을 보고 영어로 <b>소리 내어</b> 말해 본 다음, 들어보기로 원어민 발음과 비교하세요.</p>
     <div id="listen"></div>
@@ -824,6 +843,31 @@
   <!-- 전체 학습 -->
   <section class="panel" id="p4">
     <div class="allHead"><h2>전체 학습</h2><p>오늘의 레슨과 따로, 하고 싶은 것만 골라서 연습해요.</p></div>
+    <div class="lvHero" id="lvCard">
+      <p class="kick">내 레벨</p>
+      <div class="lvTop">
+        <div class="lvRing" id="lvRing"><b id="lvNum">?</b></div>
+        <div class="t"><b id="lvName">레벨을 아직 모릅니다</b>
+          <span id="lvDesc">단어와 문장을 함께 보는 테스트입니다</span></div>
+      </div>
+      <button class="btn go" id="lvGo">레벨 테스트</button>
+    </div>
+    <div class="hGrid">
+      <button class="hTile wide" type="button" data-go="0">
+        <span class="hIcon" style="background:var(--honey)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="8" height="7" rx="1.5"></rect><rect x="13" y="4" width="8" height="7" rx="1.5"></rect><rect x="3" y="14" width="18" height="6" rx="1.5"></rect></svg></span>
+        <span class="tx"><span class="nm">문장 조립 게임</span><span class="ds">뜻을 보고 영어 단어를 순서대로</span></span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
+      </button>
+      <button class="hTile" type="button" data-go="1">
+        <span class="hIcon" style="background:var(--mint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"></path><path d="M5 18a2 2 0 0 1 2-2h12"></path></svg></span>
+        <span class="nm">단어장</span><span class="ds">전체 단어 · 퀴즈</span>
+      </button>
+      <button class="hTile" type="button" data-go="2">
+        <span class="hIcon" style="background:var(--pink)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 17v-4a8 8 0 0 1 16 0v4"></path><rect x="3" y="14" width="4" height="7" rx="1.5"></rect><rect x="17" y="14" width="4" height="7" rx="1.5"></rect></svg></span>
+        <span class="nm">듣기·말하기</span><span class="ds">듣고 소리 내어 말하기</span>
+      </button>
+    </div>
+    <h3 class="allSub">골라서 보기</h3>
     <div class="allChips" id="allChips">
       <button type="button" data-ac="word" aria-pressed="true">단어</button>
       <button type="button" data-ac="gram" aria-pressed="false">문법</button>
@@ -831,8 +875,35 @@
       <button type="button" data-ac="listen" aria-pressed="false">듣기</button>
     </div>
     <div id="allBody"></div>
-    <h3 class="allSub">내 기록</h3>
-    <div class="hGrid" id="allMine"></div>
+  </section>
+
+  <!-- 학습 통계 -->
+  <section class="panel" id="p5">
+    <div class="allHead"><h2>학습 통계</h2><p>꾸준히 한 만큼 쌓여요.</p></div>
+    <div id="stBody"></div>
+  </section>
+
+  <!-- 복습 -->
+  <section class="panel" id="p6">
+    <div class="allHead"><h2>복습</h2><p>매일 조금씩 다시 보면 오래 남아요.</p></div>
+    <div id="rvBody"></div>
+  </section>
+
+  <!-- 내 기록 -->
+  <section class="panel" id="p7">
+    <div class="allHead"><h2>내 기록</h2><p>틀린 단어, 막혔던 말, 외운 단어를 모아 봐요.</p></div>
+    <div class="hGrid" id="mineRows"></div>
+    <h3 class="allSub">진도 백업</h3>
+    <details class="backup">
+      <summary>진도 백업 · 복원</summary>
+      <p class="lead" style="margin-top:8px">아래 글자를 통째로 복사해 메모장에 보관해 두세요. 기기를 바꾸거나 기록이 지워졌을 때 여기에 붙여넣고 복원하면 단계가 되살아납니다.</p>
+      <textarea id="bkText" spellcheck="false"></textarea>
+      <div class="lbtns">
+        <button class="btn" id="bkCopy">복사</button>
+        <button class="btn" id="bkLoad">붙여넣은 내용으로 복원</button>
+      </div>
+      <p class="bmsg" id="bkMsg"></p>
+    </details>
   </section>
 
 </div>
@@ -2314,6 +2385,25 @@ const store = {
 };
 let best = store.get("vb.best", 0, Number.isFinite);
 
+/* ── 학습 기록(통계용) ── 날짜별로 푼 단어(w)·문장(s)·말한 문장(t) 수. 이 기기에만 저장, 최근 90일만 남김 */
+const dkey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+let actLog = store.get("vb.log", {}, x => x && typeof x === "object" && !Array.isArray(x));
+function logAct(kind){
+  const k = dkey();
+  if (!actLog[k] || typeof actLog[k] !== "object") actLog[k] = { w:0, s:0, t:0 };
+  actLog[k][kind] = (+actLog[k][kind] || 0) + 1;
+  const keys = Object.keys(actLog).sort();
+  while (keys.length > 90) delete actLog[keys.shift()];
+  store.set("vb.log", actLog);
+}
+function dayTotal(k){ const d = actLog[k]; return d ? (+d.w || 0) + (+d.s || 0) + (+d.t || 0) : 0; }
+function streakDays(){
+  const d = new Date(); let n = 0;
+  if (!dayTotal(dkey(d))) d.setDate(d.getDate() - 1);          // 오늘 아직 안 했으면 어제부터 셉니다
+  while (dayTotal(dkey(d))){ n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+
 /* ── 3단계 단어장 ──
    b:1 외우는 중 · b:2 외운 단어 · b:3 외외운 단어 · 없으면 아직 안 배운 단어
    2단계는 3일 뒤, 3단계는 14일 뒤 다시 등장합니다(무한 복습). */
@@ -2389,16 +2479,29 @@ function headStats(){
 }
 
 /* ── 탭 ── */
+/* 아래 탭: 3 홈 · 5 학습 통계 · 4 전체 학습 · 6 복습 · 7 내 기록
+   0 문장 조립 · 1 단어장 · 2 듣기·말하기는 아래 탭에 없는 화면 — 들어온 탭을 기억했다가 '뒤로'로 돌아갑니다 */
+const SUBTAB = [0, 1, 2];
+let curTab = 3, backTab = 4;
 function go(i){
+  const sub = SUBTAB.includes(i);
+  if (sub && !SUBTAB.includes(curTab)) backTab = curTab;
+  curTab = i;
   if (i === 3){ renderHome(); drawNoteTile(); }
-  [0,1,2,3,4].forEach(j => {
-    $("#t"+j).setAttribute("aria-selected", j===i);
+  [0,1,2,3,4,5,6,7].forEach(j => {
+    const t = $("#t"+j); if (t) t.setAttribute("aria-selected", j === (sub ? backTab : i));
     $("#p"+j).classList.toggle("on", j===i);
   });
   window.scrollTo(0,0);
-  if (i === 4) renderAll();                       // 화면이 보인 뒤에 그려야 펼칠 곳으로 스크롤됩니다
+  refreshTab();                                   // 화면이 보인 뒤에 그려야 펼칠 곳으로 스크롤됩니다
 }
-[0,1,2,3,4].forEach(i => $("#t"+i).addEventListener("click", () => go(i)));
+function refreshTab(){
+  if (curTab === 4) renderAll();
+  else if (curTab === 5) renderStats();
+  else if (curTab === 6) renderReview();
+  else if (curTab === 7) renderMine();
+}
+[3,4,5,6,7].forEach(i => $("#t"+i).addEventListener("click", () => go(i)));
 
 /* ── 홈 ── */
 /* 날짜별 오늘의 문법 */
@@ -2469,8 +2572,9 @@ function renderHome(){
   const c = boxCounts(), mx = Math.max(1, c[1], c[2], c[3]);
   [1,2,3].forEach(k => { $("#hb"+k).textContent = c[k]; $("#hi"+k).style.height = (18 + c[k]/mx*48) + "px"; });
 }
-document.querySelector("#p3").addEventListener("click", e => {
-  const t = e.target.closest("[data-go]"); if (t) go(+t.dataset.go);
+document.addEventListener("click", e => {                      // 화면 안의 이동 버튼(data-go)과 뒤로(data-back)
+  const t = e.target.closest(".panel [data-go]"); if (t){ go(+t.dataset.go); return; }
+  if (e.target.closest(".panel [data-back]")) go(backTab);
 });
 $("#hLv").addEventListener("click", startLevelTest);
 
@@ -2516,8 +2620,10 @@ let deck=[], idx=0, picked=[], bankWords=[], streak=0, correct=0, missed=[], loc
 function shuffle(a){ return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]); }
 
 let deckDay = 0;                                  // 0 = 전체 문장, n = 그 날 레슨 문장
-function newRound(day){
+let gFrom = 0;                                    // 끝나면 돌아갈 곳 (returnTo). 안 넘기면 deckDay
+function newRound(day, from){
   deckDay = (typeof day === "number" && day > 0) ? day : 0;
+  gFrom = (typeof from === "number" || typeof from === "string") ? from : deckDay;
   if (deckDay){
     const own  = shuffle([...sentsOfDay(deckDay)]);
     const prev = deckDay > 1 && deckDay <= LASTDAY ? shuffle([...sentsOfDay(deckDay - 1)]).slice(0, 2) : [];   // 상황별(101~)은 어제 복습 없음
@@ -2591,6 +2697,7 @@ $("#gCheck").addEventListener("click", () => {
   const made = picked.map(p=>p.w).join(" ");
   const ok = made === s.en;
   locked = true;
+  logAct("s");
   $("#gSlot").className = "slot " + (ok?"right":"wrong");
   if (ok){
     correct++; streak++; ding();
@@ -2618,11 +2725,11 @@ function finishRound(){
       <p class="lab">${missed.length? "틀린 문장은 아래에서 다시 보세요." : "전부 맞히셨습니다."}</p>
       ${missed.length ? `<div class="missed">${missed.map(m=>
         `<div class="row"><span class="en">${m.en}</span><span class="ko">${m.ko}</span></div>`).join("")}</div>` : ""}
-      <div class="qBtns"><button class="btn${deckDay ? "" : " go"}" id="gAgain">한 번 더</button>
-        ${deckDay ? `<button class="btn go" id="gBack">${returnLabel(deckDay)}</button>` : ""}</div>
+      <div class="qBtns"><button class="btn${gFrom ? "" : " go"}" id="gAgain">한 번 더</button>
+        ${gFrom ? `<button class="btn go" id="gBack">${returnLabel(gFrom)}</button>` : ""}</div>
     </div>`;
-  $("#gAgain").addEventListener("click", () => newRound(deckDay));
-  if (deckDay) $("#gBack").addEventListener("click", () => returnTo(deckDay));
+  $("#gAgain").addEventListener("click", () => newRound(deckDay, gFrom));
+  if (gFrom) $("#gBack").addEventListener("click", () => returnTo(gFrom));
 }
 
 /* ══ 단어 ══ */
@@ -2746,7 +2853,7 @@ let qList = null, qFrom = 0;                      // qFrom: 레슨에서 시작�
 const MISS_MAX = 10;                              // 한 번 퀴즈에 섞어 넣는 헷갈린 단어 최대 개수
 function startQuiz(list, fromDay){
   qList = Array.isArray(list) && list.length ? list : null;
-  qFrom = typeof fromDay === "number" ? fromDay : 0;
+  qFrom = (typeof fromDay === "number" || typeof fromDay === "string") ? fromDay : 0;   // 레슨 Day · 상황 번호 · "review"
   const pool = Array.isArray(list) && list.length ? list : visibleWords();
   if(!pool.length) return;
   const base = Array.isArray(list) && list.length ? [...pool] : shuffle([...pool]).slice(0, Math.min(20, pool.length));
@@ -2864,6 +2971,7 @@ function drawQ(){
 
 function qNext(ok){
   const x = qDeck[qi], k = keyOf(x), b = boxOf(k);
+  logAct("w");
   if (ok){ if (b < 3) qUp++; setBox(k, Math.min(3, b + 1), false); }
   else { qMiss.push(x); setBox(k, 1, true); }
   qi++;
@@ -2883,7 +2991,7 @@ function qFinish(){
   $("#qEnd").addEventListener("click", () => { const d = qFrom; endQuiz(); if (d) returnTo(d); });
   renderWords();
 }
-function endQuiz(){ clearTimer(); document.body.classList.remove("quizOn"); }
+function endQuiz(){ clearTimer(); document.body.classList.remove("quizOn"); refreshTab(); }
 /* ══ 레벨 테스트 ══
    레벨 5에서 시작해 위아래로 좁힌다(이분 탐색). 한 단계는 5문제(단어 3 + 문장 2),
    4개 이상 맞히면 통과. 한 번 실패하면 같은 레벨을 한 번 더 준다.
@@ -3322,7 +3430,7 @@ $("#listen").addEventListener("click", e=>{
     row.classList.add("done");
     $("#ls"+i).classList.remove("hid");
     $("#lh"+i).innerHTML = '<span class="sc" style="color:var(--ok)">잘했어요!</span>들어보기로 한 번 더 비교해 보세요.';
-    spoke.n++; store.set("vb.spoke", spoke); drawCount();
+    spoke.n++; store.set("vb.spoke", spoke); drawCount(); logAct("t");
     speak(s.en, 1);
   }
 });
@@ -3366,12 +3474,14 @@ function openLesson(d){
   document.getElementById("lesson").scrollTop = 0;
 }
 function closeLesson(){ document.body.classList.remove("lessonOn"); }
-/* 연습을 마친 뒤 돌아갈 곳: 레슨(1~40)이면 그 레슨, 상황별(101~)이면 전체 학습의 실전 회화 */
+/* 연습을 마친 뒤 돌아갈 곳: 레슨(1~40)이면 그 레슨, 상황별(101~)이면 실전 회화, "review"면 복습 탭 */
 function returnLabel(d){
+  if (d === "review") return "복습으로";
   if (d > LASTDAY) return "실전 회화로";
   return d === dayNo() ? "오늘의 레슨으로" : `Day ${d} 레슨으로`;
 }
 function returnTo(d){
+  if (d === "review"){ go(6); return; }
   if (d > LASTDAY){ allCat = "talk"; allOpen = d; go(4); return; }
   go(3);                                          // 레슨 아래 탭은 홈으로 두고, '오늘의 연습' 자리로 스크롤
   openLesson(d);
@@ -3577,7 +3687,7 @@ function examCheckWord(x){
   const ok = judgeEn(typed, x.w) === true;
   if (ok){
     examLocked = true;
-    ding();
+    ding(); logAct("w");
     const k = keyOf(x);
     if (examWrong === 0 && isMissed(k)) setBox(k, boxOf(k), false);   // 한 번에 맞히면 헷갈린 단어에서 빠짐
     $("#exJ").innerHTML = '<span class="good">정답입니다! · 엔터를 누르면 다음 문제</span>';
@@ -3605,7 +3715,7 @@ function examCheckSent(x){
   const made = examPicked.map(p=>p.w).join(" ");
   if (made === x.en){
     examLocked = true;
-    ding();
+    ding(); logAct("s");
     $("#exSlot").className = "slot right";
     speak(x.en, 1);
     const btn = $("#exCheck");
@@ -3681,7 +3791,7 @@ function drawNoteTile(){
 function openNote(){ renderNote(); document.body.classList.add("noteOn"); $("#note").scrollTop = 0; }
 function closeNote(){
   document.body.classList.remove("noteOn");
-  if ($("#p4").classList.contains("on")) renderAll();          // 메모 개수를 전체 학습 화면에도 맞춰 줍니다
+  refreshTab();                                   // 메모 개수를 복습·내 기록 화면에도 맞춰 줍니다
 }
 function renderNote(){
   const list = notes.slice().sort((a,b) => b.t - a.t);
@@ -3817,7 +3927,6 @@ function renderAll(){
   try{
     $("#allBody").innerHTML = allCat === "gram" ? allGramHtml() : allCat === "talk" ? allTalkHtml()
                             : allCat === "listen" ? allListenHtml() : allWordHtml();
-    $("#allMine").innerHTML = allMineHtml();
   }catch(e){ $("#allBody").innerHTML = '<p class="allHint">불러오는 중 오류가 났어요. 화면 아래 빨간 글씨를 캡처해서 보여주세요.</p>'; throw e; }
   if (allOpen){
     const el = $(`#allBody [data-sit="${allOpen}"]`);
@@ -3845,7 +3954,73 @@ $("#p4").addEventListener("click", e => {
   if (ss){ newRound(+ss.dataset.sitsent); go(0); return; }
   const sq = e.target.closest("[data-sitquiz]");
   if (sq){ const d = +sq.dataset.sitquiz; go(1); renderWords(); startQuiz(wordsOfDay(d), d); return; }
-  if (e.target.closest("[data-allgo]")){ LPOOL = renderListen(); go(2); return; }
+  if (e.target.closest("[data-allgo]")){ LPOOL = renderListen(); go(2); }
+});
+
+/* ══ 학습 통계 ══ */
+function renderStats(){
+  const t = actLog[dkey()] || {}, left = Math.ceil((DEPART - new Date()) / 86400000);
+  const c = boxCounts(), miss = WORDS.filter(x => isMissed(keyOf(x))).length;
+  const days = []; for (let i = 6; i >= 0; i--){ const d = new Date(); d.setDate(d.getDate() - i); days.push(d); }
+  const vals = days.map(d => dayTotal(dkey(d))), mx = Math.max(1, ...vals);
+  const WK = ["일","월","화","수","목","금","토"];
+  const studied = Object.keys(actLog).filter(k => dayTotal(k)).length;
+  const cell = (b, s) => `<div><b>${b}</b><span>${s}</span></div>`;
+  $("#stBody").innerHTML = `
+    <div class="stTop">
+      <div class="stBig"><b>${streakDays()}</b><span>일 연속 공부 중</span></div>
+      <div class="stSide">${cell(`Day ${curDay}`, `/ ${LASTDAY} 레슨 진행 중`)}${cell(left > 0 ? "D-" + left : "출발!", "칸쿤까지")}</div>
+    </div>
+    <div class="stCard"><h3>오늘 한 공부</h3>
+      <div class="stRow">${cell(+t.w || 0, "단어")}${cell(+t.s || 0, "문장")}${cell(+t.t || 0, "말하기")}</div></div>
+    <div class="stCard"><h3>최근 7일</h3>
+      <div class="stWeek">${days.map((d, i) => `<div class="${i === 6 ? "now" : ""}"><em>${vals[i] || ""}</em>
+        <i style="height:${vals[i] ? 8 + vals[i] / mx * 72 : 4}px"></i><span>${i === 6 ? "오늘" : WK[d.getDay()]}</span></div>`).join("")}</div>
+      <p class="stNote">단어 퀴즈·시험, 문장 조립, "말했어요"를 한 만큼 올라가요.</p></div>
+    <div class="stCard"><h3>단어장</h3>
+      <div class="stRow">${cell(c[1], "외우는 중")}${cell(c[2], "외운")}${cell(c[3], "외외운")}${cell(miss, "헷갈림")}</div></div>
+    <div class="stCard"><h3>누적</h3>
+      <div class="stRow">${cell(myLevel ? "Lv." + myLevel : "-", "레벨")}${cell(best, "문장 최고 연속")}${cell(studied, "공부한 날")}</div></div>`;
+}
+
+/* ══ 복습 ══ 오늘의 단어(간격 반복) · 헷갈린 단어 · 지난 레슨 · 채울 메모 */
+function renderReview(){
+  const tw = todayWords(), miss = WORDS.filter(x => isMissed(keyOf(x)));
+  const fresh = tw.filter(x => boxOf(keyOf(x)) === 0).length, learn = tw.filter(x => boxOf(keyOf(x)) === 1).length;
+  const due = tw.length - fresh - learn, prev = curDay - 1, nc = noteCount(), open = nc.open;
+  $("#rvBody").innerHTML = `
+    <div class="rvCard main"><h3>오늘의 단어 복습</h3>
+      <div class="n">${tw.length}<small>개</small></div>
+      <p>${tw.length ? `새 단어 ${fresh} · 외우는 중 ${learn} · 다시 볼 때가 된 단어 ${due}` : "오늘 볼 단어를 다 봤어요. 내일 또 나와요."}</p>
+      <div class="row2"><button class="btn go" data-rv="today"${tw.length ? "" : " disabled"}>시작하기</button></div></div>
+    <div class="rvCard"><h3>헷갈린 단어</h3>
+      <div class="n">${miss.length}<small>개</small></div>
+      <p>${miss.length ? "한 번에 맞히면 목록에서 빠져요." : "아직 없어요. 퀴즈에서 틀린 단어가 여기 모여요."}</p>
+      <div class="row2"><button class="btn go" data-rv="miss"${miss.length ? "" : " disabled"}>퀴즈 풀기</button>
+        <button class="btn" data-rv="misslist"${miss.length ? "" : " disabled"}>목록 보기</button></div></div>
+    ${prev >= 1 ? `<div class="rvCard"><h3>지난 레슨 · Day ${prev}</h3>
+      <p>${GRAM[prev] ? esc(GRAM[prev].t) + " · " : ""}어제 배운 문장을 다시 조립해 보세요.</p>
+      <div class="row2"><button class="btn go" data-rv="prevsent">문장 조립</button>
+        <button class="btn" data-rv="prevlesson">레슨 다시 보기</button></div></div>` : ""}
+    <div class="rvCard"><h3>채울 메모</h3>
+      <p>${open ? `영어 답을 아직 못 적은 막혔던 말이 ${open}개 있어요.`
+          : nc.all ? "막혔던 말 메모에 영어 답을 다 채웠어요." : "아직 적은 메모가 없어요. 영어로 말이 막히면 적어 두세요."}</p>
+      <div class="row2"><button class="btn" data-rv="note">막혔던 말 메모 열기</button></div></div>`;
+}
+$("#p6").addEventListener("click", e => {
+  const b = e.target.closest("[data-rv]"); if (!b || b.disabled) return;
+  const a = b.dataset.rv, prev = curDay - 1;
+  if (a === "today") startQuiz(todayWords(), "review");
+  else if (a === "miss") startQuiz(shuffle(WORDS.filter(x => isMissed(keyOf(x)))).slice(0, 20), "review");
+  else if (a === "misslist") showWords("miss", "all");
+  else if (a === "prevsent"){ newRound(prev, "review"); go(0); }
+  else if (a === "prevlesson") openLesson(prev);
+  else if (a === "note") openNote();
+});
+
+/* ══ 내 기록 ══ */
+function renderMine(){ $("#mineRows").innerHTML = allMineHtml(); fillBackup(); }
+$("#p7").addEventListener("click", e => {
   const m = e.target.closest("[data-mine]"); if (!m) return;
   if (m.dataset.mine === "miss") showWords("miss", "all");
   else if (m.dataset.mine === "note") openNote();
@@ -3858,7 +4033,7 @@ $("#p4").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=22"></script>
-<script src="sync.js?v=22"></script>
+<script src="firebase-config.js?v=23"></script>
+<script src="sync.js?v=23"></script>
 
 </body></html>

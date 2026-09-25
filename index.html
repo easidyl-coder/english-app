@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=35"></script>
+<script src="ipa.js?v=36"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -196,6 +196,13 @@
   .qWhy p{margin:4px 0 0;font-size:13.5px;line-height:1.6;color:var(--ink)}
   .qWhy .whyT{margin:0;font-size:13px;font-weight:800;color:var(--accent)}
   .qWhy b{color:var(--accent)}
+  .hLvCard{display:flex;flex-direction:column;gap:12px;background:var(--honey);border-radius:20px;
+    padding:16px;margin-top:14px;box-shadow:0 3px 0 var(--honey-dark)}
+  .hLvCard .tx{display:flex;flex-direction:column;gap:3px}
+  .hLvCard .tx b{font-family:"Jua",sans-serif;font-weight:400;font-size:19px;color:var(--ink)}
+  .hLvCard .tx span{font-size:12.5px;color:#5A4410;line-height:1.5}
+  .hLvCard .btn{width:100%;min-height:48px;padding:0 16px;background:#fff;border-color:#fff;color:var(--ink);font-size:15px;
+    font-weight:800;box-shadow:0 3px 0 rgba(0,0,0,.15)}
   .hResume{display:flex;align-items:center;gap:10px;background:#FFF6DC;border:2px solid var(--honey);
     border-radius:18px;padding:12px 12px 12px 16px;margin-top:14px}
   .hResume .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -870,6 +877,7 @@
     </div>
     <div class="hInstall" id="hInstall" hidden></div>
     <div class="hResume" id="hResume" hidden></div>
+    <div class="hLvCard" id="hLvCard" hidden></div>
     <div class="hHero">
       <div class="sub" id="hStage">Day 1</div>
       <div class="big" id="hTitle">오늘의 레슨</div>
@@ -3201,6 +3209,12 @@ function renderHome(){
   $("#hForm").textContent = g ? g.f : "";
   $("#hProg").style.width = (day / LASTDAY * 100) + "%";
   $("#hProgN").textContent = day + "/" + LASTDAY;
+  const lvc = $("#hLvCard");                      // 레벨이 없을 때만 레벨 테스트를 권하고, 테스트를 하면 사라짐
+  lvc.hidden = !!myLevel;
+  $("#hLv").hidden = !myLevel;                    // 위쪽 칩은 레벨이 생긴 뒤 'Lv.5.4'로만 보여줌 (카드와 겹치지 않게)
+  if (!myLevel) lvc.innerHTML = `<div class="tx"><b>레벨 테스트부터 해 보세요</b>
+      <span>3~4분이면 끝나요. 끝나면 단어·문장·오늘의 레슨이 내 레벨에 맞춰져요.</span></div>
+    <button class="btn" data-lvtest type="button">${loginOn() && !loggedIn() ? "로그인하고 시작" : "시작"}</button>`;
   const rs = pausedQuiz(), resBox = $("#hResume");
   resBox.hidden = !(rs && rs.i > 0);
   if (!resBox.hidden) resBox.innerHTML = `<div class="tx"><b>풀던 단어 퀴즈 이어서 하기</b><span>${rs.i}/${rs.k.length} 풀었어요 · 남은 ${rs.k.length - rs.i}개</span></div>
@@ -3217,6 +3231,7 @@ function renderHome(){
 $("#p3").addEventListener("click", e => {
   if (e.target.closest("#hGoalEdit")){ openSetup(false); return; }
   if (e.target.closest("[data-resume]")){ resumeQuiz(); return; }
+  if (e.target.closest("[data-lvtest]")){ startLevelTest(); return; }
   const say = e.target.closest("[data-say]");
   if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
   const r = e.target.closest("[data-hgo]"); if (!r) return;
@@ -5217,7 +5232,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=35"></script>
-<script src="sync.js?v=35"></script>
+<script src="firebase-config.js?v=36"></script>
+<script src="sync.js?v=36"></script>
 
 </body></html>

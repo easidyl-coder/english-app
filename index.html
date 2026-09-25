@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=33"></script>
+<script src="ipa.js?v=34"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -191,6 +191,12 @@
   .hInstall .x{border:0;background:none;font:inherit;font-size:16px;color:var(--ink-3);cursor:pointer;width:32px;height:32px}
   .hInstall ol{flex-basis:100%;margin:4px 0 2px;padding-left:22px;font-size:13.5px;line-height:1.75;color:var(--ink)}
   .hInstall ol b{color:var(--accent)}
+  .hResume{display:flex;align-items:center;gap:10px;background:#FFF6DC;border:2px solid var(--honey);
+    border-radius:18px;padding:12px 12px 12px 16px;margin-top:14px}
+  .hResume .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .hResume .tx b{font-size:15px} .hResume .tx span{font-size:12.5px;color:var(--ink-2)}
+  .hResume .btn{min-height:40px;padding:0 16px}
+  .rvCard.resume{background:#FFF6DC;border-color:var(--honey)}
   .catMini{display:flex;flex-wrap:wrap;gap:8px}
   .catMini button{font:inherit;font-size:13.5px;font-weight:700;min-height:42px;padding:0 14px;border-radius:14px;
     border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;box-shadow:var(--shadow)}
@@ -858,6 +864,7 @@
       <div class="hChips"><button class="hChip acct" id="hAcct" hidden>로그인</button><span class="hChip fire" id="hStreak">0일 연속</span><button class="hChip" id="hLv">Lv.?</button></div>
     </div>
     <div class="hInstall" id="hInstall" hidden></div>
+    <div class="hResume" id="hResume" hidden></div>
     <div class="hHero">
       <div class="sub" id="hStage">Day 1</div>
       <div class="big" id="hTitle">오늘의 레슨</div>
@@ -1995,7 +2002,483 @@ const WORDS = [
   {d:10,lv:1,c:"음식·식당",w:"dinner",k:"저녁식사",p:"디너",ex:"We want dinner here.",exk:"저희 여기서 저녁 먹고 싶어요."},
   {d:10,lv:2,c:"말·표현",w:"Spanish",k:"스페인어",p:"스패니시",ex:"She speaks Spanish.",exk:"그녀는 스페인어를 해요."},
   {d:10,lv:1,c:"여행·교통",w:"bus",k:"버스",p:"버스",ex:"The bus goes downtown.",exk:"그 버스는 시내로 가요."},
-  {d:10,lv:2,c:"음식·식당",w:"restaurant",k:"식당, 레스토랑",p:"레스토랑",ex:"He works at a restaurant.",exk:"그는 식당에서 일해요."}
+  {d:10,lv:2,c:"음식·식당",w:"restaurant",k:"식당, 레스토랑",p:"레스토랑",ex:"He works at a restaurant.",exk:"그는 식당에서 일해요."},
+  {lv:1,c:"말·표현",w:"who",k:"누구",p:"후",ex:"Who is that man?",exk:"저 남자분은 누구예요?"},
+  {lv:1,c:"말·표현",w:"what",k:"무엇, 무슨",p:"왓",ex:"What do you want?",exk:"뭐 드시고 싶으세요?"},
+  {lv:1,c:"말·표현",w:"when",k:"언제",p:"웬",ex:"When do you open?",exk:"언제 문 여세요?"},
+  {lv:1,c:"말·표현",w:"where",k:"어디",p:"웨어",ex:"Where is the bathroom?",exk:"화장실이 어디예요?"},
+  {lv:1,c:"말·표현",w:"why",k:"왜",p:"와이",ex:"Why are you late?",exk:"왜 늦었어요?"},
+  {lv:1,c:"말·표현",w:"how",k:"어떻게, 얼마나",p:"하우",ex:"How do I get there?",exk:"거기에 어떻게 가요?"},
+  {lv:1,c:"말·표현",w:"which",k:"어느 (것)",p:"위치",ex:"Which one is yours?",exk:"어느 게 당신 거예요?"},
+  {lv:1,c:"말·표현",w:"and",k:"그리고, ~와",p:"앤드",ex:"I want coffee and bread.",exk:"커피랑 빵 주세요."},
+  {lv:1,c:"말·표현",w:"or",k:"또는, ~이나",p:"오어",ex:"Tea or coffee?",exk:"차 드릴까요, 커피 드릴까요?"},
+  {lv:1,c:"말·표현",w:"but",k:"그러나, 하지만",p:"벗",ex:"It is small, but nice.",exk:"작지만 좋아요."},
+  {lv:1,c:"말·표현",w:"because",k:"왜냐하면, ~때문에",p:"비커즈",ex:"I am late because of traffic.",exk:"차가 막혀서 늦었어요."},
+  {lv:1,c:"말·표현",w:"if",k:"만약 ~라면",p:"이프",ex:"If it rains, I stay home.",exk:"비가 오면 집에 있을게요."},
+  {lv:1,c:"말·표현",w:"then",k:"그러고 나서, 그럼",p:"덴",ex:"Turn left, then go straight.",exk:"좌회전하고 직진하세요."},
+  {lv:2,c:"말·표현",w:"than",k:"~보다",p:"댄",ex:"This is bigger than that.",exk:"이게 저것보다 커요."},
+  {lv:1,c:"말·표현",w:"me",k:"나를, 나에게",p:"미",ex:"Please help me.",exk:"저 좀 도와주세요."},
+  {lv:1,c:"말·표현",w:"him",k:"그를, 그에게",p:"힘",ex:"I know him.",exk:"저는 그를 알아요."},
+  {lv:1,c:"말·표현",w:"us",k:"우리를, 우리에게",p:"어스",ex:"Please call us.",exk:"저희에게 전화 주세요."},
+  {lv:1,c:"말·표현",w:"them",k:"그들을, 그들에게",p:"뎀",ex:"I like them.",exk:"저는 그들이 좋아요."},
+  {lv:1,c:"말·표현",w:"your",k:"당신의",p:"유어",ex:"What is your name?",exk:"이름이 뭐예요?"},
+  {lv:1,c:"말·표현",w:"its",k:"그것의",p:"잇츠",ex:"The dog wags its tail.",exk:"개가 꼬리를 흔들어요."},
+  {lv:1,c:"말·표현",w:"these",k:"이것들",p:"디즈",ex:"These are fresh.",exk:"이것들은 신선해요."},
+  {lv:1,c:"말·표현",w:"those",k:"저것들",p:"도우즈",ex:"Those are expensive.",exk:"저것들은 비싸요."},
+  {lv:1,c:"말·표현",w:"there",k:"거기에, 거기",p:"데어",ex:"Put it over there.",exk:"저기에 놔 주세요."},
+  {lv:1,c:"말·표현",w:"always",k:"항상",p:"올웨이즈",ex:"I always drink water.",exk:"저는 항상 물을 마셔요."},
+  {lv:1,c:"말·표현",w:"never",k:"절대 ~않다",p:"네버",ex:"I never eat spicy food.",exk:"저는 매운 음식을 절대 안 먹어요."},
+  {lv:1,c:"말·표현",w:"sometimes",k:"가끔",p:"섬타임즈",ex:"I sometimes walk to work.",exk:"저는 가끔 걸어서 출근해요."},
+  {lv:1,c:"말·표현",w:"often",k:"자주",p:"오픈",ex:"We often eat out.",exk:"우리는 자주 외식해요."},
+  {lv:2,c:"말·표현",w:"usually",k:"보통",p:"유주얼리",ex:"I usually wake up at six.",exk:"저는 보통 6시에 일어나요."},
+  {lv:1,c:"말·표현",w:"also",k:"또한, ~도",p:"올소",ex:"I also like tea.",exk:"저는 차도 좋아해요."},
+  {lv:1,c:"말·표현",w:"only",k:"오직, ~만",p:"온리",ex:"I only have cash.",exk:"저는 현금밖에 없어요."},
+  {lv:1,c:"말·표현",w:"just",k:"그냥, 방금, 딱",p:"저스트",ex:"I am just looking.",exk:"그냥 구경하는 거예요."},
+  {lv:2,c:"말·표현",w:"still",k:"아직도, 여전히",p:"스틸",ex:"It is still hot.",exk:"아직도 뜨거워요."},
+  {lv:2,c:"말·표현",w:"already",k:"이미, 벌써",p:"올레디",ex:"I already paid.",exk:"저 이미 계산했어요."},
+  {lv:1,c:"말·표현",w:"not",k:"~아니다",p:"낫",ex:"This is not mine.",exk:"이건 제 것이 아니에요."},
+  {lv:1,c:"말·표현",w:"all",k:"모든, 전부",p:"올",ex:"We are all ready.",exk:"우리 모두 준비됐어요."},
+  {lv:1,c:"말·표현",w:"some",k:"조금, 약간",p:"섬",ex:"I need some water.",exk:"물이 좀 필요해요."},
+  {lv:1,c:"말·표현",w:"any",k:"어떤, 조금도",p:"에니",ex:"Do you have any rooms?",exk:"빈 방 있어요?"},
+  {lv:1,c:"말·표현",w:"many",k:"많은 (셀 수 있는)",p:"메니",ex:"There are many people.",exk:"사람이 많아요."},
+  {lv:1,c:"말·표현",w:"much",k:"많이 (셀 수 없는)",p:"머치",ex:"How much is it?",exk:"얼마예요?"},
+  {lv:2,c:"말·표현",w:"most",k:"가장 많은, 대부분",p:"모스트",ex:"Most shops close at nine.",exk:"대부분의 가게는 9시에 닫아요."},
+  {lv:2,c:"말·표현",w:"few",k:"거의 없는, 몇 개",p:"퓨",ex:"Only a few seats are left.",exk:"자리가 몇 개밖에 안 남았어요."},
+  {lv:2,c:"말·표현",w:"other",k:"다른",p:"아더",ex:"Do you have other colors?",exk:"다른 색깔 있어요?"},
+  {lv:2,c:"말·표현",w:"each",k:"각각",p:"이치",ex:"Each room has a view.",exk:"방마다 전망이 있어요."},
+  {lv:1,c:"말·표현",w:"please",k:"제발, 부디",p:"플리즈",ex:"Water, please.",exk:"물 주세요."},
+  {lv:1,c:"말·표현",w:"thank you",k:"감사합니다",p:"땡큐",ex:"Thank you very much.",exk:"정말 감사합니다."},
+  {lv:1,c:"말·표현",w:"hello",k:"안녕하세요",p:"헬로",ex:"Hello, nice to meet you.",exk:"안녕하세요, 만나서 반가워요."},
+  {lv:1,c:"말·표현",w:"goodbye",k:"안녕히 가세요",p:"굿바이",ex:"Goodbye, see you soon.",exk:"안녕히 가세요, 곧 봬요."},
+  {lv:1,c:"말·표현",w:"excuse me",k:"실례합니다",p:"익스큐즈 미",ex:"Excuse me, where is the exit?",exk:"실례합니다, 출구가 어디예요?"},
+  {lv:1,c:"말·표현",w:"of course",k:"물론이죠",p:"오브 코스",ex:"Of course, come in.",exk:"물론이죠, 들어오세요."},
+  {lv:2,c:"말·표현",w:"less",k:"더 적은",p:"레스",ex:"I want less sugar.",exk:"설탕은 적게 주세요."},
+  {lv:2,c:"말·표현",w:"enough",k:"충분한",p:"이너프",ex:"That is enough, thanks.",exk:"그거면 충분해요, 고마워요."},
+  {lv:1,c:"말·표현",w:"before",k:"~전에",p:"비포",ex:"Call me before you come.",exk:"오기 전에 전화 주세요."},
+  {lv:1,c:"말·표현",w:"after",k:"~후에",p:"애프터",ex:"Let's eat after the show.",exk:"공연 끝나고 먹어요."},
+  {lv:2,c:"말·표현",w:"during",k:"~동안",p:"듀어링",ex:"It rained during the night.",exk:"밤새 비가 왔어요."},
+  {lv:2,c:"말·표현",w:"until",k:"~까지",p:"언틸",ex:"Wait until nine.",exk:"9시까지 기다려 주세요."},
+  {lv:2,c:"말·표현",w:"while",k:"~하는 동안",p:"와일",ex:"Call me while you wait.",exk:"기다리는 동안 전화 주세요."},
+  {lv:1,c:"말·표현",w:"next to",k:"~옆에",p:"넥스트 투",ex:"Sit next to me.",exk:"제 옆에 앉으세요."},
+  {lv:2,c:"말·표현",w:"below",k:"~아래에",p:"빌로우",ex:"Sign below, please.",exk:"아래에 서명해 주세요."},
+  {lv:1,c:"말·표현",w:"outside",k:"바깥에",p:"아웃사이드",ex:"It is cold outside.",exk:"밖이 추워요."},
+  {lv:2,c:"말·표현",w:"instead",k:"대신에",p:"인스테드",ex:"Tea instead of coffee, please.",exk:"커피 대신 차 주세요."},
+  {lv:2,c:"말·표현",w:"anything",k:"무엇이든",p:"에니씽",ex:"Do you need anything?",exk:"필요한 거 있으세요?"},
+  {lv:2,c:"말·표현",w:"something",k:"무언가",p:"섬씽",ex:"I want something cold.",exk:"시원한 걸 마시고 싶어요."},
+  {lv:2,c:"말·표현",w:"everything",k:"모든 것",p:"에브리씽",ex:"Everything is fine.",exk:"다 괜찮아요."},
+  {lv:2,c:"말·표현",w:"nothing",k:"아무것도 ~않다",p:"나씽",ex:"I have nothing to declare.",exk:"신고할 게 없어요."},
+  {lv:2,c:"말·표현",w:"someone",k:"누군가",p:"섬원",ex:"Someone is at the door.",exk:"누가 문 앞에 있어요."},
+  {lv:2,c:"말·표현",w:"everyone",k:"모든 사람",p:"에브리원",ex:"Hello, everyone.",exk:"여러분 안녕하세요."},
+  {lv:2,c:"말·표현",w:"either",k:"둘 중 어느 쪽이든",p:"이더",ex:"Either is fine.",exk:"어느 쪽이든 좋아요."},
+  {lv:2,c:"말·표현",w:"quite",k:"꽤",p:"콰이트",ex:"It is quite far.",exk:"꽤 멀어요."},
+  {lv:2,c:"말·표현",w:"almost",k:"거의",p:"올모스트",ex:"We are almost there.",exk:"거의 다 왔어요."},
+  {lv:1,c:"시간·숫자",w:"four",k:"4, 넷",p:"포",ex:"I have four bags.",exk:"가방이 네 개 있어요."},
+  {lv:1,c:"시간·숫자",w:"six",k:"6, 여섯",p:"식스",ex:"We are six people.",exk:"저희는 여섯 명이에요."},
+  {lv:1,c:"시간·숫자",w:"seven",k:"7, 일곱",p:"세븐",ex:"Seven days a week.",exk:"일주일에 7일이요."},
+  {lv:1,c:"시간·숫자",w:"eight",k:"8, 여덟",p:"에잇",ex:"It is eight o'clock.",exk:"8시예요."},
+  {lv:1,c:"시간·숫자",w:"nine",k:"9, 아홉",p:"나인",ex:"The shop opens at nine.",exk:"가게는 9시에 열어요."},
+  {lv:1,c:"시간·숫자",w:"eleven",k:"11",p:"일레븐",ex:"Room eleven, please.",exk:"11호실이요."},
+  {lv:1,c:"시간·숫자",w:"twelve",k:"12",p:"트웰브",ex:"Lunch is at twelve.",exk:"점심은 12시예요."},
+  {lv:1,c:"시간·숫자",w:"thirteen",k:"13",p:"써틴",ex:"I am thirteen.",exk:"저는 열세 살이에요."},
+  {lv:1,c:"시간·숫자",w:"fifteen",k:"15",p:"피프틴",ex:"Wait fifteen minutes.",exk:"15분 기다려 주세요."},
+  {lv:1,c:"시간·숫자",w:"twenty",k:"20",p:"트웬티",ex:"It costs twenty dollars.",exk:"20달러예요."},
+  {lv:1,c:"시간·숫자",w:"thirty",k:"30",p:"써티",ex:"Thirty minutes by bus.",exk:"버스로 30분이에요."},
+  {lv:1,c:"시간·숫자",w:"forty",k:"40",p:"포티",ex:"Forty dollars, please.",exk:"40달러 주세요."},
+  {lv:1,c:"시간·숫자",w:"fifty",k:"50",p:"피프티",ex:"Fifty percent off.",exk:"50% 할인이에요."},
+  {lv:2,c:"시간·숫자",w:"hundred",k:"100, 백",p:"헌드레드",ex:"One hundred pesos.",exk:"100페소예요."},
+  {lv:2,c:"시간·숫자",w:"thousand",k:"1000, 천",p:"싸우전드",ex:"It is one thousand won.",exk:"천 원이에요."},
+  {lv:2,c:"시간·숫자",w:"million",k:"백만",p:"밀리언",ex:"One million people live here.",exk:"백만 명이 여기 살아요."},
+  {lv:1,c:"시간·숫자",w:"first",k:"첫 번째",p:"퍼스트",ex:"This is my first trip.",exk:"이번이 첫 여행이에요."},
+  {lv:1,c:"시간·숫자",w:"second",k:"두 번째, 초",p:"세컨드",ex:"Take the second street.",exk:"두 번째 길로 가세요."},
+  {lv:1,c:"시간·숫자",w:"third",k:"세 번째",p:"써드",ex:"I live on the third floor.",exk:"저는 3층에 살아요."},
+  {lv:2,c:"시간·숫자",w:"half",k:"반, 절반",p:"하프",ex:"Half an hour, please.",exk:"30분만 기다려 주세요."},
+  {lv:2,c:"시간·숫자",w:"once",k:"한 번",p:"원스",ex:"I came here once.",exk:"여기 한 번 와 봤어요."},
+  {lv:2,c:"시간·숫자",w:"twice",k:"두 번",p:"트와이스",ex:"I called twice.",exk:"두 번 전화했어요."},
+  {lv:1,c:"시간·숫자",w:"time",k:"시간, 번",p:"타임",ex:"What time is it?",exk:"몇 시예요?"},
+  {lv:1,c:"시간·숫자",w:"soon",k:"곧",p:"순",ex:"See you soon.",exk:"곧 봬요."},
+  {lv:1,c:"시간·숫자",w:"tonight",k:"오늘 밤",p:"투나잇",ex:"I am free tonight.",exk:"오늘 밤에 시간 있어요."},
+  {lv:2,c:"시간·숫자",w:"weekday",k:"평일",p:"위크데이",ex:"We open on weekdays.",exk:"평일에 열어요."},
+  {lv:2,c:"시간·숫자",w:"midnight",k:"자정",p:"미드나잇",ex:"The bar closes at midnight.",exk:"바는 자정에 닫아요."},
+  {lv:2,c:"시간·숫자",w:"noon",k:"정오",p:"눈",ex:"Lunch is at noon.",exk:"점심은 정오예요."},
+  {lv:1,c:"시간·숫자",w:"monday",k:"월요일",p:"먼데이",ex:"See you on Monday.",exk:"월요일에 봬요."},
+  {lv:1,c:"시간·숫자",w:"tuesday",k:"화요일",p:"튜즈데이",ex:"The class is on Tuesday.",exk:"수업은 화요일이에요."},
+  {lv:1,c:"시간·숫자",w:"wednesday",k:"수요일",p:"웬즈데이",ex:"We leave on Wednesday.",exk:"저희는 수요일에 떠나요."},
+  {lv:1,c:"시간·숫자",w:"thursday",k:"목요일",p:"써스데이",ex:"The shop is closed on Thursday.",exk:"그 가게는 목요일에 쉬어요."},
+  {lv:1,c:"시간·숫자",w:"friday",k:"금요일",p:"프라이데이",ex:"It is Friday night.",exk:"금요일 밤이에요."},
+  {lv:1,c:"시간·숫자",w:"saturday",k:"토요일",p:"새터데이",ex:"We go out on Saturday.",exk:"토요일에 놀러 가요."},
+  {lv:1,c:"시간·숫자",w:"sunday",k:"일요일",p:"선데이",ex:"I rest on Sunday.",exk:"일요일에는 쉬어요."},
+  {lv:1,c:"시간·숫자",w:"january",k:"1월",p:"재뉴어리",ex:"It is cold in January.",exk:"1월은 추워요."},
+  {lv:1,c:"시간·숫자",w:"february",k:"2월",p:"페브루어리",ex:"February is short.",exk:"2월은 짧아요."},
+  {lv:1,c:"시간·숫자",w:"march",k:"3월",p:"마치",ex:"Spring starts in March.",exk:"봄은 3월에 시작해요."},
+  {lv:1,c:"시간·숫자",w:"april",k:"4월",p:"에이프릴",ex:"April is rainy.",exk:"4월은 비가 많이 와요."},
+  {lv:1,c:"시간·숫자",w:"may",k:"5월",p:"메이",ex:"May is a nice month.",exk:"5월은 좋은 달이에요."},
+  {lv:1,c:"시간·숫자",w:"june",k:"6월",p:"준",ex:"School ends in June.",exk:"6월에 학교가 끝나요."},
+  {lv:1,c:"시간·숫자",w:"july",k:"7월",p:"줄라이",ex:"July is very hot.",exk:"7월은 아주 더워요."},
+  {lv:1,c:"시간·숫자",w:"august",k:"8월",p:"오거스트",ex:"We travel in August.",exk:"저희는 8월에 여행해요."},
+  {lv:1,c:"시간·숫자",w:"september",k:"9월",p:"셉템버",ex:"My birthday is in September.",exk:"제 생일은 9월이에요."},
+  {lv:1,c:"시간·숫자",w:"october",k:"10월",p:"악토버",ex:"October is cool.",exk:"10월은 선선해요."},
+  {lv:1,c:"시간·숫자",w:"november",k:"11월",p:"노벰버",ex:"It gets cold in November.",exk:"11월에는 추워져요."},
+  {lv:1,c:"시간·숫자",w:"december",k:"12월",p:"디셈버",ex:"December has a holiday.",exk:"12월에는 휴일이 있어요."},
+  {lv:1,c:"시간·숫자",w:"spring",k:"봄",p:"스프링",ex:"I like spring.",exk:"저는 봄을 좋아해요."},
+  {lv:1,c:"시간·숫자",w:"summer",k:"여름",p:"서머",ex:"Summer is hot here.",exk:"여기는 여름이 더워요."},
+  {lv:1,c:"시간·숫자",w:"fall",k:"가을 (미국)",p:"폴",ex:"Fall is cool and nice.",exk:"가을은 선선하고 좋아요."},
+  {lv:1,c:"시간·숫자",w:"winter",k:"겨울",p:"윈터",ex:"Winter is cold.",exk:"겨울은 추워요."},
+  {lv:2,c:"시간·숫자",w:"daily",k:"매일의",p:"데일리",ex:"This is a daily bus.",exk:"이건 매일 다니는 버스예요."},
+  {lv:2,c:"시간·숫자",w:"weekly",k:"매주의",p:"위클리",ex:"We have a weekly meeting.",exk:"저희는 주간 회의가 있어요."},
+  {lv:2,c:"시간·숫자",w:"ago",k:"~전에",p:"어고",ex:"I arrived an hour ago.",exk:"한 시간 전에 도착했어요."},
+  {lv:2,c:"시간·숫자",w:"past",k:"과거, 지나서",p:"패스트",ex:"It is ten past two.",exk:"2시 10분이에요."},
+  {lv:2,c:"시간·숫자",w:"future",k:"미래",p:"퓨처",ex:"Let's plan the future.",exk:"미래를 계획해 봐요."},
+  {lv:2,c:"시간·숫자",w:"holiday",k:"휴일, 공휴일",p:"할러데이",ex:"Tomorrow is a holiday.",exk:"내일은 공휴일이에요."},
+  {lv:1,c:"시간·숫자",w:"birthday",k:"생일",p:"버스데이",ex:"Happy birthday!",exk:"생일 축하해요!"},
+  {lv:2,c:"시간·숫자",w:"calendar",k:"달력",p:"캘린더",ex:"Check the calendar.",exk:"달력을 확인해 보세요."},
+  {lv:2,c:"시간·숫자",w:"date",k:"날짜",p:"데이트",ex:"What is the date today?",exk:"오늘 며칠이에요?"},
+  {lv:1,c:"사람·관계",w:"mother",k:"어머니",p:"마더",ex:"My mother is a teacher.",exk:"어머니는 선생님이세요."},
+  {lv:1,c:"사람·관계",w:"father",k:"아버지",p:"파더",ex:"My father drives a taxi.",exk:"아버지는 택시를 운전하세요."},
+  {lv:1,c:"사람·관계",w:"parents",k:"부모님",p:"페어런츠",ex:"My parents live in Busan.",exk:"부모님은 부산에 사세요."},
+  {lv:1,c:"사람·관계",w:"grandmother",k:"할머니",p:"그랜드마더",ex:"My grandmother is kind.",exk:"할머니는 친절하세요."},
+  {lv:1,c:"사람·관계",w:"grandfather",k:"할아버지",p:"그랜드파더",ex:"My grandfather likes tea.",exk:"할아버지는 차를 좋아하세요."},
+  {lv:1,c:"사람·관계",w:"child",k:"아이",p:"차일드",ex:"The child is asleep.",exk:"아이가 자고 있어요."},
+  {lv:1,c:"사람·관계",w:"man",k:"남자",p:"맨",ex:"That man is my teacher.",exk:"저 남자분이 제 선생님이에요."},
+  {lv:1,c:"사람·관계",w:"woman",k:"여자",p:"우먼",ex:"The woman is a doctor.",exk:"그 여자분은 의사예요."},
+  {lv:1,c:"사람·관계",w:"boy",k:"소년",p:"보이",ex:"The boy is playing.",exk:"소년이 놀고 있어요."},
+  {lv:1,c:"사람·관계",w:"girl",k:"소녀",p:"걸",ex:"The girl is singing.",exk:"소녀가 노래하고 있어요."},
+  {lv:1,c:"사람·관계",w:"person",k:"사람",p:"퍼슨",ex:"He is a kind person.",exk:"그는 친절한 사람이에요."},
+  {lv:2,c:"사람·관계",w:"neighbor",k:"이웃",p:"네이버",ex:"My neighbor is friendly.",exk:"제 이웃은 친절해요."},
+  {lv:2,c:"사람·관계",w:"stranger",k:"낯선 사람",p:"스트레인저",ex:"Do not talk to strangers.",exk:"낯선 사람과 말하지 마세요."},
+  {lv:1,c:"사람·관계",w:"police",k:"경찰",p:"폴리스",ex:"Call the police.",exk:"경찰을 불러 주세요."},
+  {lv:2,c:"사람·관계",w:"chef",k:"요리사",p:"셰프",ex:"The chef is famous.",exk:"그 요리사는 유명해요."},
+  {lv:2,c:"사람·관계",w:"pilot",k:"조종사",p:"파일럿",ex:"The pilot is friendly.",exk:"조종사가 친절해요."},
+  {lv:2,c:"사람·관계",w:"lawyer",k:"변호사",p:"로여",ex:"My friend is a lawyer.",exk:"친구가 변호사예요."},
+  {lv:2,c:"사람·관계",w:"dentist",k:"치과의사",p:"덴티스트",ex:"I have a dentist visit.",exk:"치과 예약이 있어요."},
+  {lv:2,c:"사람·관계",w:"farmer",k:"농부",p:"파머",ex:"The farmer grows corn.",exk:"농부가 옥수수를 키워요."},
+  {lv:2,c:"사람·관계",w:"artist",k:"예술가",p:"아티스트",ex:"She is a great artist.",exk:"그녀는 훌륭한 예술가예요."},
+  {lv:2,c:"사람·관계",w:"singer",k:"가수",p:"싱어",ex:"He is a famous singer.",exk:"그는 유명한 가수예요."},
+  {lv:2,c:"사람·관계",w:"partner",k:"동료, 짝",p:"파트너",ex:"This is my partner.",exk:"이쪽은 제 동료예요."},
+  {lv:1,c:"음식·식당",w:"bread",k:"빵",p:"브레드",ex:"I want bread and butter.",exk:"빵이랑 버터 주세요."},
+  {lv:1,c:"음식·식당",w:"egg",k:"달걀",p:"에그",ex:"Two eggs, please.",exk:"달걀 두 개 주세요."},
+  {lv:1,c:"음식·식당",w:"meat",k:"고기",p:"미트",ex:"I do not eat meat.",exk:"저는 고기를 안 먹어요."},
+  {lv:1,c:"음식·식당",w:"beef",k:"소고기",p:"비프",ex:"Beef or chicken?",exk:"소고기예요, 닭고기예요?"},
+  {lv:1,c:"음식·식당",w:"pork",k:"돼지고기",p:"포크",ex:"I do not eat pork.",exk:"저는 돼지고기를 안 먹어요."},
+  {lv:1,c:"음식·식당",w:"fruit",k:"과일",p:"프루트",ex:"I like fresh fruit.",exk:"저는 신선한 과일을 좋아해요."},
+  {lv:1,c:"음식·식당",w:"apple",k:"사과",p:"애플",ex:"An apple a day.",exk:"하루에 사과 한 개."},
+  {lv:1,c:"음식·식당",w:"banana",k:"바나나",p:"버내나",ex:"I want a banana.",exk:"바나나 하나 주세요."},
+  {lv:1,c:"음식·식당",w:"grape",k:"포도",p:"그레이프",ex:"These grapes are sweet.",exk:"이 포도는 달아요."},
+  {lv:1,c:"음식·식당",w:"lemon",k:"레몬",p:"레먼",ex:"Water with lemon, please.",exk:"레몬 넣은 물 주세요."},
+  {lv:1,c:"음식·식당",w:"orange",k:"오렌지",p:"오린지",ex:"Orange juice, please.",exk:"오렌지 주스 주세요."},
+  {lv:1,c:"음식·식당",w:"strawberry",k:"딸기",p:"스트로베리",ex:"I like strawberry cake.",exk:"저는 딸기 케이크를 좋아해요."},
+  {lv:1,c:"음식·식당",w:"watermelon",k:"수박",p:"워터멜론",ex:"Watermelon is sweet.",exk:"수박은 달아요."},
+  {lv:2,c:"음식·식당",w:"peach",k:"복숭아",p:"피치",ex:"This peach is juicy.",exk:"이 복숭아는 즙이 많아요."},
+  {lv:2,c:"음식·식당",w:"mango",k:"망고",p:"망고",ex:"I love fresh mango.",exk:"신선한 망고를 좋아해요."},
+  {lv:2,c:"음식·식당",w:"pineapple",k:"파인애플",p:"파인애플",ex:"Pineapple juice, please.",exk:"파인애플 주스 주세요."},
+  {lv:2,c:"음식·식당",w:"coconut",k:"코코넛",p:"코코넛",ex:"Fresh coconut water.",exk:"신선한 코코넛 워터요."},
+  {lv:1,c:"음식·식당",w:"vegetable",k:"채소",p:"베지터블",ex:"Eat more vegetables.",exk:"채소를 더 드세요."},
+  {lv:1,c:"음식·식당",w:"potato",k:"감자",p:"포테이토",ex:"Fried potatoes, please.",exk:"감자튀김 주세요."},
+  {lv:1,c:"음식·식당",w:"tomato",k:"토마토",p:"터메이토",ex:"I like tomato soup.",exk:"토마토 수프를 좋아해요."},
+  {lv:1,c:"음식·식당",w:"onion",k:"양파",p:"어니언",ex:"No onions, please.",exk:"양파는 빼 주세요."},
+  {lv:2,c:"음식·식당",w:"carrot",k:"당근",p:"캐럿",ex:"Carrots are healthy.",exk:"당근은 건강에 좋아요."},
+  {lv:2,c:"음식·식당",w:"garlic",k:"마늘",p:"갈릭",ex:"I like garlic bread.",exk:"저는 갈릭 브레드를 좋아해요."},
+  {lv:2,c:"음식·식당",w:"mushroom",k:"버섯",p:"머쉬룸",ex:"Mushroom soup, please.",exk:"버섯 수프 주세요."},
+  {lv:2,c:"음식·식당",w:"cucumber",k:"오이",p:"큐컴버",ex:"Add cucumber, please.",exk:"오이를 넣어 주세요."},
+  {lv:2,c:"음식·식당",w:"lettuce",k:"상추",p:"레티스",ex:"Fresh lettuce and tomato.",exk:"신선한 상추와 토마토요."},
+  {lv:2,c:"음식·식당",w:"corn",k:"옥수수",p:"콘",ex:"Corn is on the menu.",exk:"메뉴에 옥수수가 있어요."},
+  {lv:1,c:"음식·식당",w:"salt",k:"소금",p:"솔트",ex:"Pass the salt, please.",exk:"소금 좀 건네주세요."},
+  {lv:1,c:"음식·식당",w:"pepper",k:"후추",p:"페퍼",ex:"Salt and pepper, please.",exk:"소금이랑 후추 주세요."},
+  {lv:1,c:"음식·식당",w:"cheese",k:"치즈",p:"치즈",ex:"Extra cheese, please.",exk:"치즈 추가해 주세요."},
+  {lv:1,c:"음식·식당",w:"butter",k:"버터",p:"버터",ex:"Bread and butter.",exk:"빵과 버터요."},
+  {lv:1,c:"음식·식당",w:"soup",k:"수프",p:"숩",ex:"Today's soup is tomato.",exk:"오늘의 수프는 토마토예요."},
+  {lv:1,c:"음식·식당",w:"pizza",k:"피자",p:"핏자",ex:"One large pizza, please.",exk:"큰 피자 하나 주세요."},
+  {lv:1,c:"음식·식당",w:"cake",k:"케이크",p:"케이크",ex:"A piece of cake, please.",exk:"케이크 한 조각 주세요."},
+  {lv:1,c:"음식·식당",w:"cookie",k:"쿠키",p:"쿠키",ex:"I want a cookie.",exk:"쿠키 하나 주세요."},
+  {lv:1,c:"음식·식당",w:"chocolate",k:"초콜릿",p:"초컬릿",ex:"I love chocolate.",exk:"초콜릿을 아주 좋아해요."},
+  {lv:1,c:"음식·식당",w:"lunch",k:"점심",p:"런치",ex:"Let's have lunch.",exk:"점심 먹어요."},
+  {lv:1,c:"음식·식당",w:"sandwich",k:"샌드위치",p:"샌드위치",ex:"A ham sandwich, please.",exk:"햄 샌드위치 주세요."},
+  {lv:1,c:"음식·식당",w:"burger",k:"햄버거",p:"버거",ex:"One burger, please.",exk:"햄버거 하나 주세요."},
+  {lv:1,c:"음식·식당",w:"fries",k:"감자튀김",p:"프라이즈",ex:"Fries and a cola, please.",exk:"감자튀김이랑 콜라 주세요."},
+  {lv:1,c:"음식·식당",w:"noodle",k:"국수, 면",p:"누들",ex:"I want noodle soup.",exk:"국수를 먹고 싶어요."},
+  {lv:2,c:"음식·식당",w:"pasta",k:"파스타",p:"파스타",ex:"Pasta is my favorite.",exk:"파스타를 제일 좋아해요."},
+  {lv:2,c:"음식·식당",w:"shrimp",k:"새우",p:"슈림프",ex:"Grilled shrimp, please.",exk:"구운 새우 주세요."},
+  {lv:2,c:"음식·식당",w:"seafood",k:"해산물",p:"씨푸드",ex:"I love seafood.",exk:"저는 해산물을 좋아해요."},
+  {lv:2,c:"음식·식당",w:"salmon",k:"연어",p:"새먼",ex:"Grilled salmon, please.",exk:"구운 연어 주세요."},
+  {lv:2,c:"음식·식당",w:"sausage",k:"소시지",p:"소시지",ex:"Two sausages, please.",exk:"소시지 두 개 주세요."},
+  {lv:2,c:"음식·식당",w:"ham",k:"햄",p:"햄",ex:"Ham and cheese, please.",exk:"햄 치즈로 주세요."},
+  {lv:1,c:"음식·식당",w:"snack",k:"간식",p:"스낵",ex:"I want a snack.",exk:"간식을 먹고 싶어요."},
+  {lv:2,c:"음식·식당",w:"ice cream",k:"아이스크림",p:"아이스 크림",ex:"Ice cream, please.",exk:"아이스크림 주세요."},
+  {lv:2,c:"음식·식당",w:"honey",k:"꿀",p:"허니",ex:"Tea with honey, please.",exk:"꿀 넣은 차 주세요."},
+  {lv:2,c:"음식·식당",w:"oil",k:"기름",p:"오일",ex:"Less oil, please.",exk:"기름 적게 해 주세요."},
+  {lv:1,c:"음식·식당",w:"spoon",k:"숟가락",p:"스푼",ex:"Can I have a spoon?",exk:"숟가락 있어요?"},
+  {lv:1,c:"음식·식당",w:"bowl",k:"그릇",p:"보울",ex:"A bowl of soup.",exk:"수프 한 그릇이요."},
+  {lv:1,c:"음식·식당",w:"bottle",k:"병",p:"바틀",ex:"A bottle of water.",exk:"물 한 병이요."},
+  {lv:2,c:"음식·식당",w:"sour",k:"신",p:"사워",ex:"This is too sour.",exk:"이건 너무 셔요."},
+  {lv:2,c:"음식·식당",w:"wine",k:"와인",p:"와인",ex:"A glass of red wine.",exk:"레드 와인 한 잔이요."},
+  {lv:2,c:"음식·식당",w:"cheers",k:"건배",p:"치어스",ex:"Cheers!",exk:"건배!"},
+  {lv:1,c:"숙소·생활",w:"home",k:"집",p:"홈",ex:"I am going home.",exk:"저는 집에 가는 중이에요."},
+  {lv:1,c:"숙소·생활",w:"door",k:"문",p:"도어",ex:"Please close the door.",exk:"문 좀 닫아 주세요."},
+  {lv:1,c:"숙소·생활",w:"window",k:"창문",p:"윈도우",ex:"Open the window, please.",exk:"창문 좀 열어 주세요."},
+  {lv:1,c:"숙소·생활",w:"bed",k:"침대",p:"베드",ex:"The bed is comfortable.",exk:"침대가 편해요."},
+  {lv:1,c:"숙소·생활",w:"chair",k:"의자",p:"체어",ex:"Take a chair.",exk:"의자에 앉으세요."},
+  {lv:1,c:"숙소·생활",w:"kitchen",k:"부엌",p:"키친",ex:"The kitchen is clean.",exk:"부엌이 깨끗해요."},
+  {lv:1,c:"숙소·생활",w:"bathroom",k:"욕실, 화장실",p:"배쓰룸",ex:"Where is the bathroom?",exk:"화장실이 어디예요?"},
+  {lv:1,c:"숙소·생활",w:"toilet",k:"변기, 화장실",p:"토일릿",ex:"The toilet is broken.",exk:"변기가 고장 났어요."},
+  {lv:1,c:"숙소·생활",w:"wall",k:"벽",p:"월",ex:"There is a picture on the wall.",exk:"벽에 그림이 있어요."},
+  {lv:1,c:"숙소·생활",w:"sofa",k:"소파",p:"소파",ex:"Sit on the sofa.",exk:"소파에 앉으세요."},
+  {lv:2,c:"숙소·생활",w:"lamp",k:"전등",p:"램프",ex:"The lamp is off.",exk:"전등이 꺼져 있어요."},
+  {lv:2,c:"숙소·생활",w:"mirror",k:"거울",p:"미러",ex:"Where is the mirror?",exk:"거울이 어디 있어요?"},
+  {lv:2,c:"숙소·생활",w:"garden",k:"정원",p:"가든",ex:"The hotel has a garden.",exk:"호텔에 정원이 있어요."},
+  {lv:2,c:"숙소·생활",w:"lock",k:"자물쇠, 잠그다",p:"락",ex:"Please lock the door.",exk:"문을 잠가 주세요."},
+  {lv:2,c:"숙소·생활",w:"fridge",k:"냉장고",p:"프리지",ex:"Milk is in the fridge.",exk:"우유는 냉장고에 있어요."},
+  {lv:2,c:"숙소·생활",w:"fan",k:"선풍기",p:"팬",ex:"Turn on the fan.",exk:"선풍기를 켜 주세요."},
+  {lv:2,c:"숙소·생활",w:"heater",k:"난방기",p:"히터",ex:"The heater is broken.",exk:"난방기가 고장 났어요."},
+  {lv:2,c:"숙소·생활",w:"air conditioner",k:"에어컨",p:"에어 컨디셔너",ex:"The air conditioner is cold.",exk:"에어컨이 너무 추워요."},
+  {lv:1,c:"숙소·생활",w:"paper",k:"종이",p:"페이퍼",ex:"I need some paper.",exk:"종이가 필요해요."},
+  {lv:1,c:"숙소·생활",w:"pencil",k:"연필",p:"펜슬",ex:"Do you have a pencil?",exk:"연필 있어요?"},
+  {lv:1,c:"숙소·생활",w:"box",k:"상자",p:"박스",ex:"Put it in the box.",exk:"상자에 넣어 주세요."},
+  {lv:1,c:"숙소·생활",w:"computer",k:"컴퓨터",p:"컴퓨터",ex:"The computer is slow.",exk:"컴퓨터가 느려요."},
+  {lv:1,c:"숙소·생활",w:"television",k:"텔레비전",p:"텔레비전",ex:"Turn on the television.",exk:"TV를 켜 주세요."},
+  {lv:1,c:"숙소·생활",w:"clock",k:"시계 (벽·탁상)",p:"클락",ex:"The clock is wrong.",exk:"시계가 틀려요."},
+  {lv:1,c:"숙소·생활",w:"bird",k:"새",p:"버드",ex:"A bird is singing.",exk:"새가 노래하고 있어요."},
+  {lv:1,c:"숙소·생활",w:"horse",k:"말",p:"호스",ex:"I can ride a horse.",exk:"저는 말을 탈 수 있어요."},
+  {lv:1,c:"숙소·생활",w:"cow",k:"소",p:"카우",ex:"The cow is big.",exk:"소가 커요."},
+  {lv:1,c:"숙소·생활",w:"pig",k:"돼지",p:"피그",ex:"The pig is pink.",exk:"돼지가 분홍색이에요."},
+  {lv:2,c:"숙소·생활",w:"rabbit",k:"토끼",p:"래빗",ex:"The rabbit is fast.",exk:"토끼는 빨라요."},
+  {lv:2,c:"숙소·생활",w:"pet",k:"반려동물",p:"펫",ex:"Pets are not allowed.",exk:"반려동물은 안 돼요."},
+  {lv:1,c:"여행·교통",w:"train",k:"기차",p:"트레인",ex:"The train is late.",exk:"기차가 늦어요."},
+  {lv:1,c:"여행·교통",w:"plane",k:"비행기",p:"플레인",ex:"The plane leaves at ten.",exk:"비행기는 10시에 출발해요."},
+  {lv:1,c:"여행·교통",w:"airplane",k:"비행기",p:"에어플레인",ex:"I am on the airplane.",exk:"저는 비행기 안에 있어요."},
+  {lv:1,c:"여행·교통",w:"bike",k:"자전거",p:"바이크",ex:"I ride a bike.",exk:"저는 자전거를 타요."},
+  {lv:1,c:"여행·교통",w:"boat",k:"배",p:"보트",ex:"Take the boat.",exk:"배를 타세요."},
+  {lv:1,c:"여행·교통",w:"road",k:"도로",p:"로드",ex:"This road is long.",exk:"이 길은 길어요."},
+  {lv:1,c:"여행·교통",w:"street",k:"거리",p:"스트리트",ex:"Walk down this street.",exk:"이 길을 따라 걸어가세요."},
+  {lv:1,c:"여행·교통",w:"city",k:"도시",p:"시티",ex:"I love this city.",exk:"저는 이 도시를 좋아해요."},
+  {lv:1,c:"여행·교통",w:"country",k:"나라, 시골",p:"컨트리",ex:"Which country are you from?",exk:"어느 나라에서 왔어요?"},
+  {lv:1,c:"여행·교통",w:"village",k:"마을",p:"빌리지",ex:"It is a small village.",exk:"작은 마을이에요."},
+  {lv:1,c:"여행·교통",w:"office",k:"사무실",p:"오피스",ex:"I am at the office.",exk:"저는 사무실에 있어요."},
+  {lv:1,c:"여행·교통",w:"bank",k:"은행",p:"뱅크",ex:"The bank is closed.",exk:"은행은 문을 닫았어요."},
+  {lv:1,c:"여행·교통",w:"cafe",k:"카페",p:"카페",ex:"Let's go to a cafe.",exk:"카페에 가요."},
+  {lv:1,c:"여행·교통",w:"shop",k:"가게",p:"샵",ex:"This shop is nice.",exk:"이 가게 좋아요."},
+  {lv:1,c:"여행·교통",w:"store",k:"상점",p:"스토어",ex:"The store opens at nine.",exk:"상점은 9시에 열어요."},
+  {lv:2,c:"여행·교통",w:"tour",k:"관광, 투어",p:"투어",ex:"Is there a city tour?",exk:"시내 투어 있어요?"},
+  {lv:2,c:"여행·교통",w:"visa",k:"비자",p:"비자",ex:"I need a visa.",exk:"비자가 필요해요."},
+  {lv:2,c:"여행·교통",w:"destination",k:"목적지",p:"데스티네이션",ex:"What is your destination?",exk:"목적지가 어디예요?"},
+  {lv:2,c:"여행·교통",w:"direction",k:"방향",p:"디렉션",ex:"Which direction is it?",exk:"어느 쪽이에요?"},
+  {lv:2,c:"여행·교통",w:"parking",k:"주차",p:"파킹",ex:"Is there parking here?",exk:"여기 주차할 수 있어요?"},
+  {lv:1,c:"여행·교통",w:"sea",k:"바다",p:"씨",ex:"The sea is beautiful.",exk:"바다가 아름다워요."},
+  {lv:1,c:"여행·교통",w:"river",k:"강",p:"리버",ex:"The river is wide.",exk:"강이 넓어요."},
+  {lv:1,c:"여행·교통",w:"mountain",k:"산",p:"마운틴",ex:"I want to see the mountains.",exk:"산을 보고 싶어요."},
+  {lv:1,c:"여행·교통",w:"lake",k:"호수",p:"레이크",ex:"The lake is calm.",exk:"호수가 잔잔해요."},
+  {lv:1,c:"여행·교통",w:"tree",k:"나무",p:"트리",ex:"Sit under the tree.",exk:"나무 아래에 앉으세요."},
+  {lv:1,c:"여행·교통",w:"flower",k:"꽃",p:"플라워",ex:"These flowers are pretty.",exk:"이 꽃들 예뻐요."},
+  {lv:1,c:"여행·교통",w:"sun",k:"해, 태양",p:"선",ex:"The sun is strong.",exk:"햇볕이 강해요."},
+  {lv:1,c:"여행·교통",w:"moon",k:"달",p:"문",ex:"The moon is bright.",exk:"달이 밝아요."},
+  {lv:1,c:"여행·교통",w:"star",k:"별",p:"스타",ex:"I can see many stars.",exk:"별이 많이 보여요."},
+  {lv:1,c:"여행·교통",w:"sky",k:"하늘",p:"스카이",ex:"The sky is blue.",exk:"하늘이 파래요."},
+  {lv:1,c:"여행·교통",w:"rain",k:"비",p:"레인",ex:"It looks like rain.",exk:"비가 올 것 같아요."},
+  {lv:1,c:"여행·교통",w:"snow",k:"눈",p:"스노우",ex:"It will snow tomorrow.",exk:"내일 눈이 올 거예요."},
+  {lv:1,c:"여행·교통",w:"wind",k:"바람",p:"윈드",ex:"The wind is strong.",exk:"바람이 세요."},
+  {lv:1,c:"여행·교통",w:"cloud",k:"구름",p:"클라우드",ex:"There are many clouds.",exk:"구름이 많아요."},
+  {lv:2,c:"여행·교통",w:"sunny",k:"화창한",p:"서니",ex:"It is sunny today.",exk:"오늘은 화창해요."},
+  {lv:2,c:"여행·교통",w:"cloudy",k:"흐린",p:"클라우디",ex:"It is cloudy.",exk:"흐려요."},
+  {lv:2,c:"여행·교통",w:"rainy",k:"비 오는",p:"레이니",ex:"It is a rainy day.",exk:"비 오는 날이에요."},
+  {lv:2,c:"여행·교통",w:"island",k:"섬",p:"아일랜드",ex:"The island is beautiful.",exk:"그 섬은 아름다워요."},
+  {lv:2,c:"여행·교통",w:"forest",k:"숲",p:"포리스트",ex:"The forest is quiet.",exk:"숲이 조용해요."},
+  {lv:1,c:"몸·건강",w:"heart",k:"심장, 마음",p:"하트",ex:"My heart is fast.",exk:"심장이 빨리 뛰어요."},
+  {lv:1,c:"몸·건강",w:"body",k:"몸",p:"바디",ex:"My whole body hurts.",exk:"온몸이 아파요."},
+  {lv:2,c:"몸·건강",w:"neck",k:"목",p:"넥",ex:"My neck hurts.",exk:"목이 아파요."},
+  {lv:2,c:"몸·건강",w:"shoulder",k:"어깨",p:"숄더",ex:"My shoulder hurts.",exk:"어깨가 아파요."},
+  {lv:2,c:"몸·건강",w:"back",k:"등, 뒤",p:"백",ex:"My back hurts.",exk:"허리가 아파요."},
+  {lv:2,c:"몸·건강",w:"stomach",k:"배, 위",p:"스토머크",ex:"My stomach hurts.",exk:"배가 아파요."},
+  {lv:2,c:"몸·건강",w:"knee",k:"무릎",p:"니",ex:"My knee hurts.",exk:"무릎이 아파요."},
+  {lv:2,c:"몸·건강",w:"throat",k:"목구멍",p:"쓰로트",ex:"I have a sore throat.",exk:"목이 아파요."},
+  {lv:2,c:"몸·건강",w:"skin",k:"피부",p:"스킨",ex:"I have dry skin.",exk:"피부가 건조해요."},
+  {lv:2,c:"몸·건강",w:"blood",k:"피",p:"블러드",ex:"There is blood.",exk:"피가 나요."},
+  {lv:2,c:"몸·건강",w:"allergy",k:"알레르기",p:"앨러지",ex:"I have a nut allergy.",exk:"견과류 알레르기가 있어요."},
+  {lv:2,c:"몸·건강",w:"health",k:"건강",p:"헬스",ex:"Health is important.",exk:"건강이 중요해요."},
+  {lv:2,c:"몸·건강",w:"rest",k:"쉬다, 휴식",p:"레스트",ex:"You need to rest.",exk:"좀 쉬셔야 해요."},
+  {lv:1,c:"쇼핑·돈",w:"clothes",k:"옷",p:"클로즈",ex:"I need new clothes.",exk:"새 옷이 필요해요."},
+  {lv:1,c:"쇼핑·돈",w:"shirt",k:"셔츠",p:"셔츠",ex:"I like this shirt.",exk:"이 셔츠 마음에 들어요."},
+  {lv:1,c:"쇼핑·돈",w:"pants",k:"바지",p:"팬츠",ex:"These pants are too long.",exk:"이 바지는 너무 길어요."},
+  {lv:1,c:"쇼핑·돈",w:"shoes",k:"신발",p:"슈즈",ex:"Where can I buy shoes?",exk:"신발은 어디서 사요?"},
+  {lv:1,c:"쇼핑·돈",w:"hat",k:"모자",p:"햇",ex:"This hat is nice.",exk:"이 모자 좋아요."},
+  {lv:1,c:"쇼핑·돈",w:"coat",k:"코트",p:"코트",ex:"Bring a coat.",exk:"코트를 가져가세요."},
+  {lv:1,c:"쇼핑·돈",w:"dress",k:"원피스",p:"드레스",ex:"This dress is pretty.",exk:"이 원피스 예뻐요."},
+  {lv:1,c:"쇼핑·돈",w:"socks",k:"양말",p:"삭스",ex:"I need socks.",exk:"양말이 필요해요."},
+  {lv:1,c:"쇼핑·돈",w:"glasses",k:"안경",p:"글래시즈",ex:"I lost my glasses.",exk:"안경을 잃어버렸어요."},
+  {lv:1,c:"쇼핑·돈",w:"umbrella",k:"우산",p:"엄브렐라",ex:"Take an umbrella.",exk:"우산을 챙기세요."},
+  {lv:2,c:"쇼핑·돈",w:"jacket",k:"재킷",p:"재킷",ex:"This jacket is warm.",exk:"이 재킷은 따뜻해요."},
+  {lv:2,c:"쇼핑·돈",w:"sweater",k:"스웨터",p:"스웨터",ex:"I need a sweater.",exk:"스웨터가 필요해요."},
+  {lv:2,c:"쇼핑·돈",w:"skirt",k:"치마",p:"스커트",ex:"This skirt is short.",exk:"이 치마는 짧아요."},
+  {lv:2,c:"쇼핑·돈",w:"jeans",k:"청바지",p:"진즈",ex:"Do you have jeans?",exk:"청바지 있어요?"},
+  {lv:2,c:"쇼핑·돈",w:"shorts",k:"반바지",p:"쇼츠",ex:"I wear shorts in summer.",exk:"여름엔 반바지를 입어요."},
+  {lv:2,c:"쇼핑·돈",w:"sandals",k:"샌들",p:"샌들즈",ex:"I need sandals.",exk:"샌들이 필요해요."},
+  {lv:2,c:"쇼핑·돈",w:"pocket",k:"주머니",p:"포켓",ex:"It is in my pocket.",exk:"주머니에 있어요."},
+  {lv:2,c:"쇼핑·돈",w:"credit card",k:"신용카드",p:"크레딧 카드",ex:"Do you take credit cards?",exk:"신용카드 받아요?"},
+  {lv:1,c:"성질·정도",w:"purple",k:"보라색",p:"퍼플",ex:"I like purple.",exk:"저는 보라색을 좋아해요."},
+  {lv:1,c:"성질·정도",w:"gray",k:"회색",p:"그레이",ex:"The car is gray.",exk:"차가 회색이에요."},
+  {lv:1,c:"성질·정도",w:"gold",k:"금색",p:"골드",ex:"It is a gold ring.",exk:"금반지예요."},
+  {lv:1,c:"성질·정도",w:"silver",k:"은색",p:"실버",ex:"I like silver.",exk:"저는 은색을 좋아해요."},
+  {lv:1,c:"성질·정도",w:"high",k:"높은",p:"하이",ex:"The mountain is high.",exk:"산이 높아요."},
+  {lv:1,c:"성질·정도",w:"low",k:"낮은",p:"로우",ex:"The price is low.",exk:"가격이 낮아요."},
+  {lv:1,c:"성질·정도",w:"bad",k:"나쁜",p:"배드",ex:"The weather is bad.",exk:"날씨가 나빠요."},
+  {lv:1,c:"성질·정도",w:"hard",k:"어려운, 딱딱한",p:"하드",ex:"This is hard.",exk:"이거 어려워요."},
+  {lv:1,c:"성질·정도",w:"rich",k:"부유한",p:"리치",ex:"He is rich.",exk:"그는 부자예요."},
+  {lv:1,c:"성질·정도",w:"poor",k:"가난한",p:"푸어",ex:"The village is poor.",exk:"그 마을은 가난해요."},
+  {lv:1,c:"성질·정도",w:"true",k:"사실인",p:"트루",ex:"Is it true?",exk:"사실이에요?"},
+  {lv:1,c:"성질·정도",w:"false",k:"거짓의",p:"폴스",ex:"That is false.",exk:"그건 거짓이에요."},
+  {lv:1,c:"성질·정도",w:"top",k:"꼭대기, 위",p:"탑",ex:"It is on the top shelf.",exk:"맨 위 선반에 있어요."},
+  {lv:1,c:"성질·정도",w:"bottom",k:"바닥, 아래",p:"바텀",ex:"It is at the bottom.",exk:"맨 아래에 있어요."},
+  {lv:1,c:"성질·정도",w:"narrow",k:"좁은",p:"내로우",ex:"The street is narrow.",exk:"길이 좁아요."},
+  {lv:2,c:"성질·정도",w:"thick",k:"두꺼운",p:"씩",ex:"The book is thick.",exk:"책이 두꺼워요."},
+  {lv:2,c:"성질·정도",w:"thin",k:"얇은",p:"씬",ex:"The paper is thin.",exk:"종이가 얇아요."},
+  {lv:2,c:"성질·정도",w:"sharp",k:"날카로운",p:"샤프",ex:"The knife is sharp.",exk:"칼이 날카로워요."},
+  {lv:2,c:"성질·정도",w:"dry",k:"마른",p:"드라이",ex:"My hair is dry.",exk:"머리가 말랐어요."},
+  {lv:2,c:"성질·정도",w:"special",k:"특별한",p:"스페셜",ex:"Today is special.",exk:"오늘은 특별해요."},
+  {lv:2,c:"성질·정도",w:"possible",k:"가능한",p:"파서블",ex:"Is it possible?",exk:"가능해요?"},
+  {lv:2,c:"성질·정도",w:"famous",k:"유명한",p:"페이머스",ex:"It is a famous place.",exk:"유명한 곳이에요."},
+  {lv:2,c:"성질·정도",w:"popular",k:"인기 있는",p:"파퓰러",ex:"This dish is popular.",exk:"이 요리는 인기가 많아요."},
+  {lv:2,c:"성질·정도",w:"weak",k:"약한",p:"위크",ex:"The signal is weak.",exk:"신호가 약해요."},
+  {lv:2,c:"감정·상태",w:"afraid",k:"무서워하는",p:"어프레이드",ex:"I am afraid of dogs.",exk:"저는 개가 무서워요."},
+  {lv:2,c:"감정·상태",w:"glad",k:"기쁜",p:"글래드",ex:"I am glad to see you.",exk:"만나서 기뻐요."},
+  {lv:1,c:"동작·행동",w:"wake up",k:"일어나다",p:"웨이크 업",ex:"I wake up at seven.",exk:"저는 7시에 일어나요."},
+  {lv:1,c:"동작·행동",w:"talk",k:"이야기하다",p:"토크",ex:"Can we talk?",exk:"얘기 좀 할 수 있어요?"},
+  {lv:1,c:"동작·행동",w:"say",k:"말하다",p:"세이",ex:"What did you say?",exk:"뭐라고 하셨어요?"},
+  {lv:1,c:"동작·행동",w:"tell",k:"말해 주다",p:"텔",ex:"Please tell me.",exk:"말해 주세요."},
+  {lv:1,c:"동작·행동",w:"ask",k:"묻다",p:"애스크",ex:"Can I ask a question?",exk:"질문해도 돼요?"},
+  {lv:1,c:"동작·행동",w:"hear",k:"듣다 (들리다)",p:"히어",ex:"I cannot hear you.",exk:"안 들려요."},
+  {lv:1,c:"동작·행동",w:"see",k:"보다",p:"씨",ex:"I can see the sea.",exk:"바다가 보여요."},
+  {lv:1,c:"동작·행동",w:"think",k:"생각하다",p:"씽크",ex:"I think so.",exk:"그렇게 생각해요."},
+  {lv:1,c:"동작·행동",w:"believe",k:"믿다",p:"빌리브",ex:"I believe you.",exk:"당신을 믿어요."},
+  {lv:1,c:"동작·행동",w:"hate",k:"싫어하다",p:"헤이트",ex:"I hate the cold.",exk:"저는 추운 게 싫어요."},
+  {lv:1,c:"동작·행동",w:"close",k:"닫다",p:"클로즈",ex:"Please close the door.",exk:"문 좀 닫아 주세요."},
+  {lv:1,c:"동작·행동",w:"begin",k:"시작하다",p:"비긴",ex:"The show begins at eight.",exk:"공연은 8시에 시작해요."},
+  {lv:1,c:"동작·행동",w:"feel",k:"느끼다",p:"필",ex:"I feel tired.",exk:"피곤해요."},
+  {lv:1,c:"동작·행동",w:"win",k:"이기다",p:"윈",ex:"We can win.",exk:"우리가 이길 수 있어요."},
+  {lv:1,c:"동작·행동",w:"dance",k:"춤추다",p:"댄스",ex:"Let's dance.",exk:"춤춰요."},
+  {lv:1,c:"동작·행동",w:"break",k:"깨다, 고장 내다",p:"브레이크",ex:"Please do not break it.",exk:"깨뜨리지 마세요."},
+  {lv:1,c:"동작·행동",w:"fix",k:"고치다",p:"픽스",ex:"Can you fix this?",exk:"이거 고쳐 주실래요?"},
+  {lv:1,c:"동작·행동",w:"build",k:"짓다",p:"빌드",ex:"They build a new hotel.",exk:"새 호텔을 지어요."},
+  {lv:1,c:"동작·행동",w:"draw",k:"그리다",p:"드로",ex:"I draw pictures.",exk:"저는 그림을 그려요."},
+  {lv:1,c:"동작·행동",w:"paint",k:"페인트칠하다, 그리다",p:"페인트",ex:"I paint the wall.",exk:"벽에 페인트칠을 해요."},
+  {lv:1,c:"동작·행동",w:"laugh",k:"웃다",p:"래프",ex:"We laugh a lot.",exk:"우리는 많이 웃어요."},
+  {lv:1,c:"동작·행동",w:"cry",k:"울다",p:"크라이",ex:"Do not cry.",exk:"울지 마세요."},
+  {lv:2,c:"동작·행동",w:"come in",k:"들어오다",p:"컴 인",ex:"Please come in.",exk:"들어오세요."},
+  {lv:2,c:"동작·행동",w:"go out",k:"나가다",p:"고 아웃",ex:"Let's go out.",exk:"나가요."},
+  {lv:2,c:"동작·행동",w:"enjoy",k:"즐기다",p:"인조이",ex:"Enjoy your meal.",exk:"맛있게 드세요."},
+  {lv:2,c:"동작·행동",w:"invite",k:"초대하다",p:"인바이트",ex:"I want to invite you.",exk:"당신을 초대하고 싶어요."},
+  {lv:2,c:"동작·행동",w:"fill",k:"채우다",p:"필",ex:"Please fill this form.",exk:"이 서류를 작성해 주세요."},
+  {lv:2,c:"동작·행동",w:"climb",k:"오르다",p:"클라임",ex:"I want to climb the mountain.",exk:"산에 오르고 싶어요."},
+  {lv:2,c:"동작·행동",w:"hurry",k:"서두르다",p:"허리",ex:"Hurry up.",exk:"서두르세요."},
+  {lv:2,c:"동작·행동",w:"touch",k:"만지다",p:"터치",ex:"Do not touch.",exk:"만지지 마세요."},
+  {lv:1,c:"여행·교통",w:"north",k:"북쪽",p:"노스",ex:"The hotel is to the north.",exk:"호텔은 북쪽에 있어요."},
+  {lv:1,c:"여행·교통",w:"south",k:"남쪽",p:"사우스",ex:"The beach is to the south.",exk:"해변은 남쪽에 있어요."},
+  {lv:1,c:"여행·교통",w:"east",k:"동쪽",p:"이스트",ex:"The sun rises in the east.",exk:"해는 동쪽에서 떠요."},
+  {lv:1,c:"여행·교통",w:"west",k:"서쪽",p:"웨스트",ex:"The sun sets in the west.",exk:"해는 서쪽으로 져요."},
+  {lv:1,c:"여행·교통",w:"up",k:"위로",p:"업",ex:"Go up the stairs.",exk:"계단으로 올라가세요."},
+  {lv:1,c:"여행·교통",w:"down",k:"아래로",p:"다운",ex:"Go down this street.",exk:"이 길로 내려가세요."},
+  {lv:2,c:"여행·교통",w:"middle",k:"가운데",p:"미들",ex:"Sit in the middle.",exk:"가운데에 앉으세요."},
+  {lv:2,c:"여행·교통",w:"center",k:"중심",p:"센터",ex:"The hotel is in the city center.",exk:"호텔은 시내 중심에 있어요."},
+  {lv:2,c:"여행·교통",w:"side",k:"옆, 쪽",p:"사이드",ex:"Sit on this side.",exk:"이쪽에 앉으세요."},
+  {lv:2,c:"여행·교통",w:"everywhere",k:"어디에나",p:"에브리웨어",ex:"There are shops everywhere.",exk:"가게가 어디에나 있어요."},
+  {lv:2,c:"여행·교통",w:"anywhere",k:"어디든",p:"에니웨어",ex:"Sit anywhere, please.",exk:"아무 데나 앉으세요."},
+  {lv:2,c:"여행·교통",w:"world",k:"세상, 세계",p:"월드",ex:"I want to see the world.",exk:"세계를 보고 싶어요."},
+  {lv:2,c:"여행·교통",w:"farm",k:"농장",p:"팜",ex:"We visit a farm.",exk:"농장에 가요."},
+  {lv:2,c:"여행·교통",w:"grass",k:"풀, 잔디",p:"그래스",ex:"Do not walk on the grass.",exk:"잔디를 밟지 마세요."},
+  {lv:2,c:"여행·교통",w:"storm",k:"폭풍",p:"스톰",ex:"A storm is coming.",exk:"폭풍이 오고 있어요."},
+  {lv:2,c:"여행·교통",w:"fire",k:"불",p:"파이어",ex:"Call for help. There is a fire!",exk:"도와주세요. 불이 났어요!"},
+  {lv:2,c:"여행·교통",w:"air",k:"공기",p:"에어",ex:"The air is fresh here.",exk:"여기 공기가 맑아요."},
+  {lv:2,c:"여행·교통",w:"earth",k:"지구, 땅",p:"어스",ex:"We live on the earth.",exk:"우리는 지구에 살아요."},
+  {lv:2,c:"여행·교통",w:"stone",k:"돌",p:"스톤",ex:"This stone is old.",exk:"이 돌은 오래됐어요."},
+  {lv:2,c:"여행·교통",w:"sand",k:"모래",p:"샌드",ex:"The sand is hot.",exk:"모래가 뜨거워요."},
+  {lv:2,c:"여행·교통",w:"mall",k:"쇼핑몰",p:"몰",ex:"Let's go to the mall.",exk:"쇼핑몰에 가요."},
+  {lv:2,c:"여행·교통",w:"supermarket",k:"슈퍼마켓",p:"슈퍼마켓",ex:"The supermarket is near.",exk:"슈퍼마켓이 가까워요."},
+  {lv:2,c:"여행·교통",w:"clinic",k:"의원",p:"클리닉",ex:"There is a clinic nearby.",exk:"근처에 의원이 있어요."},
+  {lv:2,c:"여행·교통",w:"bar",k:"술집, 바",p:"바",ex:"Let's go to a bar.",exk:"술집에 가요."},
+  {lv:2,c:"여행·교통",w:"port",k:"항구",p:"포트",ex:"The ship is at the port.",exk:"배가 항구에 있어요."},
+  {lv:2,c:"여행·교통",w:"ship",k:"배, 선박",p:"쉽",ex:"The ship leaves at noon.",exk:"배는 정오에 떠나요."},
+  {lv:2,c:"여행·교통",w:"guide",k:"안내인, 안내하다",p:"가이드",ex:"The guide speaks English.",exk:"가이드가 영어를 해요."},
+  {lv:2,c:"여행·교통",w:"exit",k:"출구",p:"엑싯",ex:"Where is the exit?",exk:"출구가 어디예요?"},
+  {lv:2,c:"여행·교통",w:"entrance",k:"입구",p:"엔트런스",ex:"The entrance is on the left.",exk:"입구는 왼쪽에 있어요."},
+  {lv:2,c:"여행·교통",w:"reception",k:"프런트, 접수처",p:"리셉션",ex:"Please ask at reception.",exk:"프런트에 문의해 주세요."},
+  {lv:2,c:"여행·교통",w:"booking",k:"예약",p:"부킹",ex:"I have a booking.",exk:"예약했어요."},
+  {lv:1,c:"쇼핑·돈",w:"cap",k:"야구 모자",p:"캡",ex:"I lost my cap.",exk:"모자를 잃어버렸어요."},
+  {lv:2,c:"쇼핑·돈",w:"gloves",k:"장갑",p:"글러브즈",ex:"I need gloves.",exk:"장갑이 필요해요."},
+  {lv:2,c:"쇼핑·돈",w:"scarf",k:"스카프, 목도리",p:"스카프",ex:"This scarf is warm.",exk:"이 목도리는 따뜻해요."},
+  {lv:2,c:"쇼핑·돈",w:"belt",k:"벨트",p:"벨트",ex:"This belt is too long.",exk:"이 벨트는 너무 길어요."},
+  {lv:2,c:"쇼핑·돈",w:"ring",k:"반지",p:"링",ex:"This ring is nice.",exk:"이 반지 멋져요."},
+  {lv:2,c:"숙소·생활",w:"toothbrush",k:"칫솔",p:"투쓰브러시",ex:"I forgot my toothbrush.",exk:"칫솔을 잊어버렸어요."},
+  {lv:2,c:"숙소·생활",w:"toothpaste",k:"치약",p:"투쓰페이스트",ex:"I need toothpaste.",exk:"치약이 필요해요."},
+  {lv:2,c:"숙소·생활",w:"hairdryer",k:"헤어드라이어",p:"헤어드라이어",ex:"Do you have a hairdryer?",exk:"헤어드라이어 있어요?"},
+  {lv:2,c:"숙소·생활",w:"plug",k:"플러그",p:"플러그",ex:"I need a plug adapter.",exk:"플러그 어댑터가 필요해요."},
+  {lv:2,c:"숙소·생활",w:"battery",k:"배터리",p:"배터리",ex:"My battery is low.",exk:"배터리가 얼마 없어요."},
+  {lv:2,c:"숙소·생활",w:"glass",k:"유리, 유리잔",p:"글래스",ex:"A glass of water, please.",exk:"물 한 잔 주세요."},
+  {lv:2,c:"숙소·생활",w:"wood",k:"나무 (재료)",p:"우드",ex:"The table is made of wood.",exk:"탁자는 나무로 만들었어요."},
+  {lv:2,c:"숙소·생활",w:"metal",k:"금속",p:"메탈",ex:"This is metal.",exk:"이건 금속이에요."},
+  {lv:2,c:"숙소·생활",w:"pan",k:"프라이팬",p:"팬",ex:"Use the pan.",exk:"프라이팬을 쓰세요."},
+  {lv:2,c:"숙소·생활",w:"pot",k:"냄비",p:"팟",ex:"Put water in the pot.",exk:"냄비에 물을 넣으세요."},
+  {lv:2,c:"숙소·생활",w:"roof",k:"지붕",p:"루프",ex:"There is a pool on the roof.",exk:"옥상에 수영장이 있어요."},
+  {lv:1,c:"음식·식당",w:"food",k:"음식",p:"푸드",ex:"The food is good.",exk:"음식이 맛있어요."},
+  {lv:1,c:"음식·식당",w:"meal",k:"식사",p:"밀",ex:"Enjoy your meal.",exk:"맛있게 드세요."},
+  {lv:2,c:"음식·식당",w:"melon",k:"멜론",p:"멜런",ex:"I like melon.",exk:"저는 멜론을 좋아해요."},
+  {lv:2,c:"음식·식당",w:"candy",k:"사탕",p:"캔디",ex:"Kids like candy.",exk:"아이들은 사탕을 좋아해요."},
+  {lv:1,c:"몸·건강",w:"chest",k:"가슴",p:"체스트",ex:"My chest hurts.",exk:"가슴이 아파요."},
+  {lv:2,c:"몸·건강",w:"toe",k:"발가락",p:"토우",ex:"My toe hurts.",exk:"발가락이 아파요."},
+  {lv:2,c:"몸·건강",w:"bone",k:"뼈",p:"본",ex:"I think it is a broken bone.",exk:"뼈가 부러진 것 같아요."},
+  {lv:2,c:"몸·건강",w:"brain",k:"뇌",p:"브레인",ex:"Use your brain.",exk:"머리를 쓰세요."},
+  {lv:1,c:"숙소·생활",w:"sheep",k:"양",p:"쉽",ex:"The sheep are on the hill.",exk:"양들이 언덕에 있어요."},
+  {lv:1,c:"숙소·생활",w:"duck",k:"오리",p:"덕",ex:"The duck is on the lake.",exk:"오리가 호수에 있어요."},
+  {lv:1,c:"숙소·생활",w:"mouse",k:"쥐",p:"마우스",ex:"There is a mouse.",exk:"쥐가 있어요."},
+  {lv:1,c:"숙소·생활",w:"lion",k:"사자",p:"라이언",ex:"The lion is big.",exk:"사자는 커요."},
+  {lv:1,c:"숙소·생활",w:"tiger",k:"호랑이",p:"타이거",ex:"The tiger is fast.",exk:"호랑이는 빨라요."},
+  {lv:1,c:"숙소·생활",w:"bear",k:"곰",p:"베어",ex:"Look at the bear.",exk:"곰을 보세요."},
+  {lv:1,c:"숙소·생활",w:"monkey",k:"원숭이",p:"멍키",ex:"The monkey is funny.",exk:"원숭이가 웃겨요."},
+  {lv:1,c:"말·표현",w:"word",k:"단어",p:"워드",ex:"I do not know this word.",exk:"이 단어를 몰라요."},
+  {lv:1,c:"말·표현",w:"sentence",k:"문장",p:"센텐스",ex:"Please say the sentence again.",exk:"그 문장을 다시 말해 주세요."},
+  {lv:1,c:"말·표현",w:"language",k:"언어",p:"랭귀지",ex:"I want to learn a new language.",exk:"새 언어를 배우고 싶어요."},
+  {lv:1,c:"말·표현",w:"message",k:"메시지",p:"메시지",ex:"I have a message for you.",exk:"전할 말이 있어요."},
+  {lv:1,c:"말·표현",w:"letter",k:"편지, 글자",p:"레터",ex:"I write a letter.",exk:"편지를 써요."},
+  {lv:1,c:"말·표현",w:"news",k:"뉴스, 소식",p:"뉴스",ex:"I have good news.",exk:"좋은 소식이 있어요."},
+  {lv:1,c:"말·표현",w:"story",k:"이야기",p:"스토리",ex:"Tell me a story.",exk:"이야기해 주세요."},
+  {lv:1,c:"말·표현",w:"song",k:"노래",p:"송",ex:"I love this song.",exk:"저는 이 노래를 좋아해요."},
+  {lv:1,c:"말·표현",w:"photo",k:"사진",p:"포토",ex:"Can I take a photo?",exk:"사진 찍어도 돼요?"},
+  {lv:1,c:"말·표현",w:"picture",k:"그림, 사진",p:"픽처",ex:"Can you take a picture?",exk:"사진 좀 찍어 주실래요?"},
+  {lv:1,c:"말·표현",w:"video",k:"영상",p:"비디오",ex:"I watch a video.",exk:"영상을 봐요."},
+  {lv:1,c:"말·표현",w:"newspaper",k:"신문",p:"뉴스페이퍼",ex:"I read the newspaper.",exk:"신문을 읽어요."},
+  {lv:1,c:"말·표현",w:"magazine",k:"잡지",p:"매거진",ex:"I read a magazine.",exk:"잡지를 읽어요."},
+  {lv:1,c:"말·표현",w:"email",k:"이메일",p:"이메일",ex:"Send me an email.",exk:"이메일 보내 주세요."},
+  {lv:2,c:"말·표현",w:"number",k:"숫자, 번호",p:"넘버",ex:"What is your phone number?",exk:"전화번호가 뭐예요?"},
+  {lv:2,c:"말·표현",w:"age",k:"나이",p:"에이지",ex:"What is your age?",exk:"나이가 어떻게 되세요?"},
+  {lv:2,c:"말·표현",w:"way",k:"길, 방법",p:"웨이",ex:"Which way is it?",exk:"어느 쪽이에요?"},
+  {lv:2,c:"말·표현",w:"place",k:"장소",p:"플레이스",ex:"This is a nice place.",exk:"좋은 곳이에요."},
+  {lv:2,c:"말·표현",w:"thing",k:"것, 물건",p:"씽",ex:"I forgot one thing.",exk:"한 가지를 잊었어요."},
+  {lv:2,c:"말·표현",w:"type",k:"종류",p:"타입",ex:"What type of room?",exk:"어떤 종류의 방이에요?"},
+  {lv:2,c:"말·표현",w:"example",k:"예",p:"이그잼플",ex:"Can you give an example?",exk:"예를 들어 주실래요?"},
+  {lv:2,c:"말·표현",w:"part",k:"부분",p:"파트",ex:"This is the best part.",exk:"여기가 제일 좋은 부분이에요."},
+  {lv:1,c:"시간·숫자",w:"zero",k:"0, 영",p:"지로",ex:"The temperature is zero.",exk:"기온이 영도예요."},
+  {lv:1,c:"시간·숫자",w:"autumn",k:"가을",p:"오텀",ex:"Autumn is beautiful.",exk:"가을은 아름다워요."},
+  {lv:2,c:"사람·관계",w:"worker",k:"일하는 사람",p:"워커",ex:"The workers are friendly.",exk:"직원들이 친절해요."},
+  {lv:2,c:"사람·관계",w:"engineer",k:"기술자, 엔지니어",p:"엔지니어",ex:"He is an engineer.",exk:"그는 엔지니어예요."},
+  {lv:2,c:"사람·관계",w:"player",k:"선수",p:"플레이어",ex:"He is a good player.",exk:"그는 훌륭한 선수예요."},
+  {lv:2,c:"성질·정도",w:"fat",k:"뚱뚱한",p:"팻",ex:"The cat is fat.",exk:"고양이가 뚱뚱해요."},
+  {lv:2,c:"성질·정도",w:"great",k:"훌륭한",p:"그레이트",ex:"That is great.",exk:"훌륭해요."},
+  {lv:2,c:"성질·정도",w:"fine",k:"괜찮은",p:"파인",ex:"I am fine.",exk:"저는 괜찮아요."},
+  {lv:2,c:"성질·정도",w:"well",k:"잘",p:"웰",ex:"I do not feel well.",exk:"몸이 안 좋아요."},
+  {lv:2,c:"성질·정도",w:"better",k:"더 좋은",p:"베터",ex:"This one is better.",exk:"이게 더 좋아요."},
+  {lv:2,c:"성질·정도",w:"best",k:"가장 좋은",p:"베스트",ex:"This is the best.",exk:"이게 최고예요."},
+  {lv:2,c:"성질·정도",w:"last",k:"마지막의",p:"라스트",ex:"This is the last bus.",exk:"이게 마지막 버스예요."},
+  {lv:1,c:"동작·행동",w:"went",k:"갔다 (go의 과거)",p:"웬트",ex:"I went to the beach.",exk:"저는 해변에 갔어요."},
+  {lv:1,c:"동작·행동",w:"came",k:"왔다 (come의 과거)",p:"케임",ex:"She came yesterday.",exk:"그녀는 어제 왔어요."},
+  {lv:1,c:"동작·행동",w:"got",k:"얻었다 (get의 과거)",p:"갓",ex:"I got a ticket.",exk:"표를 구했어요."},
+  {lv:1,c:"동작·행동",w:"made",k:"만들었다 (make의 과거)",p:"메이드",ex:"I made dinner.",exk:"저녁을 만들었어요."},
+  {lv:1,c:"동작·행동",w:"took",k:"가져갔다 (take의 과거)",p:"툭",ex:"I took a taxi.",exk:"택시를 탔어요."},
+  {lv:1,c:"동작·행동",w:"gave",k:"줬다 (give의 과거)",p:"게이브",ex:"He gave me a gift.",exk:"그가 선물을 줬어요."},
+  {lv:1,c:"동작·행동",w:"said",k:"말했다 (say의 과거)",p:"세드",ex:"She said yes.",exk:"그녀는 좋다고 했어요."},
+  {lv:1,c:"동작·행동",w:"told",k:"말해 줬다 (tell의 과거)",p:"톨드",ex:"He told me the price.",exk:"그가 가격을 말해 줬어요."},
+  {lv:1,c:"동작·행동",w:"saw",k:"봤다 (see의 과거)",p:"소",ex:"I saw a dolphin.",exk:"돌고래를 봤어요."},
+  {lv:1,c:"동작·행동",w:"knew",k:"알았다 (know의 과거)",p:"뉴",ex:"I knew it.",exk:"그럴 줄 알았어요."},
+  {lv:1,c:"동작·행동",w:"thought",k:"생각했다 (think의 과거)",p:"쏘트",ex:"I thought so.",exk:"그렇게 생각했어요."},
+  {lv:1,c:"동작·행동",w:"found",k:"찾았다 (find의 과거)",p:"파운드",ex:"I found my key.",exk:"열쇠를 찾았어요."},
+  {lv:2,c:"동작·행동",w:"pick",k:"고르다, 따다",p:"픽",ex:"Pick a color.",exk:"색을 고르세요."},
+  {lv:2,c:"동작·행동",w:"wake",k:"깨다, 깨우다",p:"웨이크",ex:"Please wake me at seven.",exk:"7시에 깨워 주세요."},
+  {lv:2,c:"동작·행동",w:"end",k:"끝나다, 끝",p:"엔드",ex:"The show ends at nine.",exk:"공연은 9시에 끝나요."},
+  {lv:2,c:"동작·행동",w:"let",k:"~하게 하다",p:"렛",ex:"Let me check.",exk:"제가 확인해 볼게요."}
 ];
 /* ── 문장 데이터 ── 새 문장은 이 배열 끝에 한 줄씩 추가됩니다 ── */
 const SENTS = [
@@ -2563,6 +3046,7 @@ function todayWords(){
   const learn = pool.filter(x => boxOf(keyOf(x)) === 1 && stampOf(keyOf(x)) < t0.getTime())   // 오늘 이미 푼 건 내일 다시
                     .sort((a,b) => stampOf(keyOf(a)) - stampOf(keyOf(b))).slice(0, LEARN_CAP);
   const fresh = pool.filter(x => boxOf(keyOf(x)) === 0)
+                    .sort((a, b) => (a.lv || 0) - (b.lv || 0))                              // 쉬운 단어(레벨 낮은 것)부터
                     .slice(0, Math.max(0, goalW() - (+todayLog().n || 0)));                  // 새 단어는 하루 목표만큼
   const seen = new Set(), out = [];
   [...due, ...learn, ...fresh].forEach(x => {
@@ -2624,7 +3108,8 @@ function go(i){
   refreshTab();                                   // 화면이 보인 뒤에 그려야 펼칠 곳으로 스크롤됩니다
 }
 function refreshTab(){
-  if (curTab === 4) renderAll();
+  if (curTab === 3) renderHome();
+  else if (curTab === 4) renderAll();
   else if (curTab === 5) renderStats();
   else if (curTab === 6) renderReview();
   else if (curTab === 7) renderMine();
@@ -2711,6 +3196,10 @@ function renderHome(){
   $("#hForm").textContent = g ? g.f : "";
   $("#hProg").style.width = (day / LASTDAY * 100) + "%";
   $("#hProgN").textContent = day + "/" + LASTDAY;
+  const rs = pausedQuiz(), resBox = $("#hResume");
+  resBox.hidden = !(rs && rs.i > 0);
+  if (!resBox.hidden) resBox.innerHTML = `<div class="tx"><b>풀던 단어 퀴즈 이어서 하기</b><span>${rs.i}/${rs.k.length} 풀었어요 · 남은 ${rs.k.length - rs.i}개</span></div>
+    <button class="btn go" data-resume type="button">이어서</button>`;
   $("#hRings").innerHTML = ringHtml(+t.n || 0, goalW(), "var(--accent)", "새 단어", "w")
                          + ringHtml(+t.s || 0, goalS(), "var(--honey)", "문장", "s");
   const s = dailySent();
@@ -2722,6 +3211,7 @@ function renderHome(){
 }
 $("#p3").addEventListener("click", e => {
   if (e.target.closest("#hGoalEdit")){ openSetup(false); return; }
+  if (e.target.closest("[data-resume]")){ resumeQuiz(); return; }
   const say = e.target.closest("[data-say]");
   if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
   const r = e.target.closest("[data-hgo]"); if (!r) return;
@@ -3021,7 +3511,37 @@ $("#tHide").addEventListener("click", e=>{
 let qDeck=[], qi=0, qMiss=[], qUp=0;
 let qList = null, qFrom = 0;                      // qFrom: 레슨에서 시작했으면 그 Day (끝나면 레슨으로 돌아감)
 const MISS_MAX = 10;                              // 한 번 퀴즈에 섞어 넣는 헷갈린 단어 최대 개수
+
+/* ── 퀴즈 이어서 하기 ── 문제를 넘길 때마다 풀던 자리를 이 기기에 저장해 두고, 닫았다 다시 와도 그 자리부터 이어 합니다.
+   (풀던 문제의 틀린 횟수는 저장하지 않아서, 그 문제는 처음부터 다시) 3일이 지나면 잊습니다. */
+const QS_KEY = "vb.qs", QS_DAYS = 3;
+function saveQuizSession(){
+  if (!qDeck.length || qi >= qDeck.length){ clearQuizSession(); return; }
+  store.set(QS_KEY, { k: qDeck.map(keyOf), i: qi, up: qUp, m: qMiss.map(keyOf), f: qFrom,
+                      l: qList ? qList.map(keyOf) : null, t: Date.now() });
+}
+function clearQuizSession(){ try{ localStorage.removeItem(QS_KEY); }catch(e){} }
+function pausedQuiz(){
+  const s = store.get(QS_KEY, null, x => x && Array.isArray(x.k) && Number.isFinite(x.i));
+  if (!s || s.i >= s.k.length || Date.now() - (+s.t || 0) > QS_DAYS * 86400000) return null;
+  return s;
+}
+function resumeQuiz(){
+  const s = pausedQuiz(); if (!s) return false;
+  const byKey = new Map(WORDS.map(x => [keyOf(x), x]));
+  const deck = s.k.map(k => byKey.get(k));
+  if (deck.some(x => !x)){ clearQuizSession(); return false; }    // 단어 목록이 바뀌어 못 맞추면 새로 시작
+  qDeck = deck; qi = s.i; qUp = +s.up || 0;
+  qMiss = (s.m || []).map(k => byKey.get(k)).filter(Boolean);
+  qFrom = s.f || 0;
+  qList = s.l ? s.l.map(k => byKey.get(k)).filter(Boolean) : null;
+  document.body.classList.add("quizOn");
+  drawQ();
+  return true;
+}
 function startQuiz(list, fromDay){
+  const p = pausedQuiz();                         // 풀던 게 있으면 이어서 할지 물어봄 (확인 = 이어서, 취소 = 새로)
+  if (p && p.i > 0 && confirm(`풀던 단어 퀴즈가 있어요 (${p.i}/${p.k.length}).\n\n확인 = 이어서 하기\n취소 = 새로 시작`) && resumeQuiz()) return;
   qList = Array.isArray(list) && list.length ? list : null;
   qFrom = (typeof fromDay === "number" || typeof fromDay === "string") ? fromDay : 0;   // 레슨 Day · 상황 번호 · "review"
   const pool = Array.isArray(list) && list.length ? list : visibleWords();
@@ -3077,6 +3597,7 @@ function clozeOf(x){
 }
 
 function drawQ(){
+  saveQuizSession();
   $("#qBar").style.width = (qi/qDeck.length*100)+"%";
   $("#qCount").textContent = (qi+1)+" / "+qDeck.length;
   const x = qDeck[qi];
@@ -3149,6 +3670,7 @@ function qNext(ok){
   qi<qDeck.length ? drawQ() : qFinish();
 }
 function qFinish(){
+  clearQuizSession();
   $("#qBar").style.width="100%";
   const got = qDeck.length - qMiss.length;
   $("#qBody").innerHTML = `
@@ -4471,7 +4993,11 @@ function renderReview(){
   const tw = todayWords(), miss = WORDS.filter(x => isMissed(keyOf(x)));
   const fresh = tw.filter(x => boxOf(keyOf(x)) === 0).length, learn = tw.filter(x => boxOf(keyOf(x)) === 1).length;
   const due = tw.length - fresh - learn, prev = curDay - 1, nc = noteCount(), open = nc.open;
-  $("#rvBody").innerHTML = `
+  const rs = pausedQuiz();
+  $("#rvBody").innerHTML = (rs && rs.i > 0 ? `
+    <div class="rvCard resume"><h3>풀던 퀴즈 이어서 하기</h3>
+      <p>${rs.i}/${rs.k.length} 풀었어요 · 남은 ${rs.k.length - rs.i}개. 닫은 자리부터 이어서 풀어요.</p>
+      <div class="row2"><button class="btn go" data-rv="resume">이어서 풀기</button></div></div>` : "") + `
     <div class="rvCard main"><h3>오늘의 단어 복습</h3>
       <div class="n">${tw.length}<small>개</small></div>
       <p>${tw.length ? `새 단어 ${fresh} · 외우는 중 ${learn} · 다시 볼 때가 된 단어 ${due}` : "오늘 볼 단어를 다 봤어요. 내일 또 나와요."}</p>
@@ -4493,7 +5019,8 @@ function renderReview(){
 $("#p6").addEventListener("click", e => {
   const b = e.target.closest("[data-rv]"); if (!b || b.disabled) return;
   const a = b.dataset.rv, prev = curDay - 1;
-  if (a === "today") startQuiz(todayWords(), "review");
+  if (a === "resume") resumeQuiz();
+  else if (a === "today") startQuiz(todayWords(), "review");
   else if (a === "miss") startQuiz(shuffle(WORDS.filter(x => isMissed(keyOf(x)))).slice(0, 20), "review");
   else if (a === "misslist") showWords("miss", "all");
   else if (a === "prevsent"){ newRound(prev, "review"); go(0); }
@@ -4596,7 +5123,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=33"></script>
-<script src="sync.js?v=33"></script>
+<script src="firebase-config.js?v=34"></script>
+<script src="sync.js?v=34"></script>
 
 </body></html>

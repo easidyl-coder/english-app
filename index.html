@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=34"></script>
+<script src="ipa.js?v=35"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -191,6 +191,11 @@
   .hInstall .x{border:0;background:none;font:inherit;font-size:16px;color:var(--ink-3);cursor:pointer;width:32px;height:32px}
   .hInstall ol{flex-basis:100%;margin:4px 0 2px;padding-left:22px;font-size:13.5px;line-height:1.75;color:var(--ink)}
   .hInstall ol b{color:var(--accent)}
+  /* 퀴즈 — 왜 이 단어일까요? */
+  .qWhy{margin:14px auto 0;max-width:440px;background:var(--accent-soft);border-radius:16px;padding:12px 14px;text-align:left}
+  .qWhy p{margin:4px 0 0;font-size:13.5px;line-height:1.6;color:var(--ink)}
+  .qWhy .whyT{margin:0;font-size:13px;font-weight:800;color:var(--accent)}
+  .qWhy b{color:var(--accent)}
   .hResume{display:flex;align-items:center;gap:10px;background:#FFF6DC;border:2px solid var(--honey);
     border-radius:18px;padding:12px 12px 12px 16px;margin-top:14px}
   .hResume .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -3596,68 +3601,131 @@ function clozeOf(x){
   return null;
 }
 
-function drawQ(){
-  saveQuizSession();
-  $("#qBar").style.width = (qi/qDeck.length*100)+"%";
-  $("#qCount").textContent = (qi+1)+" / "+qDeck.length;
-  const x = qDeck[qi];
-  const cloze = clozeOf(x);
-  const line = cloze
-    ? esc(cloze.pre) + "<u>&nbsp;</u>" + esc(cloze.post)
-    : "<u>&nbsp;</u>";
-
-  $("#qBody").innerHTML = `
-    <p class="qPrompt">${isMissed(keyOf(x)) ? "헷갈렸던 단어 · 한 번에 맞히면 다시 안 나와요" : "이 뜻에 맞는 영어를 빈칸에 적어보세요"}</p>
-    <p class="qMean">${esc(x.k)}</p>
-    <p class="qCloze">${line}</p>
-    <p class="qClozeKo">${cloze ? esc(x.exk) : "&nbsp;"}</p>
+/* 문제마다 화면을 통째로 다시 그리면 입력칸이 새로 만들어져서, 아이폰 키보드가 내려갔다 올라오며 화면이 밀리고
+   영어로 바꿔 둔 키보드도 원래대로 돌아간다 → 뼈대는 한 번만 만들고, 문제마다 글자만 바꾼다 */
+let qSt = { hinted: 0, wrong: 0, passed: false, cloze: null };
+function ensureQShell(){
+  if ($("#qBody [data-qshell]")) return;
+  $("#qBody").innerHTML = `<div data-qshell>
+    <p class="qPrompt" id="qPr"></p>
+    <p class="qMean" id="qMe"></p>
+    <p class="qCloze" id="qCl"></p>
+    <p class="qClozeKo" id="qCk"></p>
     <div class="qType" id="qT">
       <input type="text" id="qIn" placeholder="영어로 적어보세요" autocomplete="off"
         autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" lang="en">
-      <button class="btn" id="qHint">힌트</button>
-      <button class="btn go" id="qShow">확인</button>
+      <button class="btn" id="qHint" type="button">힌트</button>
+      <button class="btn go" id="qShow" type="button">확인</button>
     </div>
     <p class="qJudge" id="qJ"></p>
-    <div class="qAns veiled" id="qA">
-      <p class="qWord">${esc(x.w)}</p>
-      <p class="qPron">${ipaOf(x.w)?`[${esc(ipaOf(x.w))}] · `:""}${esc(x.p||"")}</p>
-      <p class="ex"><i>${esc(x.ex)}</i> &nbsp;${esc(x.exk)}</p>
-    </div>
-    <div class="qBtns" id="qB"></div>`;
-
-  let hinted = 0, wrong = 0, passed = false;
-
-  $("#qHint").addEventListener("click", ()=>{
-    if (passed) return;
-    hinted = Math.min(x.w.length - 1, hinted + 1);
-    $("#qJ").innerHTML = `<span class="typed">${esc(x.w.slice(0, hinted))}…</span>`;
+    <div class="qAns veiled" id="qA"><p class="qWord" id="qAw"></p><p class="qPron" id="qAp"></p><p class="ex" id="qAe"></p></div>
+    <div class="qWhy" id="qWhy" hidden></div>
+  </div>`;
+  $("#qHint").addEventListener("click", () => {
+    const x = qDeck[qi]; if (!x || qSt.passed) return;
+    qSt.hinted = Math.min(x.w.length - 1, qSt.hinted + 1);
+    $("#qJ").innerHTML = `<span class="typed">${esc(x.w.slice(0, qSt.hinted))}…</span>`;
   });
-
-  function check(){
-    if (passed) return;
-    const typed = $("#qIn").value.trim();
-    if (!typed) return;
-    const ok = judgeEn(typed, x.w, cloze && cloze.token);
-    if (ok){
-      passed = true;
-      ding();
-      $("#qHint").hidden = true;
-      $("#qShow").textContent = "다음";
-      $("#qA").className = "qAns";
-      $("#qJ").innerHTML = '<span class="good">맞았습니다 · 엔터를 누르면 다음 문제</span>';
-      $("#qIn").focus();                     // 입력칸을 그대로 두어야 키보드가 안 내려갑니다
-    } else {
-      wrong++;
-      shakeEl($("#qT"));
-      $("#qIn").focus();
-      $("#qJ").innerHTML = `<span class="miss">다시 적어보세요</span>`;
-      if (wrong >= 2) $("#qA").className = "qAns faint";
-    }
+  $("#qShow").addEventListener("click", qSubmit);
+  $("#qIn").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); qSubmit(); } });
+}
+function drawQ(){
+  saveQuizSession();
+  ensureQShell();
+  $("#qBar").style.width = (qi/qDeck.length*100)+"%";
+  $("#qCount").textContent = (qi+1)+" / "+qDeck.length;
+  const x = qDeck[qi], cloze = clozeOf(x);
+  qSt = { hinted: 0, wrong: 0, passed: false, cloze };
+  $("#qPr").textContent = isMissed(keyOf(x)) ? "헷갈렸던 단어 · 한 번에 맞히면 다시 안 나와요" : "이 뜻에 맞는 영어를 빈칸에 적어보세요";
+  $("#qMe").textContent = x.k;
+  $("#qCl").innerHTML = cloze ? esc(cloze.pre) + "<u>&nbsp;</u>" + esc(cloze.post) : "<u>&nbsp;</u>";
+  $("#qCk").innerHTML = cloze ? esc(x.exk) : "&nbsp;";
+  $("#qHint").hidden = false;
+  $("#qShow").textContent = "확인";
+  $("#qJ").innerHTML = "";
+  $("#qA").className = "qAns veiled";
+  $("#qAw").textContent = x.w;
+  $("#qAp").textContent = (ipaOf(x.w) ? `[${ipaOf(x.w)}] · ` : "") + (x.p || "");
+  $("#qAe").innerHTML = `<i>${esc(x.ex)}</i> &nbsp;${esc(x.exk)}`;
+  $("#qWhy").hidden = true; $("#qWhy").innerHTML = "";
+  const inp = $("#qIn");
+  inp.value = "";
+  if (document.activeElement !== inp) inp.focus({ preventScroll: true });   // 이미 입력 중이면 그대로 → 키보드가 안 내려감
+}
+function qSubmit(){
+  const x = qDeck[qi]; if (!x) return;
+  if (qSt.passed){ qNext(qSt.wrong === 0); return; }
+  const inp = $("#qIn"), typed = inp.value.trim();
+  if (!typed) return;
+  if (judgeEn(typed, x.w, qSt.cloze && qSt.cloze.token)){
+    qSt.passed = true;
+    ding();
+    $("#qHint").hidden = true;
+    $("#qShow").textContent = "다음";
+    $("#qA").className = "qAns";
+    $("#qJ").innerHTML = '<span class="good">맞았습니다 · 엔터를 누르면 다음 문제</span>';
+    $("#qWhy").innerHTML = whyHtml(x, qSt.cloze); $("#qWhy").hidden = false;
+  } else {
+    qSt.wrong++;
+    shakeEl($("#qT"));
+    $("#qJ").innerHTML = `<span class="miss">다시 적어보세요</span>`;
+    if (qSt.wrong >= 2) $("#qA").className = "qAns faint";
   }
-  const submit = () => passed ? qNext(wrong === 0) : check();
-  $("#qShow").addEventListener("click", submit);
-  $("#qIn").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); submit(); } });
-  $("#qIn").focus();
+  if (document.activeElement !== inp) inp.focus({ preventScroll: true });
+}
+/* 버튼을 눌러도 입력칸에서 포커스가 빠지지 않게 → 아이폰 키보드가 내려가지 않음 */
+$("#qBody").addEventListener("mousedown", e => { if (e.target.closest("#qShow, #qHint")) e.preventDefault(); });
+
+/* ── 왜 이 단어일까요? ── 문법 단어는 쓰임새를, 모양이 바뀌었으면(-s, -ed, -ing, 줄임말, 대문자) 그 이유를 알려 준다 */
+const WHY = {};
+[["my your his its our their", "'~의'(누구의 것인지)를 나타내는 말(소유격)이라 명사 앞에 붙어요.{next} 나의 my · 당신의 your · 그의 his · 그녀의 her · 우리의 our · 그들의 their"],
+ ["me him us them", "동사나 전치사 뒤에서 '~를, ~에게'가 되는 말(목적격)이에요. I → me · he → him · she → her · we → us · they → them"],
+ ["i you he she it we they", "문장에서 '누가'에 해당하는 말(주어)이에요. 주어는 보통 문장 맨 앞에 와요. 나 I · 당신 you · 그 he · 그녀 she · 우리 we · 그들 they"],
+ ["am is are", "be동사(~이다, ~에 있다)예요. I는 am, he·she·it은 is, you·we·they는 are를 써요."],
+ ["was were", "be동사의 과거(~였다, ~에 있었다)예요. I·he·she·it은 was, you·we·they는 were를 써요."],
+ ["do does did", "일반동사로 묻거나 부정할 때 앞에 붙이는 도우미예요. 주어가 he·she·it이면 does, 과거면 did. 뒤의 동사는 원래 모양 그대로 써요."],
+ ["can could will would should must may might", "조동사예요. 뒤에 동사원형이 와요. can 할 수 있다 · will ~할 것이다 · should ~하는 게 좋다 · must 꼭 ~해야 한다 · could/would 좀 더 공손하게"],
+ ["a an", "셀 수 있는 것 '하나'를 말할 때 명사 앞에 붙여요.{next} 모음 소리(아·에·이·오·우) 앞에서는 an을 써요."],
+ ["the", "이미 알거나 하나로 정해진 것 앞에 붙는 '그'예요.{next}"],
+ ["in on at", "때와 장소를 나타내요. at: 시각·한 지점(at 7, at the gate) · on: 요일·날짜·표면 위(on Monday, on the table) · in: 월·연도·공간 안(in May, in the room)"],
+ ["to", "'~로, ~에게'(가는 방향·도착점)예요. 동사 앞에 붙으면 '~하려고, ~하는 것'(to eat)이 돼요."],
+ ["for", "'~를 위해, ~동안'이에요. for you 당신을 위해 · for two days 이틀 동안"],
+ ["from", "'~에서, ~로부터'(출발점·출신)예요. I'm from Korea. 저는 한국에서 왔어요."],
+ ["with", "'~와 함께, ~을 넣어서'예요. with my friend 친구와 · with ice 얼음 넣어서"],
+ ["of", "'~의, ~중에서'예요. a cup of coffee 커피 한 잔 · one of them 그중 하나"],
+ ["by", "'~로(수단), ~옆에, ~까지'예요. by bus 버스로 · by the window 창가에 · by five 5시까지"],
+ ["about", "'~에 대해, 약'이에요. talk about it 그것에 대해 말하다 · about ten minutes 약 10분"],
+ ["this that these those", "가까운 건 this(여러 개면 these), 먼 건 that(여러 개면 those)이에요."],
+ ["here there", "가까운 곳은 here(여기), 먼 곳은 there(거기·저기)예요. There is ~는 '~가 있어요'."],
+ ["and but or so", "문장이나 단어를 잇는 말이에요. and 그리고 · but 하지만 · or 또는 · so 그래서"],
+ ["because", "이유를 붙이는 말이에요. because 뒤에는 주어+동사가 와요. (because I was tired)"],
+ ["if", "'만약 ~라면'이에요. if 뒤에는 미래라도 현재형을 써요. (If it rains, …)"],
+ ["when", "질문 맨 앞이면 '언제', 문장 가운데면 '~할 때'예요."],
+ ["than", "비교할 때 '~보다'예요. bigger than this 이것보다 큰"],
+ ["some any", "some은 '조금, 몇몇'(평서문·권할 때), any는 질문·부정문에서 '조금이라도, 어떤'이에요."],
+ ["many much", "'많은'이에요. 셀 수 있으면(사람·가방) many, 셀 수 없으면(물·돈·시간) much를 써요."],
+ ["very too", "very는 '매우', too는 '너무(지나치게)'예요. 문장 끝의 too는 '~도'라는 뜻이에요."],
+ ["not no", "부정을 나타내요. not은 동사·형용사를 부정하고(not busy), no는 명사 앞에서 '없는'이에요(no sugar)."],
+ ["who what where why how which", "질문하는 말(의문사)이라 질문 맨 앞에 와요. who 누구 · what 무엇 · where 어디 · why 왜 · how 어떻게 · which 어느 것"]
+].forEach(([ws, text]) => ws.split(" ").forEach(w => { WHY[w] = text; }));
+function whyHtml(x, cloze){
+  const w = x.w, lw = w.toLowerCase(), tok = cloze ? cloze.token : w, lt = tok.toLowerCase();
+  const next = cloze ? (cloze.post.trim().split(/\s+/)[0] || "").replace(/[^A-Za-z']/g, "") : "";
+  const lines = [];
+  let rule = WHY[lw];
+  if (lw === "her") rule = /의/.test(x.k) ? WHY.my : WHY.me;       // her는 '그녀의'와 '그녀를' 둘 다라서 뜻으로 가른다
+  if (rule) lines.push(rule.replace("{next}", next ? ` 여기서는 뒤의 <b>${esc(next)}</b> 앞에 왔어요.` : ""));
+  if (lt === lw){
+    if (tok !== w && /^[A-Z]/.test(tok) && !/^[A-Z]/.test(w)) lines.push(`문장 맨 앞이라 첫 글자를 대문자로 써서 <b>${esc(tok)}</b>예요.`);
+  } else if (lt.startsWith(lw)){
+    const tail = lt.slice(lw.length);
+    if (tail[0] === "'") lines.push(`여기서는 줄임말 <b>${esc(tok)}</b>로 쓰였어요${CONTR[lt] ? ` (= ${esc(CONTR[lt])})` : ""}. ${esc(w)}만 적어도 맞아요.`);
+    else if (tail === "s" || tail === "es") lines.push(`여기서는 끝에 -${tail}가 붙은 <b>${esc(tok)}</b>로 쓰였어요. 여러 개이거나, 주어가 he·she·it이면 붙어요.`);
+    else if (tail === "ed" || tail === "d") lines.push(`'~했다'(과거)라서 -${tail}가 붙은 <b>${esc(tok)}</b>로 쓰였어요.`);
+    else if (tail === "ing") lines.push(`'~하는 중'이라 -ing가 붙은 <b>${esc(tok)}</b>로 쓰였어요.`);
+  }
+  if (!rule) lines.unshift(`빈칸 자리의 뜻은 '<b>${esc(String(x.k).split(/[,;]/)[0].trim())}</b>' → 영어로 <b>${esc(w)}</b>`);
+  return `<p class="whyT">왜 <b>${esc(tok)}</b>일까요?</p>` + lines.map(l => `<p>${l}</p>`).join("");
 }
 
 function qNext(ok){
@@ -4634,8 +4702,19 @@ function renderExam(){
       <span class="gMeta">Day ${examDay} 시험 · ${examIdx+1} / ${examDeck.length}</span></div>
     <div class="gProg" style="margin-bottom:16px"><i style="width:${(examIdx/examDeck.length*100)}%"></i></div>`;
   if (item.type === "word"){
+    const inp = $("#exIn");
+    if (inp){                                     // 앞 문제도 단어였으면 입력칸은 그대로 두고 글자만 바꾼다 (키보드가 안 내려감)
+      $("#exBody .lsTop .gMeta").textContent = `Day ${examDay} 시험 · ${examIdx+1} / ${examDeck.length}`;
+      $("#exBody .gProg i").style.width = (examIdx/examDeck.length*100) + "%";
+      $("#exBody .prompt .ko").textContent = item.x.k;
+      inp.value = ""; $("#exJ").innerHTML = "";
+      const rv = $("#exReveal"); rv.style.display = "none"; rv.textContent = "";
+      const btn = $("#exCheck"); btn.textContent = "확인"; delete btn.dataset.next;
+      if (document.activeElement !== inp) inp.focus({ preventScroll: true });
+      return;
+    }
     $("#exBody").innerHTML = top + examWordHtml(item.x);
-    const inp = $("#exIn"); if (inp) inp.focus();
+    const inp2 = $("#exIn"); if (inp2) inp2.focus({ preventScroll: true });
   } else {
     const words = item.x.en.split(" ");
     examBank = shuffle(words.map((w,i)=>({w,i})));
@@ -4760,6 +4839,21 @@ $("#exBody").addEventListener("click", e => {
 $("#exBody").addEventListener("keydown", e => {
   if (e.key === "Enter" && e.target.id === "exIn"){ e.preventDefault(); examSubmit(); }
 });
+$("#exBody").addEventListener("mousedown", e => {                // 버튼을 눌러도 입력칸 포커스 유지 → 키보드가 안 내려감
+  if ($("#exIn") && e.target.closest("#exCheck, #exHint, #exSay")) e.preventDefault(); });
+
+/* ── 아이폰 키보드가 화면을 밀어 올리지 않게 ── 퀴즈·시험은 화면에 고정된 창이라 밀 필요가 없다.
+   창이 열릴 때의 스크롤 위치를 기억해 두고, 키보드 때문에 움직이면 그 자리로 되돌린다 */
+let ovOpen = false, ovY = 0;
+new MutationObserver(() => {
+  const open = document.body.classList.contains("quizOn") || document.body.classList.contains("examOn");
+  if (open && !ovOpen) ovY = window.scrollY;
+  ovOpen = open;
+}).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+function unshift(){ if (ovOpen && Math.abs(window.scrollY - ovY) > 1) window.scrollTo(0, ovY); }
+window.addEventListener("scroll", unshift, { passive: true });
+if (window.visualViewport) window.visualViewport.addEventListener("resize", () => setTimeout(unshift, 60));
+document.addEventListener("focusin", () => { setTimeout(unshift, 60); setTimeout(unshift, 300); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeExam(); });
 
 /* ══ 막혔던 말 메모 ══ 영어로 뭐라 하는지 몰랐던 순간을 바로 적어 둡니다 */
@@ -5123,7 +5217,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=34"></script>
-<script src="sync.js?v=34"></script>
+<script src="firebase-config.js?v=35"></script>
+<script src="sync.js?v=35"></script>
 
 </body></html>

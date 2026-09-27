@@ -1,7 +1,7 @@
 /* ── 로그인과 진도 동기화 ──
    firebase-config.js 가 채워져 있으면 구글 로그인을 켜고, 사람별로 서버에 저장합니다:
    단어장 단계(vb.box)·레벨(vb.level)·최고 연속(vb.best)·레슨 진도(vb.day)·막혔던 말 메모(vb.notes)·
-   하루 목표(vb.goal)·날짜별 공부량(vb.log).
+   하루 목표(vb.goal)·날짜별 공부량(vb.log)·단계 코스 진도(vb.stage).
    앱을 업데이트해도 로그인과 이 기록은 그대로입니다. 앱을 지웠다 다시 깔거나 휴대폰을 바꿔도
    같은 구글 계정으로 로그인하면 서버 기록을 합쳐서 되살립니다.
    설정이 비어 있으면 아무것도 하지 않고, 지금처럼 기기 안에만 저장합니다. */
@@ -41,7 +41,13 @@
              notes: Array.isArray(notes) ? notes : [], notesAt: num(get("vb.at.notes", 0)),
              goal: goal && Number.isFinite(goal.w) && Number.isFinite(goal.s) ? pickGoal(goal) : null,
              goalAt: num(get("vb.at.goal", 0)),
-             log: obj(get("vb.log", {})) };
+             log: obj(get("vb.log", {})), stage: obj(get("vb.stage", {})) };
+  }
+  /* 단계 코스 진도: 단계별 끝낸 과 수·열린 단계 수 모두 큰 값 (진도가 줄지 않게) */
+  function mergeStage(a, b){
+    const s = {};
+    ["b", "i", "a", "open"].forEach(f => { const v = Math.max(num(obj(a)[f]), num(obj(b)[f])); if (v) s[f] = v; });
+    return s;
   }
 
   /* 두 쪽(이 기기 a · 서버 b) 기록을 합칩니다. 어느 쪽 기록도 함부로 지우지 않는 쪽으로 합칩니다.
@@ -71,7 +77,7 @@
              day: Math.max(num(a.day), num(b.day), 1),
              notes: useNotes ? bNotes : a.notes, notesAt: Math.max(num(a.notesAt), num(b.notesAt)),
              goal: useGoal ? pickGoal(bGoal) : a.goal, goalAt: Math.max(num(a.goalAt), num(b.goalAt)),
-             log };
+             log, stage: mergeStage(a.stage, b.stage) };
   }
 
   async function pull(){
@@ -82,12 +88,12 @@
       const mine = local();
       const merged = merge(mine, snap.exists ? snap.data() : {});
       const same = k => JSON.stringify(merged[k]) === JSON.stringify(mine[k]);
-      const changed = !["box", "level", "best", "day", "notes", "goal", "log"].every(same);
+      const changed = !["box", "level", "best", "day", "notes", "goal", "log", "stage"].every(same);
       put("vb.box", merged.box); put("vb.level", merged.level); put("vb.at.level", merged.levelAt);
       put("vb.best", merged.best); put("vb.day", merged.day);
       put("vb.notes", merged.notes); put("vb.at.notes", merged.notesAt);
       if (merged.goal){ put("vb.goal", merged.goal); put("vb.at.goal", merged.goalAt); }
-      put("vb.log", merged.log);
+      put("vb.log", merged.log); put("vb.stage", merged.stage);
       await ref.set(Object.assign({ name: user.displayName || "", updatedAt: Date.now() }, merged));
       if (changed) location.reload();          // 합친 기록으로 화면을 다시 그립니다
     } catch(e){ console.warn("동기화 실패", e); }
@@ -103,7 +109,7 @@
         .catch(e => console.warn("저장 실패", e));
     }, 1500);
   }
-  const SYNCED = ["vb.box", "vb.level", "vb.best", "vb.day", "vb.notes", "vb.goal", "vb.log"];
+  const SYNCED = ["vb.box", "vb.level", "vb.best", "vb.day", "vb.notes", "vb.goal", "vb.log", "vb.stage"];
   window.onStoreSet = k => {
     if (k === "vb.level") put("vb.at.level", Date.now());    // 언제 바꿨는지 남겨야 두 기기 중 최신을 고릅니다
     if (k === "vb.notes") put("vb.at.notes", Date.now());

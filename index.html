@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=39"></script>
+<script src="ipa.js?v=40"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -794,6 +794,44 @@
     border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer}
   .allChips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
   .allHint{font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
+  /* 단계 코스 */
+  #stageBox{margin-top:10px}
+  .stgTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .stgTabs button{font:inherit;font-size:15px;font-weight:800;min-height:52px;border-radius:16px;border:1px solid var(--line);
+    background:#fff;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+  .stgTabs button small{font-size:11.5px;font-weight:700;color:var(--ink-3)}
+  .stgTabs button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .stgTabs button[aria-pressed="true"] small{color:var(--tint)}
+  .stgTabs button.lock{color:var(--ink-3);background:var(--line-2)}
+  .stgCard{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px}
+  .stgCard .gProg{height:8px;margin:6px 0 12px}
+  .stgTop{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .stgTop b{font-size:17px}
+  .stgTop small{font-size:12.5px;color:var(--ink-2);font-weight:700}
+  .stgGrid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-bottom:14px}
+  .stgGrid button{font:inherit;font-size:12px;font-weight:800;aspect-ratio:1;min-width:0;padding:0;border-radius:9px;
+    border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer}
+  .stgGrid button.done{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+  .stgGrid button.cur{border:2px solid var(--accent);color:var(--accent)}
+  .stgGrid button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .stgGrid button:disabled{opacity:.35;cursor:default}
+  .stgUnit h4{margin:0 0 4px;font-size:16px}
+  .stgUnit .ds{font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
+  .stgWords{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .stgWords span{font-size:13px;font-weight:700;background:var(--line-2);border-radius:8px;padding:4px 8px}
+  .stgWords span.ok{background:var(--accent-soft);color:var(--accent)}
+  .stgUnit .row2{display:flex;gap:8px;margin-bottom:10px}
+  .stgUnit .row2 .btn{flex:1;min-height:48px}
+  .stgList summary{font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;padding:6px 0}
+  .stgList .wl{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--line-2)}
+  .stgList .wl span{color:var(--ink-2);text-align:right}
+  .stgEnd{width:100%;min-height:50px;margin-top:4px}
+  .stgNote{font-size:12.5px;color:var(--ink-2);margin:6px 0 0;text-align:center}
+  .stgExam{margin-top:12px;padding:14px;border-radius:14px;background:var(--accent-soft)}
+  .stgExam b{display:block;font-size:15px;margin-bottom:4px}
+  .stgExam p{font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
+  .stgExam .btn{width:100%;min-height:48px}
+  body.mustTest #qX{visibility:hidden}
   .allSub{font-family:"Jua",sans-serif;font-weight:400;font-size:19px;margin:26px 0 0}
   .allGo{display:flex;margin:0 0 12px} .allGo .btn{flex:1;min-height:50px}
   .allCard{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:10px}
@@ -1014,6 +1052,8 @@
         <span class="nm">듣기·말하기</span><span class="ds">듣고 소리 내어 말하기</span>
       </button>
     </div>
+    <h3 class="allSub">단계 코스</h3>
+    <div id="stageBox"></div>
     <h3 class="allSub">골라서 보기</h3>
     <div class="allChips" id="allChips">
       <button type="button" data-ac="word" aria-pressed="true">단어</button>
@@ -7058,11 +7098,16 @@ function shuffle(a){ return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).m
 let deckDay = 0;                                  // 0 = 전체 문장, n = 그 날 레슨 문장
 let gFrom = 0;                                    // 끝나면 돌아갈 곳 (returnTo). 안 넘기면 deckDay
 let deckExtra = 0;                                // 레슨 문장에 섞은 '내 레벨 문장' 수
-function newRound(day, from){
+let deckList = null, deckLabel = "";              // 문장 목록을 직접 받았을 때 (단계 코스의 한 과)
+function newRound(day, from, label){
+  deckList = Array.isArray(day) && day.length ? day : null;
+  deckLabel = deckList ? String(label || "") : "";
   deckDay = (typeof day === "number" && day > 0) ? day : 0;
   gFrom = (typeof from === "number" || typeof from === "string") ? from : deckDay;
   deckExtra = 0;
-  if (deckDay){
+  if (deckList){
+    deck = shuffle([...deckList]);
+  } else if (deckDay){
     const own  = shuffle([...sentsOfDay(deckDay)]);
     const prev = deckDay > 1 && deckDay <= LASTDAY ? shuffle([...sentsOfDay(deckDay - 1)]).slice(0, 2) : [];   // 상황별(101~)은 어제 복습 없음
     const base = own.concat(prev).slice(0, 10);    // 오늘 문장 + 어제 문장 2개 복습
@@ -7082,12 +7127,13 @@ function newRound(day, from){
   draw();
 }
 function drawMode(){
-  $("#gModeTx").textContent = deckDay > LASTDAY ? `실전 회화 · ${DAYS[deckDay] || ""}`
+  $("#gModeTx").textContent = deckList ? `단계 코스 · ${deckLabel}`
+    : deckDay > LASTDAY ? `실전 회화 · ${DAYS[deckDay] || ""}`
     : deckDay ? `레슨 문장${GRAM[deckDay] ? " · " + GRAM[deckDay].t : ""}${deckExtra ? ` + 내 레벨 ${deckExtra}개` : ""}`
     : myLevel ? `내 레벨(${lvShow(myLevel)}) 문장에서 랜덤` : "전체 문장에서 랜덤";
-  $("#gModeBtn").textContent = deckDay ? "전체 문장으로" : "레슨 문장으로";
+  $("#gModeBtn").textContent = deckDay || deckList ? "전체 문장으로" : "레슨 문장으로";
 }
-$("#gModeBtn").addEventListener("click", () => newRound(deckDay ? 0 : dayNo()));
+$("#gModeBtn").addEventListener("click", () => newRound(deckDay || deckList ? 0 : dayNo()));
 function draw(){
   locked=false; picked=[];
   const s = deck[idx];
@@ -7237,7 +7283,7 @@ function finishRound(){
       <div class="qBtns"><button class="btn${gFrom ? "" : " go"}" id="gAgain">한 번 더</button>
         ${gFrom ? `<button class="btn go" id="gBack">${returnLabel(gFrom)}</button>` : ""}</div>
     </div>`;
-  $("#gAgain").addEventListener("click", () => newRound(deckDay, gFrom));
+  $("#gAgain").addEventListener("click", () => newRound(deckList || deckDay, gFrom, deckLabel));
   if (gFrom) $("#gBack").addEventListener("click", () => returnTo(gFrom));
 }
 
@@ -7718,7 +7764,12 @@ let tCountdown = null;
    로그인 기능이 꺼져 있으면(firebase-config.js 비움) 막지 않습니다. 로그인 상태는 sync.js가 알려 줍니다. */
 const loginOn = () => !!window.FIREBASE_CONFIG;
 const loggedIn = () => !!window.appUser;
-let lvGateOpen = false;
+let lvGateOpen = false, lvForced = false;
+function requireTest(){                           // 레벨이 없으면 레벨 테스트부터 (하루 목표를 정한 다음)
+  if (myLevel || document.body.classList.contains("setupOn")) return;
+  lvForced = true; document.body.classList.add("mustTest");
+  startLevelTest();
+}
 function showLvGate(){
   lvGateOpen = true;
   clearTimer(); clearInterval(tCountdown); tRun++;
@@ -7728,10 +7779,12 @@ function showLvGate(){
   $("#qBody").innerHTML = `
     <div class="lvIntro">
       <p class="kick">레벨 테스트</p>
-      <h2>로그인하고 레벨 테스트를 볼 수 있어요</h2>
+      <h2>${lvForced ? "먼저 로그인하고 레벨 테스트를 해 주세요" : "로그인하고 레벨 테스트를 볼 수 있어요"}</h2>
       <ul>
+        ${lvForced ? "<li><b>처음 한 번만</b> 하면 돼요. 레벨에 맞춰 단어·어휘·문장 조립·단계 코스가 정해져요.</li>" : ""}
         <li>내 레벨이 <b>구글 계정에 저장</b>돼서, 어느 휴대폰에서 열어도 그대로 나와요.</li>
         <li>레벨이 정해지면 오늘의 단어·문장 조립·듣기가 <b>내 레벨에 맞는 난이도</b>로 나와요.</li>
+        ${inAppBrowser() ? "<li><b>카카오톡·네이버 같은 앱 안에서는 구글 로그인이 안 돼요.</b> 오른쪽 위(아이폰은 아래) 메뉴에서 <b>다른 브라우저로 열기</b>(Safari·크롬)를 눌러 주세요.</li>" : ""}
       </ul>
       <button class="btn go" id="lvLogin" type="button">구글로 로그인</button>
       <p class="lvWait" id="lvWait">로그인이 끝나면 바로 레벨 테스트로 넘어가요.</p>
@@ -7927,6 +7980,8 @@ function finishLevelTest(){
   const lv = tail.length ? Math.round(tail.reduce((a, b) => a + b, 0) / tail.length * 10) / 10 : 1;
   const L = Math.round(lv);
   myLevel = lv; store.set("vb.level", lv);
+  lvForced = false; document.body.classList.remove("mustTest");   // 처음 필수 테스트 끝 → 닫기 버튼 다시 보임
+  placeStage(lv);                                  // 단계 코스도 레벨에 맞는 단계까지 열어 줌
   const oldDay = curDay, want = placeDay(lv), moved = want > curDay;      // 레슨은 앞으로만 옮김 (진도가 줄지 않게)
   if (moved){ curDay = want; store.set("vb.day", curDay); }
   const n = WORDS.filter(inMyLevel).length, ns = SENTS.filter(inMyLevel).length;
@@ -7940,7 +7995,7 @@ function finishLevelTest(){
       <p class="big">${lvShow(lv)}</p>
       <p class="nm">레벨 ${lvShow(lv)} · ${LVNAME[L]}</p>
       <p class="ds">${saved ? "구글 계정에 저장했어요. " : ""}${tLog.length}문제 중 ${hit}개 맞혔어요. 이제 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)}에 맞춰
-        단어 ${n}개와 문장 ${ns}개가 나옵니다.</p>
+        단어 ${n}개와 문장 ${ns}개가 나옵니다. 단계 코스는 <b>${STAGES[stOpen() - 1].nm}</b>까지 열렸어요.</p>
     </div>
     <div class="lvPlace" id="lvPlace">${placeHtml(moved, oldDay)}</div>
     ${lvPathSvg()}
@@ -8116,8 +8171,10 @@ $("#bkLoad").addEventListener("click", ()=>{
     $("#bkMsg").textContent = "복원했습니다.";
   }catch(e){ $("#bkMsg").textContent = "복원하지 못했습니다. 백업한 글자 전체를 붙여넣었는지 확인해 주세요."; }
 });
-$("#qX").addEventListener("click", endQuiz);
-document.addEventListener("keydown", e=>{ if(e.key==="Escape") endQuiz(); });
+/* 처음 켤 때는 레벨 테스트를 해야 앱을 쓸 수 있음 — 그동안은 닫기 버튼을 숨기고 Esc도 막음 */
+function tryEndQuiz(){ if (lvForced && !myLevel) return; endQuiz(); }
+$("#qX").addEventListener("click", tryEndQuiz);
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") tryEndQuiz(); });
 
 /* ══ 듣기·말하기 ══ '말하기'를 누르고 영어로 말하면 음성 인식으로 단어마다 맞았는지 보여줍니다.
    음성 인식이 없거나 막힌 기기에서는 예전처럼 '말했어요'(스스로 확인) 버튼을 씁니다. */
@@ -8412,6 +8469,7 @@ function closeLesson(){ document.body.classList.remove("lessonOn"); }
 function returnLabel(d){
   if (d === "home") return "홈으로";
   if (d === "vocab") return "어휘로";
+  if (d === "stage") return "단계 코스로";
   if (d === "review") return "복습으로";
   if (d > LASTDAY) return "실전 회화로";
   return d === dayNo() ? "오늘의 레슨으로" : `Day ${d} 레슨으로`;
@@ -8419,6 +8477,7 @@ function returnLabel(d){
 function returnTo(d){
   if (d === "home"){ go(3); return; }
   if (d === "vocab"){ allCat = "vocab"; go(4); return; }
+  if (d === "stage"){ go(4); $("#stageBox").scrollIntoView({ block: "start" }); return; }
   if (d === "review"){ go(6); return; }
   if (d > LASTDAY){ allCat = "talk"; allOpen = d; go(4); return; }
   go(3);                                          // 레슨 아래 탭은 홈으로 두고, '오늘의 연습' 자리로 스크롤
@@ -8537,9 +8596,12 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeLesson(
 
 /* ══ 레슨 시험 ══ 그날 단어(최대 8개) → 그날 문장(최대 8개). 맞혀야만 다음 문제로 넘어갑니다 */
 let examDay = 0, examDeck = [], examIdx = 0, examWrong = 0, examHinted = 0, examLocked = false;
+let examMode = "day", examStage = "", examScore = 0;   // "day" 레슨 시험 · "stage" 승급 시험 (examScore = 첫 시도에 맞힌 수)
+const examTitle = () => examMode === "stage" ? `${(STAGES.find(s => s.id === examStage) || {}).nm} 승급 시험` : `Day ${examDay} 시험`;
 let examPicked = [], examBank = [], examMissed = [];
 
 function openExam(d){
+  examMode = "day"; examScore = 0;
   examDay = d || dayNo();
   const words = wordsOfDay(examDay).slice(0, 8).map(x => ({ type:"word", x }));
   const sents = sentsOfDay(examDay).slice(0, 8).map(x => ({ type:"sent", x }));
@@ -8597,12 +8659,12 @@ function renderExam(){
   if (examIdx >= examDeck.length){ renderExamDone(); return; }
   const item = examDeck[examIdx];
   const top = `<div class="lsTop"><button class="btn" id="exX">닫기</button>
-      <span class="gMeta">Day ${examDay} 시험 · ${examIdx+1} / ${examDeck.length}</span></div>
+      <span class="gMeta">${examTitle()} · ${examIdx+1} / ${examDeck.length}</span></div>
     <div class="gProg" style="margin-bottom:16px"><i style="width:${(examIdx/examDeck.length*100)}%"></i></div>`;
   if (item.type === "word"){
     const inp = $("#exIn");
     if (inp){                                     // 앞 문제도 단어였으면 입력칸은 그대로 두고 글자만 바꾼다 (키보드가 안 내려감)
-      $("#exBody .lsTop .gMeta").textContent = `Day ${examDay} 시험 · ${examIdx+1} / ${examDeck.length}`;
+      $("#exBody .lsTop .gMeta").textContent = `${examTitle()} · ${examIdx+1} / ${examDeck.length}`;
       $("#exBody .gProg i").style.width = (examIdx/examDeck.length*100) + "%";
       $("#exBody .prompt .ko").textContent = item.x.k;
       inp.value = ""; $("#exJ").innerHTML = "";
@@ -8615,13 +8677,15 @@ function renderExam(){
     const inp2 = $("#exIn"); if (inp2) inp2.focus({ preventScroll: true });
   } else {
     const words = item.x.en.split(" ");
-    examBank = shuffle(words.map((w,i)=>({w,i})));
+    examBank = shuffle(words.map((w,i)=>({w,i}))
+      .concat(examMode === "stage" ? decoysFor(words, trapCount(words.length)).map(w => ({ w, i: -1 })) : []));   // 승급 시험은 함정 조각도
     if (examBank.length>1 && examBank.every((b,k)=>b.i===k)) examBank = shuffle(examBank);
     $("#exBody").innerHTML = top + examSentHtml(item.x);
     renderExamSlot(); renderExamBank();
   }
 }
 function renderExamDone(){
+  if (examMode === "stage"){ renderStageExamDone(); return; }
   const missedHtml = examMissed.length
     ? `<div class="missed">${examMissed.map(m => m.type === "word"
         ? `<div class="row"><span class="en">${esc(m.x.w)}</span><span class="ko">${esc(m.x.k)}</span></div>`
@@ -8650,6 +8714,7 @@ function examCheckWord(x){
   if (ok){
     examLocked = true;
     ding(); logAct("w");
+    if (examWrong === 0) examScore++;
     const k = keyOf(x);
     if (examWrong === 0 && isMissed(k)) setBox(k, boxOf(k), false, repOf(k));   // 한 번에 맞히면 헷갈린 단어에서 빠짐
     $("#exJ").innerHTML = '<span class="good">정답입니다! · 엔터를 누르면 다음 문제</span>';
@@ -8678,6 +8743,7 @@ function examCheckSent(x){
   if (made === x.en){
     examLocked = true;
     ding(); logAct("s");
+    if (examWrong === 0) examScore++;
     $("#exSlot").className = "slot right";
     speak(x.en, 1);
     const btn = $("#exCheck");
@@ -8709,6 +8775,11 @@ $("#exBody").addEventListener("click", e => {
     examHinted = Math.min(item.x.w.length - 1, examHinted + 1);
     $("#exJ").innerHTML = `<span class="typed">${esc(item.x.w.slice(0, examHinted))}…</span>`;
     return;
+  }
+  if (e.target.closest("#exStRetry")){ openStageExam(examStage); return; }
+  if (e.target.closest("#exStNext, #exStBack")){
+    if (e.target.closest("#exStNext")){ stView = STAGES[STAGES.findIndex(s => s.id === examStage) + 1].id; stUnit = 0; }
+    closeExam(); returnTo("stage"); return;
   }
   if (e.target.closest("#exNext")){
     finishDay();
@@ -8933,7 +9004,133 @@ function allMineHtml(){
     + (canInstall() ? row("install", "var(--accent-soft)", '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path>', "앱으로 설치",
           "휴대폰에 앱처럼 설치하기") : "");
 }
+/* ══ 단계 코스 ══ 레슨(Day)과 따로 가는 초급·중급·고급 코스. 단계마다 20과, 한 과 = 단어 20개 + 문장 8개.
+   한 과는 단어 20개를 퀴즈로 한 번씩 다 풀어야 '끝내기'가 열리고, 20과를 다 끝내면
+   승급 시험(20문제 중 16개 이상을 한 번에 맞히기)을 통과해야 다음 단계가 열립니다.
+   레벨 테스트 결과가 높으면 그 단계까지 바로 열어 줌(placeStage).
+   진도 vb.stage = { b, i, a: 단계별 끝낸 과 수, open: 열린 단계 수 1~3 } — 로그인하면 계정에도 저장 */
+const STAGES = [{ id: "b", nm: "초급", lo: 1, hi: 3 }, { id: "i", nm: "중급", lo: 4, hi: 6 }, { id: "a", nm: "고급", lo: 7, hi: 10 }];
+const ST_UNITS = 20, ST_W = 20, ST_S = 8, ST_EXAM_W = 12, ST_EXAM_S = 8, ST_PASS = 16;
+let stage = store.get("vb.stage", {}, x => x && typeof x === "object" && !Array.isArray(x));
+const stDone = id => Math.max(0, Math.min(ST_UNITS, Math.floor(+stage[id] || 0)));
+const stOpen = () => Math.max(1, Math.min(STAGES.length, Math.floor(+stage.open || 1)));
+const stageForLv = lv => lv < 3.5 ? 1 : lv < 6.5 ? 2 : 3;      // 레벨 → 열어 줄 단계 수
+const saveStage = () => store.set("vb.stage", stage);
+function placeStage(lv){                            // 앞으로만 엶 (진도가 줄지 않게)
+  if (lv && stageForLv(lv) > stOpen()){ stage = Object.assign({}, stage, { open: stageForLv(lv) }); saveStage(); }
+  stView = null;
+}
+let stView = null, stUnit = -1;                   // 보고 있는 단계 id · 펼친 과(0부터)
+const ST_CACHE = {};
+function stageData(id){
+  if (ST_CACHE[id]) return ST_CACHE[id];
+  const S = STAGES.find(s => s.id === id), span = S.hi - S.lo + 1, per = Math.ceil(ST_UNITS * ST_W / span);
+  const seen = new Set(), words = [], rest = [];
+  for (let lv = S.lo; lv <= S.hi; lv++){          // 레벨마다 고르게 뽑아 쉬운 레벨이 앞 과에 오게
+    let n = 0;
+    WORDS.forEach(x => {
+      if (x.lv !== lv) return;
+      const k = x.w.toLowerCase(); if (seen.has(k)) return; seen.add(k);
+      (n++ < per ? words : rest).push(x);
+    });
+  }
+  const all = words.slice(0, ST_UNITS * ST_W).concat(rest).slice(0, ST_UNITS * ST_W);
+  const ss = SENTS.filter(x => x.lv >= S.lo && x.lv <= S.hi).sort((a, b) => a.lv - b.lv);
+  const units = [];
+  for (let u = 0; u < ST_UNITS; u++){
+    const start = Math.floor(u * ss.length / ST_UNITS);
+    units.push({ w: all.slice(u * ST_W, u * ST_W + ST_W),
+                 s: Array.from({ length: Math.min(ST_S, ss.length) }, (_, j) => ss[(start + j) % ss.length]) });
+  }
+  return (ST_CACHE[id] = { S, all, ss, units });
+}
+const LOCK = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>';
+function renderStage(){
+  const box = $("#stageBox"); if (!box) return;
+  const open = stOpen();
+  if (!stView) stView = STAGES[open - 1].id;
+  const si = STAGES.findIndex(s => s.id === stView), S = STAGES[si], locked = si + 1 > open;
+  const tabs = `<div class="stgTabs">${STAGES.map((s, i) => `<button type="button" data-stg="${s.id}" aria-pressed="${s.id === stView}"${i + 1 > open ? ' class="lock"' : ""}>
+      <span>${i + 1 > open ? LOCK + " " : ""}${s.nm}</span><small>${i + 1 > open ? "잠김" : `${stDone(s.id)}/${ST_UNITS}과`}</small></button>`).join("")}</div>`;
+  if (locked){
+    const prev = STAGES[si - 1];
+    box.innerHTML = tabs + `<div class="stgCard"><div class="stgUnit"><h4>${LOCK} ${S.nm}은 아직 잠겨 있어요</h4>
+      <p class="ds">${prev.nm} 20과를 끝내고 <b>${prev.nm} 승급 시험</b>을 통과하면 열려요. 레벨 테스트에서 레벨 ${S.lo - 0.5} 이상이 나와도 바로 열려요.</p>
+      <div class="row2"><button class="btn go" type="button" data-stg="${prev.id}">${prev.nm} 코스 보기</button></div></div></div>`;
+    return;
+  }
+  const D = stageData(S.id), done = stDone(S.id);
+  if (stUnit < 0 || stUnit > Math.min(done, ST_UNITS - 1)) stUnit = Math.min(done, ST_UNITS - 1);
+  const grid = `<div class="stgGrid">${D.units.map((_, u) => `<button type="button" data-stu="${u}"
+      class="${u === stUnit ? "on" : u < done ? "done" : u === done ? "cur" : ""}"${u > done ? " disabled" : ""}>${u + 1}</button>`).join("")}</div>`;
+  const next = STAGES[si + 1], passed = next && stOpen() > si + 1;
+  const exam = done >= ST_UNITS ? `<div class="stgExam"><b>${passed ? `${S.nm} 승급 시험 통과 ✓` : next ? `${S.nm} 승급 시험` : `${S.nm} 졸업 시험`}</b>
+      <p>${passed ? `${next.nm} 코스가 열려 있어요. 실력 확인용으로 다시 볼 수도 있어요.`
+        : `단어 ${ST_EXAM_W}개 + 문장 ${ST_EXAM_S}개, 한 번에 맞힌 게 ${ST_PASS}개 이상이면 통과${next ? `예요. 통과하면 ${next.nm} 코스가 열려요.` : "예요."}`}</p>
+      <button class="btn go" type="button" data-stexam="${S.id}">${passed ? "다시 보기" : "시험 보기"}</button></div>` : "";
+  const U = D.units[stUnit], seenN = U.w.filter(x => boxOf(keyOf(x)) >= 1).length, all = seenN >= U.w.length;
+  const unit = `<div class="stgUnit"><h4>${S.nm} ${stUnit + 1}과${stUnit < done ? " · 끝냄" : ""}</h4>
+      <p class="ds">단어 ${U.w.length}개 · 문장 ${U.s.length}개 · 퀴즈로 푼 단어 ${seenN}/${U.w.length}</p>
+      <div class="stgWords">${U.w.map(x => `<span${boxOf(keyOf(x)) >= 1 ? ' class="ok"' : ""}>${esc(x.w)}</span>`).join("")}</div>
+      <div class="row2"><button class="btn go" type="button" data-stq>① 단어 퀴즈</button><button class="btn go" type="button" data-sts>② 문장 조립</button></div>
+      <details class="stgList"><summary>뜻과 문장 모두 보기 · 듣기</summary>
+        ${U.w.map(x => `<div class="wl"><b>${esc(x.w)}</b><span>${esc(x.k)}</span></div>`).join("")}
+        <div style="margin-top:12px">${U.s.map(allSentHtml).join("")}</div></details>
+      ${stUnit === done && done < ST_UNITS ? `<button class="btn go stgEnd" type="button" data-stend${all ? "" : " disabled"}>
+        ${stUnit + 1}과 끝내기 → ${stUnit + 1 < ST_UNITS ? `${stUnit + 2}과` : "승급 시험"}</button>
+        ${all ? "" : `<p class="stgNote">단어 퀴즈로 ${U.w.length}개를 한 번씩 다 풀면 끝낼 수 있어요 (지금 ${seenN}/${U.w.length})</p>`}` : ""}</div>`;
+  box.innerHTML = tabs + `<div class="stgCard"><div class="stgTop"><b>${S.nm} 코스</b><small>${done}/${ST_UNITS}과 끝냄</small></div>
+    <div class="gProg"><i style="width:${done / ST_UNITS * 100}%"></i></div>${grid}${unit}${exam}</div>`;
+}
+$("#stageBox").addEventListener("click", e => {    // 들어보기(data-say)는 바깥 #p4 처리기가 맡음
+  const tb = e.target.closest("[data-stg]");
+  if (tb){ stView = tb.dataset.stg; stUnit = -1; renderStage(); return; }
+  const ub = e.target.closest("[data-stu]");
+  if (ub && !ub.disabled){ stUnit = +ub.dataset.stu; renderStage(); return; }
+  const ex = e.target.closest("[data-stexam]");
+  if (ex){ openStageExam(ex.dataset.stexam); return; }
+  if (!stView || stUnit < 0) return;
+  const S = STAGES.find(s => s.id === stView), U = stageData(stView).units[stUnit];
+  if (e.target.closest("[data-stq]")){ go(1); renderWords(); startQuiz([...U.w], "stage"); return; }
+  if (e.target.closest("[data-sts]")){ newRound(U.s, "stage", `${S.nm} ${stUnit + 1}과`); go(0); return; }
+  const end = e.target.closest("[data-stend]");
+  if (end && !end.disabled){
+    stage = Object.assign({}, stage, { [stView]: stDone(stView) + 1 }); saveStage();
+    stUnit = Math.min(stDone(stView), ST_UNITS - 1);
+    renderStage(); $("#stageBox").scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+});
+/* 승급 시험 — 레슨 시험 화면(#exam)을 같이 씀. 단어는 적기, 문장은 조립(함정 조각 포함). 첫 시도에 맞힌 수로 채점 */
+function openStageExam(id){
+  const D = stageData(id);
+  examMode = "stage"; examStage = id; examScore = 0; examDay = 0;
+  examDeck = shuffle([...D.all]).slice(0, ST_EXAM_W).map(x => ({ type: "word", x }))
+    .concat(shuffle([...D.ss]).slice(0, ST_EXAM_S).map(x => ({ type: "sent", x })));
+  examIdx = 0; examMissed = [];
+  document.body.classList.add("examOn");
+  document.getElementById("exam").scrollTop = 0;
+  renderExamSafe();
+}
+function renderStageExamDone(){
+  const si = STAGES.findIndex(s => s.id === examStage), S = STAGES[si], next = STAGES[si + 1];
+  const pass = examScore >= ST_PASS;
+  if (pass && next && stOpen() < si + 2){ stage = Object.assign({}, stage, { open: si + 2 }); saveStage(); }
+  const missedHtml = examMissed.length ? `<div class="missed">${examMissed.map(m => m.type === "word"
+      ? `<div class="row"><span class="en">${esc(m.x.w)}</span><span class="ko">${esc(m.x.k)}</span></div>`
+      : `<div class="row"><span class="en">${esc(m.x.en)}</span><span class="ko">${esc(m.x.ko)}</span></div>`).join("")}</div>` : "";
+  $("#exBody").innerHTML = `
+    <div class="lsTop"><button class="btn" id="exX">닫기</button><span class="gMeta">${S.nm} ${next ? "승급" : "졸업"} 시험 결과</span></div>
+    <div class="done">
+      <p class="score">${examScore} / ${examDeck.length}</p>
+      <p class="lab">${pass ? (next ? `통과! 이제 ${next.nm} 코스가 열렸어요.` : `통과! ${S.nm} 코스를 모두 마쳤어요.`)
+        : `${ST_PASS}개 이상 한 번에 맞혀야 통과예요. 틀린 문제는 헷갈린 단어에 모아 뒀으니 복습하고 다시 도전하세요.`}</p>
+      ${missedHtml}
+      <div class="qBtns">${pass && next ? `<button class="btn go" id="exStNext">${next.nm} 1과 시작</button>`
+        : `<button class="btn" id="exStRetry">다시 도전</button><button class="btn go" id="exStBack">단계 코스로</button>`}</div>
+    </div>`;
+}
 function renderAll(){
+  renderStage();
   [...$("#allChips").children].forEach(b => b.setAttribute("aria-pressed", b.dataset.ac === allCat));
   try{
     $("#allBody").innerHTML = allCat === "gram" ? allGramHtml() : allCat === "talk" ? allTalkHtml()
@@ -9091,8 +9288,9 @@ $("#suBody").addEventListener("click", e => {
   goal = { w: suPick.w, s: suPick.s, q: suPick.q };
   store.set("vb.goal", goal);
   closeSetup();
-  if (!deckDay) newRound();                       // 문장 수가 바뀌었으면 새 판으로
+  if (!deckDay && !deckList) newRound();          // 문장 수가 바뀌었으면 새 판으로
   renderWords(); renderHome(); refreshTab();
+  requireTest();                                  // 처음이면 이어서 레벨 테스트
 });
 
 /* ══ 앱 설치 ══ 안드로이드(크롬)는 버튼 한 번으로 설치 창을 띄우고, 아이폰은 애플이 막아 둬서 방법을 보여줍니다 */
@@ -9133,12 +9331,13 @@ $("#hInstall").addEventListener("click", e => {
 
 /* 시작 — 한 곳에서 오류가 나도 나머지는 계속 실행됩니다 */
 [drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), renderHome, renderInstall,
- () => { if (!goal) openSetup(true); }]
+ () => { if (myLevel && !stage.open) placeStage(myLevel); },   // 전에 레벨 테스트를 한 사람은 단계 코스를 레벨에 맞게 열어 둠
+ () => { if (!goal) openSetup(true); else requireTest(); }]
   .forEach(fn => { try{ fn(); }catch(e){ console.error(e); } });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=39"></script>
-<script src="sync.js?v=39"></script>
+<script src="firebase-config.js?v=40"></script>
+<script src="sync.js?v=40"></script>
 
 </body></html>

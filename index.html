@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=37"></script>
+<script src="ipa.js?v=38"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -774,6 +774,11 @@
   .suOpt span{font-size:12px;color:var(--ink-2)}
   .suOpt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
   .suOpt[aria-pressed="true"] span{color:var(--accent)}
+  .qPick{padding:8px 2px 4px}
+  .qPickT{font-family:"Jua",sans-serif;font-size:24px;margin:6px 0 4px}
+  .qPickD{font-size:13px;color:var(--ink-2);margin:0 0 14px;line-height:1.5}
+  .qPick .suGrid{margin-bottom:16px}
+  .qGo{width:100%;margin-bottom:12px}
   .suSave{width:100%;min-height:56px;font-size:17px;margin-top:26px}
   .hBars{display:flex;align-items:flex-end;gap:8px}
   .hBars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -3328,9 +3333,10 @@ function dayTotal(k){ const d = actLog[k]; return d ? (+d.w || 0) + (+d.s || 0) 
 const todayLog = () => actLog[dkey()] || {};    // n: 오늘 처음 배운 새 단어 수
 
 /* ── 하루 목표 ── 처음 켤 때 정합니다. w: 하루 새 단어 수, s: 하루 문장 수 (이 기기에만 저장) */
-const GOAL_W = [5, 10, 20, 30], GOAL_S = [5, 10, 15, 20];
+const GOAL_W = [5, 10, 20, 30], GOAL_S = [5, 10, 15, 20], GOAL_Q = [5, 10, 15, 20];
 let goal = store.get("vb.goal", null, x => x && typeof x === "object" && Number.isFinite(x.w) && Number.isFinite(x.s));
 const goalW = () => goal ? goal.w : 20, goalS = () => goal ? goal.s : 10;
+const goalQ = () => goal && GOAL_Q.includes(goal.q) ? goal.q : 10;   // q: 단어 퀴즈 한 판 문제 수 (없던 옛 기록은 10)
 function streakDays(){
   const d = new Date(); let n = 0;
   if (!dayTotal(dkey(d))) d.setDate(d.getDate() - 1);          // 오늘 아직 안 했으면 어제부터 셉니다
@@ -3340,14 +3346,15 @@ function streakDays(){
 
 /* ── 3단계 단어장 ──
    b:1 외우는 중 · b:2 외운 단어 · b:3 외외운 단어 · 없으면 아직 안 배운 단어
-   2단계는 3일 뒤, 3단계는 14일 뒤 다시 등장합니다(무한 복습). */
+   잊을 때쯤 다시 나옵니다: 1단계는 다음 날 → 2단계는 3일 뒤 → 3단계는 7일 → 14일 → 30일 → 60일 뒤
+   (3단계에서 맞힌 횟수 r로 간격을 늘림, 틀리면 1단계로). */
 const LEARN_CAP = 20;
 const LVNAME = {1:"왕기초",2:"기초",3:"초급",4:"초중급",5:"중급 진입",
                 6:"중급",7:"중상급",8:"상급 진입",9:"상급",10:"최상급"};
 let myLevel = store.get("vb.level", 0, Number.isFinite);
 const inMyLevel = x => { if (!myLevel || x.lv == null) return true;            // 레벨은 4.6처럼 소수 — 반올림한 레벨 ±1
   const L = Math.round(myLevel); return x.lv >= L - 1 && x.lv <= L + 1; };
-const WAIT = {2: 3*86400000, 3: 14*86400000};
+const DAY_MS = 86400000, WAIT3 = [7, 14, 30, 60];
 let boxes = store.get("vb.box", null, x => x && typeof x === "object" && !Array.isArray(x));
 if (!boxes || typeof boxes !== "object" || Array.isArray(boxes)){
   boxes = {};
@@ -3360,15 +3367,18 @@ const saveBoxes = () => store.set("vb.box", boxes);
 const boxOf = k => (boxes[k] && boxes[k].b) || 0;
 const stampOf = k => (boxes[k] && boxes[k].t) || 0;
 /* missed: true = 헷갈린 단어로 표시(m:1), false = 표시 지우기, 안 넘기면 원래대로 둠 */
-function setBox(k, b, missed){
+function setBox(k, b, missed, r){
   const keep = !!(boxes[k] && boxes[k].m);
   b = Math.round(b);
   boxes[k] = {b: Math.max(0, Math.min(3, b)), t: Date.now()};   // 0단계도 시간을 남겨야 기기 간에 맞춰집니다
   if (missed === undefined ? keep : missed) boxes[k].m = 1;
+  if (r > 0) boxes[k].r = Math.min(r, WAIT3.length - 1);          // 3단계에서 몇 번 더 맞혔는지 → 복습 간격
   saveBoxes();
 }
 const isMissed = k => !!(boxes[k] && boxes[k].m);
-const isDue = k => { const b = boxOf(k); return b >= 2 && Date.now() - stampOf(k) >= WAIT[b]; };
+const repOf = k => (boxes[k] && +boxes[k].r) || 0;
+const waitDays = k => boxOf(k) === 2 ? 3 : WAIT3[Math.min(repOf(k), WAIT3.length - 1)];
+const isDue = k => { const b = boxOf(k); return b >= 2 && Date.now() - stampOf(k) >= waitDays(k) * DAY_MS; };
 
 function todayWords(){
   const pool = WORDS.filter(inMyLevel);                 // 내 레벨 ±1 단어만
@@ -3554,7 +3564,7 @@ $("#p3").addEventListener("click", e => {
   const say = e.target.closest("[data-say]");
   if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
   const r = e.target.closest("[data-hgo]"); if (!r) return;
-  if (r.dataset.hgo === "w"){ const tw = todayWords(); if (tw.length) startQuiz(tw, "home"); else go(6); }
+  if (r.dataset.hgo === "w"){ const tw = todayWords(); if (tw.length) startQuiz(tw, "home", todayWords); else go(6); }
   else { newRound(0, "home"); go(0); }
 });
 document.addEventListener("click", e => {                      // 화면 안의 이동 버튼(data-go)과 뒤로(data-back)
@@ -3931,7 +3941,7 @@ const QS_KEY = "vb.qs", QS_DAYS = 3;
 function saveQuizSession(){
   if (!qDeck.length || qi >= qDeck.length){ clearQuizSession(); return; }
   store.set(QS_KEY, { k: qDeck.map(keyOf), i: qi, up: qUp, m: qMiss.map(keyOf), f: qFrom,
-                      l: qList ? qList.map(keyOf) : null, t: Date.now() });
+                      l: qList ? qList.map(keyOf) : null, a: qAgainFn === todayWords ? 1 : 0, t: Date.now() });
 }
 function clearQuizSession(){ try{ localStorage.removeItem(QS_KEY); }catch(e){} }
 function pausedQuiz(){
@@ -3947,24 +3957,59 @@ function resumeQuiz(){
   qDeck = deck; qi = s.i; qUp = +s.up || 0;
   qMiss = (s.m || []).map(k => byKey.get(k)).filter(Boolean);
   qFrom = s.f || 0;
-  qList = s.l ? s.l.map(k => byKey.get(k)).filter(Boolean) : null;
+  qList = s.l ? s.l.map(k => byKey.get(k)).filter(Boolean) : null;  qAgainFn = s.a ? todayWords : null;
   document.body.classList.add("quizOn");
   drawQ();
   return true;
 }
-function startQuiz(list, fromDay){
+/* 단어 퀴즈 시작 — 먼저 '몇 문제 풀까요?'(기본은 하루 목표의 q)를 고르고 시작합니다.
+   헷갈린 단어도 그 수 안에 섞고(최대 1/3), 못 푼 단어는 '다음 판'으로 남깁니다.
+   list: 이 단어들로 (없으면 단어장에 보이는 단어) · again: 다음 판 목록을 새로 만드는 함수 (오늘의 단어처럼 푼 뒤 바뀌는 것) */
+let qPool = [], qAgainPool = [], qPick = 10, qAgainFn = null;
+function startQuiz(list, fromDay, again){
   const p = pausedQuiz();                         // 풀던 게 있으면 이어서 할지 물어봄 (확인 = 이어서, 취소 = 새로)
   if (p && p.i > 0 && confirm(`풀던 단어 퀴즈가 있어요 (${p.i}/${p.k.length}).\n\n확인 = 이어서 하기\n취소 = 새로 시작`) && resumeQuiz()) return;
-  qList = Array.isArray(list) && list.length ? list : null;
+  const given = Array.isArray(list) && list.length;
+  qList = given ? list : null;
   qFrom = (typeof fromDay === "number" || typeof fromDay === "string") ? fromDay : 0;   // 레슨 Day · 상황 번호 · "review"
-  const pool = Array.isArray(list) && list.length ? list : visibleWords();
-  if(!pool.length) return;
-  const base = Array.isArray(list) && list.length ? [...pool] : shuffle([...pool]).slice(0, Math.min(20, pool.length));
-  const have = new Set(base.map(keyOf));
-  const again = shuffle(WORDS.filter(x => isMissed(keyOf(x)) && !have.has(keyOf(x)))).slice(0, MISS_MAX);
-  qDeck = shuffle(base.concat(again));
-  qi=0; qMiss=[]; qUp=0;
+  qAgainFn = typeof again === "function" ? again : null;
+  qPool = given ? [...list] : shuffle([...visibleWords()]);
+  if (!qPool.length) return;
+  const have = new Set(qPool.map(keyOf));
+  qAgainPool = shuffle(WORDS.filter(x => isMissed(keyOf(x)) && !have.has(keyOf(x)))).slice(0, MISS_MAX);
+  const avail = qPool.length + qAgainPool.length;
+  qPick = Math.min(goalQ(), avail);
   document.body.classList.add("quizOn");
+  if (avail <= GOAL_Q[0]) beginQuiz(avail);       // 5개 이하면 고를 것 없이 바로
+  else drawPick();
+}
+function drawPick(){
+  const avail = qPool.length + qAgainPool.length;
+  const opts = GOAL_Q.filter(v => v < avail);
+  if (avail <= 40 || !opts.length) opts.push(avail);               // '전부'는 40개 이하일 때만
+  $("#qBar").style.width = "0%";
+  $("#qCount").textContent = "문제 수";
+  $("#qBody").innerHTML = `<div class="qPick">
+    <p class="qPickT">몇 문제 풀까요?</p>
+    <p class="qPickD">지금 풀 단어 ${avail}개${qAgainPool.length ? ` (헷갈린 단어 ${qAgainPool.length}개 포함)` : ""}${avail > qPick ? ` · 남은 단어는 다음 판에 나와요` : ""}</p>
+    <div class="suGrid">${opts.map(v => `<button type="button" class="suOpt" data-qn="${v}" aria-pressed="${v === qPick}">
+      <b>${v === avail && !GOAL_Q.includes(v) ? "전부" : v}</b><span>${v === avail && !GOAL_Q.includes(v) ? v + "문제" : "문제"}</span></button>`).join("")}</div>
+    <button type="button" class="btn go qGo" id="qGo">${qPick}문제 시작</button>
+    <p class="qPickD">고른 수는 다음 퀴즈에도 기억해요 · 내 기록 → 하루 목표에서도 바꿀 수 있어요</p></div>`;
+}
+$("#qBody").addEventListener("click", e => {
+  const b = e.target.closest("[data-qn]");
+  if (b){ qPick = +b.dataset.qn; drawPick(); return; }
+  if (e.target.closest("#qGo")) beginQuiz(qPick);
+});
+function beginQuiz(n){
+  if (GOAL_Q.includes(n) && n !== goalQ()){                       // 고른 수를 기억 (계정에도 저장됨)
+    goal = { w: goalW(), s: goalS(), q: n }; store.set("vb.goal", goal);
+  }
+  const nAgain = Math.min(qAgainPool.length, Math.max(n - qPool.length, Math.floor(n / 3)));
+  const base = qPool.slice(0, n - nAgain);                          // 오늘의 단어는 복습할 단어가 앞에 있어서 먼저 들어감
+  qDeck = shuffle(base.concat(qAgainPool.slice(0, n - base.length)));
+  qi = 0; qMiss = []; qUp = 0;
   drawQ();
 }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -4140,7 +4185,7 @@ function qNext(ok){
   const x = qDeck[qi], k = keyOf(x), b = boxOf(k);
   logAct("w");
   if (b === 0) logAct("n");                       // 처음 배운 새 단어 → 오늘 새 단어 목표에 셈
-  if (ok){ if (b < 3) qUp++; setBox(k, Math.min(3, b + 1), false); }
+  if (ok){ if (b < 3){ qUp++; setBox(k, b + 1, false); } else setBox(k, 3, false, repOf(k) + 1); }   // 3단계면 다음 복습을 더 멀리
   else { qMiss.push(x); setBox(k, 1, true); }
   qi++;
   qi<qDeck.length ? drawQ() : qFinish();
@@ -4149,14 +4194,16 @@ function qFinish(){
   clearQuizSession();
   $("#qBar").style.width="100%";
   const got = qDeck.length - qMiss.length;
+  const done = new Set(qDeck.map(keyOf));                            // 이번 판에 못 들어간 단어 → 다음 판
+  const rest = qAgainFn ? qAgainFn() : qList ? qList.filter(x => !done.has(keyOf(x))) : [];
   $("#qBody").innerHTML = `
     <div class="done"><p class="score">${got} / ${qDeck.length}</p>
     <p class="lab">${qUp}개가 다음 단계로 올라갔습니다.${qMiss.length? " 헷갈린 단어는 1단계로 돌아가고, 한 번에 맞힐 때까지 다음 퀴즈에 다시 나와요." : ""}</p>
     ${qMiss.length? `<div class="missed">${qMiss.map(m=>
       `<div class="row"><span class="en">${m.w}</span><span class="ko">${m.k}</span></div>`).join("")}</div>`:""}
-    <div class="qBtns"><button class="btn" id="qAgain">한 번 더</button>
+    <div class="qBtns"><button class="btn" id="qAgain">${rest.length ? `다음 판 (남은 ${rest.length}개)` : "한 번 더"}</button>
     <button class="btn go" id="qEnd">${qFrom ? returnLabel(qFrom) : "목록으로"}</button></div></div>`;
-  $("#qAgain").addEventListener("click", () => startQuiz(qList, qFrom));
+  $("#qAgain").addEventListener("click", () => startQuiz(rest.length ? rest : qList, qFrom, qAgainFn));
   $("#qEnd").addEventListener("click", () => { const d = qFrom; endQuiz(); if (d) returnTo(d); });
   renderWords();
 }
@@ -4600,7 +4647,7 @@ function bindPlan(){
       go(1); renderWords();
       $("#cats").scrollIntoView({ behavior:"smooth", block:"start" });
     } else if (act === "today"){
-      go(1); renderWords(); startQuiz(todayWords());
+      go(1); renderWords(); startQuiz(todayWords(), 0, todayWords);
     } else if (act === "sent"){
       newRound(); go(0);
     } else if (act === "listen"){
@@ -5163,7 +5210,7 @@ function examCheckWord(x){
     examLocked = true;
     ding(); logAct("w");
     const k = keyOf(x);
-    if (examWrong === 0 && isMissed(k)) setBox(k, boxOf(k), false);   // 한 번에 맞히면 헷갈린 단어에서 빠짐
+    if (examWrong === 0 && isMissed(k)) setBox(k, boxOf(k), false, repOf(k));   // 한 번에 맞히면 헷갈린 단어에서 빠짐
     $("#exJ").innerHTML = '<span class="good">정답입니다! · 엔터를 누르면 다음 문제</span>';
     speak(x.w, 1);
     const btn = $("#exCheck");
@@ -5171,7 +5218,7 @@ function examCheckWord(x){
     $("#exIn").focus();                      // 입력칸을 그대로 두어야 키보드가 안 내려갑니다
   } else {
     examWrong++;
-    if (examWrong === 1) setBox(keyOf(x), boxOf(keyOf(x)), true);    // 헷갈린 단어로 표시 → 다음 퀴즈에 다시 나옴
+    if (examWrong === 1) setBox(keyOf(x), boxOf(keyOf(x)), true, repOf(keyOf(x)));    // 헷갈린 단어로 표시 → 다음 퀴즈에 다시 나옴
     shakeEl($("#exType"));
     $("#exIn").focus();
     $("#exJ").innerHTML = '<span class="miss">다시 적어보세요</span>';
@@ -5382,7 +5429,7 @@ function vocabPool(){
 function allVocabHtml(){
   const pool = vocabPool(), show = pickBy(pool, 8, 101 + vocabSeed * 37);
   return `<p class="allHint">여러 단어가 한 덩어리로 쓰이는 표현·숙어예요. ${myLevel ? `내 레벨(${lvShow(myLevel)})에 맞는 표현 ${pool.length}개 중 8개를 보여 드려요.` : `모두 ${pool.length}개예요.`}</p>
-    <div class="allGo"><button class="btn go" type="button" data-vquiz>표현 퀴즈 10문제</button><button class="btn" type="button" data-vlist>전체 목록</button></div>
+    <div class="allGo"><button class="btn go" type="button" data-vquiz>표현 퀴즈</button><button class="btn" type="button" data-vlist>전체 목록</button></div>
     ${show.map(x => `<div class="vS"><div class="en">${esc(x.w)}</div><div class="ko">${esc(x.k)}</div>
       <div class="vEx"><i>${esc(x.ex)}</i><br>${esc(x.exk)}</div>
       <div class="row2"><button class="btn" type="button" data-say="${esc(x.ex)}">예문 듣기</button></div></div>`).join("")}
@@ -5472,7 +5519,7 @@ $("#p4").addEventListener("click", e => {
   if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
   const cat = e.target.closest("[data-allcat]");
   if (cat){ showWords("all", cat.dataset.allcat); return; }
-  if (e.target.closest("[data-vquiz]")){ startQuiz(shuffle([...vocabPool()]).slice(0, 10), "vocab"); return; }
+  if (e.target.closest("[data-vquiz]")){ startQuiz(shuffle([...vocabPool()]), "vocab"); return; }
   if (e.target.closest("[data-vlist]")){ showWords("all", "표현·숙어"); return; }
   if (e.target.closest("[data-vmore]")){ vocabSeed++; renderAll(); $("#allBody").scrollIntoView({ block: "start" }); return; }
   if (e.target.closest("[data-allsearch]")){               // 단어장을 열고 찾기 칸에 바로 커서 (누른 순간이라 키보드도 뜸)
@@ -5544,8 +5591,8 @@ $("#p6").addEventListener("click", e => {
   const b = e.target.closest("[data-rv]"); if (!b || b.disabled) return;
   const a = b.dataset.rv, prev = curDay - 1;
   if (a === "resume") resumeQuiz();
-  else if (a === "today") startQuiz(todayWords(), "review");
-  else if (a === "miss") startQuiz(shuffle(WORDS.filter(x => isMissed(keyOf(x)))).slice(0, 20), "review");
+  else if (a === "today") startQuiz(todayWords(), "review", todayWords);
+  else if (a === "miss") startQuiz(shuffle(WORDS.filter(x => isMissed(keyOf(x)))), "review");
   else if (a === "misslist") showWords("miss", "all");
   else if (a === "prevsent"){ newRound(prev, "review"); go(0); }
   else if (a === "prevlesson") openLesson(prev);
@@ -5567,9 +5614,9 @@ $("#p7").addEventListener("click", e => {
 });
 
 /* ══ 하루 목표 정하기 ══ 처음 켤 때 한 번 뜨고, 홈·내 기록에서 다시 열 수 있습니다 */
-let suPick = { w: 20, s: 10 }, suFirst = false;
+let suPick = { w: 20, s: 10, q: 10 }, suFirst = false;
 function openSetup(first){
-  suFirst = !!first; suPick = { w: goalW(), s: goalS() };
+  suFirst = !!first; suPick = { w: goalW(), s: goalS(), q: goalQ() };
   renderSetup();
   document.body.classList.add("setupOn");
   $("#setup").scrollTop = 0;
@@ -5590,6 +5637,9 @@ function renderSetup(){
     <section class="lsSec"><h2>하루에 연습할 문장</h2>
       <p class="hint">문장 조립 게임 한 판에 나오는 문장 수예요.</p>
       <div class="suGrid">${GOAL_S.map(v => opt("s", v, SH[v])).join("")}</div></section>
+    <section class="lsSec"><h2>단어 퀴즈 한 판 문제 수</h2>
+      <p class="hint">퀴즈를 시작할 때마다 바꿀 수도 있어요. 못 푼 단어는 다음 판에 나와요.</p>
+      <div class="suGrid">${GOAL_Q.map(v => opt("q", v, SH[v])).join("")}</div></section>
     <button class="btn go suSave" id="suSave" type="button">${suFirst ? "이대로 시작하기" : "저장하기"}</button>`;
 }
 $("#suBody").addEventListener("click", e => {
@@ -5597,7 +5647,7 @@ $("#suBody").addEventListener("click", e => {
   if (o){ suPick[o.dataset.su] = +o.dataset.v; renderSetup(); return; }
   if (e.target.closest("#suX")){ closeSetup(); return; }
   if (!e.target.closest("#suSave")) return;
-  goal = { w: suPick.w, s: suPick.s };
+  goal = { w: suPick.w, s: suPick.s, q: suPick.q };
   store.set("vb.goal", goal);
   closeSetup();
   if (!deckDay) newRound();                       // 문장 수가 바뀌었으면 새 판으로
@@ -5647,7 +5697,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=37"></script>
-<script src="sync.js?v=37"></script>
+<script src="firebase-config.js?v=38"></script>
+<script src="sync.js?v=38"></script>
 
 </body></html>

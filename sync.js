@@ -32,13 +32,14 @@
 
   const obj = v => v && typeof v === "object" && !Array.isArray(v) ? v : {};
   const num = v => Number.isFinite(+v) ? +v : 0;
+  const pickGoal = g => Number.isFinite(g.q) ? { w: g.w, s: g.s, q: g.q } : { w: g.w, s: g.s };   // q: 퀴즈 한 판 문제 수
   function local(){
     const notes = get("vb.notes", []), goal = get("vb.goal", null);
     return { box: obj(get("vb.box", {})), level: num(get("vb.level", 0)),
              levelAt: num(get("vb.at.level", 0)), best: num(get("vb.best", 0)),
              day: Math.max(1, num(get("vb.day", 1))),
              notes: Array.isArray(notes) ? notes : [], notesAt: num(get("vb.at.notes", 0)),
-             goal: goal && Number.isFinite(goal.w) && Number.isFinite(goal.s) ? { w: goal.w, s: goal.s } : null,
+             goal: goal && Number.isFinite(goal.w) && Number.isFinite(goal.s) ? pickGoal(goal) : null,
              goalAt: num(get("vb.at.goal", 0)),
              log: obj(get("vb.log", {})) };
   }
@@ -69,7 +70,7 @@
              best: Math.max(num(a.best), num(b.best)),
              day: Math.max(num(a.day), num(b.day), 1),
              notes: useNotes ? bNotes : a.notes, notesAt: Math.max(num(a.notesAt), num(b.notesAt)),
-             goal: useGoal ? { w: bGoal.w, s: bGoal.s } : a.goal, goalAt: Math.max(num(a.goalAt), num(b.goalAt)),
+             goal: useGoal ? pickGoal(bGoal) : a.goal, goalAt: Math.max(num(a.goalAt), num(b.goalAt)),
              log };
   }
 

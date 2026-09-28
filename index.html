@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=40"></script>
+<script src="ipa.js?v=41"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -1043,9 +1043,9 @@
         <span class="tx"><span class="nm">문장 조립 게임</span><span class="ds">뜻을 보고 영어 단어를 순서대로</span></span>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>
       </button>
-      <button class="hTile" type="button" data-go="1">
-        <span class="hIcon" style="background:var(--mint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"></path><path d="M5 18a2 2 0 0 1 2-2h12"></path></svg></span>
-        <span class="nm">단어장</span><span class="ds">전체 단어 · 퀴즈</span>
+      <button class="hTile" type="button" data-allvocab>
+        <span class="hIcon" style="background:var(--mint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M4 11h16M4 16h8"></path><path d="M16 16l2 2 3-4"></path></svg></span>
+        <span class="nm">어휘</span><span class="ds">표현·숙어 · 퀴즈</span>
       </button>
       <button class="hTile" type="button" data-go="2">
         <span class="hIcon" style="background:var(--pink)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 17v-4a8 8 0 0 1 16 0v4"></path><rect x="3" y="14" width="4" height="7" rx="1.5"></rect><rect x="17" y="14" width="4" height="7" rx="1.5"></rect></svg></span>
@@ -8919,7 +8919,10 @@ function allWordHtml(){
     st[x.c] = st[x.c] || { n:0, got:0 };
     st[x.c].n++; if (boxOf(keyOf(x)) >= 2) st[x.c].got++;
   });
-  return `<button type="button" class="allSearchBtn" data-allsearch>
+  return `<button class="hTile wide" type="button" data-go="1" style="margin-bottom:10px">
+      <span class="hIcon" style="background:var(--mint)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z"></path><path d="M5 18a2 2 0 0 1 2-2h12"></path></svg></span>
+      <span class="tx"><span class="nm">단어장</span><span class="ds">전체 단어 ${WORDS.length.toLocaleString()}개 · 레벨·분야별 · 퀴즈</span></span>${CHEV}</button>
+    <button type="button" class="allSearchBtn" data-allsearch>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.6-3.6"></path></svg>
       <span>단어 찾기 · 영어, 뜻, 발음</span></button>
     <p class="allHint">${myLevel ? `내 레벨(${lvShow(myLevel)}) 단어를 분야별로 모았어요.` : "분야별로 모았어요."} 누르면 그 분야 단어 목록이 열려요.</p>
@@ -9153,6 +9156,8 @@ function showWords(f, cat){
 $("#p4").addEventListener("click", e => {
   const ch = e.target.closest("[data-ac]");
   if (ch){ allCat = ch.dataset.ac; renderAll(); return; }
+  if (e.target.closest("[data-allvocab]")){                // 위의 '어휘' 타일 → 아래 골라서 보기의 어휘를 펼쳐서 보여 줌
+    allCat = "vocab"; renderAll(); $("#allChips").scrollIntoView({ block: "start" }); return; }
   const say = e.target.closest("[data-say]");
   if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
   const cat = e.target.closest("[data-allcat]");
@@ -9337,7 +9342,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=40"></script>
-<script src="sync.js?v=40"></script>
+<script src="firebase-config.js?v=41"></script>
+<script src="sync.js?v=41"></script>
 
 </body></html>

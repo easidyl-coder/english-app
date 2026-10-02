@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=42"></script>
+<script src="ipa.js?v=43"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -6176,6 +6176,62 @@ const WORDS = [
   {lv:3,c:"숙소·생활",w:"wardrobe",k:"옷장",p:"워드로브",ex:"Hang your clothes in the wardrobe.",exk:"옷은 옷장에 거세요."},
   {lv:3,c:"숙소·생활",w:"hanger",k:"옷걸이",p:"행어",ex:"Can I have more hangers?",exk:"옷걸이 더 주실 수 있어요?"},
   {lv:3,c:"여행·교통",w:"snorkel mask",k:"스노클 마스크",p:"스노클 마스크",ex:"My snorkel mask is foggy.",exk:"스노클 마스크에 김이 서렸어요."},
+  {lv:6,c:"표현·숙어",w:"call it a day",k:"오늘은 그만하다",p:"콜 잇 어 데이",ex:"Let's call it a day and get dinner.",exk:"오늘은 여기까지 하고 저녁 먹어요."},
+  {lv:6,c:"표현·숙어",w:"play it by ear",k:"그때그때 봐서 하다",p:"플레이 잇 바이 이어",ex:"We don't have a plan, we'll just play it by ear.",exk:"계획은 없고 그냥 그때그때 봐서 해요."},
+  {lv:6,c:"표현·숙어",w:"hit the road",k:"출발하다",p:"힛 더 로드",ex:"We should hit the road before traffic gets bad.",exk:"차 막히기 전에 출발해야 해요."},
+  {lv:6,c:"표현·숙어",w:"go with the flow",k:"흐름에 맡기다",p:"고 위드 더 플로우",ex:"On vacation, I just go with the flow.",exk:"휴가 땐 그냥 흘러가는 대로 해요."},
+  {lv:6,c:"표현·숙어",w:"not my cup of tea",k:"내 취향이 아니다",p:"낫 마이 컵 오브 티",ex:"Clubs are just not my cup of tea.",exk:"클럽은 그냥 제 취향이 아니에요."},
+  {lv:6,c:"표현·숙어",w:"worth every penny",k:"돈이 하나도 안 아깝다",p:"워스 에브리 페니",ex:"The boat tour was worth every penny.",exk:"보트 투어는 돈이 하나도 안 아까웠어요."},
+  {lv:6,c:"표현·숙어",w:"keep me posted",k:"계속 소식 알려 줘",p:"킵 미 포스티드",ex:"Keep me posted when you land.",exk:"도착하면 계속 연락 줘요."},
+  {lv:6,c:"표현·숙어",w:"tourist trap",k:"바가지 관광지",p:"투어리스트 트랩",ex:"That restaurant is a total tourist trap.",exk:"그 식당은 완전 관광객 바가지 집이에요."},
+  {lv:7,c:"표현·숙어",w:"up in the air",k:"아직 정해지지 않은",p:"업 인 디 에어",ex:"Our plans for Sunday are still up in the air.",exk:"일요일 계획은 아직 안 정해졌어요."},
+  {lv:7,c:"표현·숙어",w:"break the bank",k:"큰돈이 들다",p:"브레이크 더 뱅크",ex:"This place is nice, and it won't break the bank.",exk:"여기 좋은데 돈도 많이 안 들어요."},
+  {lv:7,c:"표현·숙어",w:"off the beaten path",k:"사람들이 잘 모르는 곳에",p:"오프 더 비튼 패스",ex:"We found a beach off the beaten path.",exk:"사람들이 잘 모르는 해변을 찾았어요."},
+  {lv:7,c:"표현·숙어",w:"on a shoestring",k:"아주 적은 돈으로",p:"온 어 슈스트링",ex:"We traveled on a shoestring budget.",exk:"아주 적은 돈으로 여행했어요."},
+  {lv:7,c:"표현·숙어",w:"a stone's throw",k:"엎어지면 코 닿을 데",p:"어 스톤즈 스로우",ex:"The beach is a stone's throw from our hotel.",exk:"해변이 호텔에서 엎어지면 코 닿을 데예요."},
+  {lv:7,c:"표현·숙어",w:"rule of thumb",k:"대략적인 규칙, 경험상",p:"룰 오브 썸",ex:"As a rule of thumb, tip about fifteen percent.",exk:"보통 팁은 15% 정도 주면 돼요."},
+  {lv:7,c:"표현·숙어",w:"under the weather",k:"몸이 좀 안 좋은",p:"언더 더 웨더",ex:"I'm feeling a little under the weather today.",exk:"오늘 몸이 좀 안 좋아요."},
+  {lv:7,c:"표현·숙어",w:"back to square one",k:"원점으로 돌아가다",p:"백 투 스퀘어 원",ex:"The hotel lost our booking, so we're back to square one.",exk:"호텔이 예약을 날려서 원점이에요."},
+  {lv:7,c:"표현·숙어",w:"cut to the chase",k:"본론으로 들어가다",p:"컷 투 더 체이스",ex:"Let's cut to the chase, how much is it?",exk:"본론만 말할게요, 얼마예요?"},
+  {lv:7,c:"표현·숙어",w:"a mixed bag",k:"좋은 것도 나쁜 것도 섞인 것",p:"어 믹스트 백",ex:"The reviews are a bit of a mixed bag.",exk:"후기가 좋은 것도 나쁜 것도 섞여 있어요."},
+  {lv:7,c:"표현·숙어",w:"hit or miss",k:"복불복인",p:"힛 오어 미스",ex:"The food here is kind of hit or miss.",exk:"여기 음식은 좀 복불복이에요."},
+  {lv:7,c:"표현·숙어",w:"the icing on the cake",k:"금상첨화",p:"디 아이싱 온 더 케이크",ex:"The free drinks were the icing on the cake.",exk:"무료 음료까지 있어서 금상첨화였어요."},
+  {lv:8,c:"표현·숙어",w:"pay through the nose",k:"바가지를 쓰다",p:"페이 쓰루 더 노즈",ex:"Don't pay through the nose at the airport shops.",exk:"공항 가게에서 바가지 쓰지 마세요."},
+  {lv:8,c:"표현·숙어",w:"bite the bullet",k:"꾹 참고 하다",p:"바이트 더 불릿",ex:"Let's just bite the bullet and book the flight.",exk:"그냥 꾹 참고 비행기 예약해요."},
+  {lv:8,c:"표현·숙어",w:"on the fence",k:"결정을 못 하고 있는",p:"온 더 펜스",ex:"I'm still on the fence about the second tour.",exk:"두 번째 투어는 아직 고민 중이에요."},
+  {lv:8,c:"표현·숙어",w:"a blessing in disguise",k:"전화위복",p:"어 블레싱 인 디스가이즈",ex:"Missing the bus was a blessing in disguise.",exk:"버스를 놓친 게 전화위복이었어요."},
+  {lv:8,c:"표현·숙어",w:"go the extra mile",k:"한 발 더 신경 쓰다",p:"고 디 엑스트라 마일",ex:"The staff really go the extra mile here.",exk:"여기 직원들은 정말 한 발 더 신경 써요."},
+  {lv:8,c:"표현·숙어",w:"jump the gun",k:"너무 서두르다",p:"점프 더 건",ex:"Let's not jump the gun and book everything now.",exk:"너무 서둘러서 지금 다 예약하지 말아요."},
+  {lv:8,c:"표현·숙어",w:"cut corners",k:"대충 하다",p:"컷 코너스",ex:"Cheap tours tend to cut corners on safety.",exk:"싼 투어는 안전을 대충 하는 경향이 있어요."},
+  {lv:8,c:"표현·숙어",w:"learn the ropes",k:"요령을 익히다",p:"런 더 로프스",ex:"It took a day to learn the ropes of the bus system.",exk:"버스 타는 요령을 익히는 데 하루 걸렸어요."},
+  {lv:8,c:"표현·숙어",w:"touch base",k:"잠깐 연락하다",p:"터치 베이스",ex:"Let's touch base tomorrow morning.",exk:"내일 아침에 잠깐 연락해요."},
+  {lv:8,c:"표현·숙어",w:"get the ball rolling",k:"일을 시작하다",p:"겟 더 볼 롤링",ex:"Let's get the ball rolling on the plans.",exk:"계획부터 시작해 봐요."},
+  {lv:8,c:"표현·숙어",w:"a far cry from",k:"~와는 거리가 먼",p:"어 파 크라이 프롬",ex:"This hotel is a far cry from the photos.",exk:"이 호텔은 사진이랑 완전 딴판이에요."},
+  {lv:8,c:"표현·숙어",w:"read between the lines",k:"행간을 읽다, 숨은 뜻을 알아채다",p:"리드 비트윈 더 라인즈",ex:"If you read between the lines, the reviews aren't great.",exk:"숨은 뜻을 보면 후기가 좋은 게 아니에요."},
+  {lv:9,c:"표현·숙어",w:"the elephant in the room",k:"모두가 알지만 말 안 하는 문제",p:"디 엘리펀트 인 더 룸",ex:"The price is the elephant in the room.",exk:"가격이 다들 알면서 말 안 하는 문제예요."},
+  {lv:9,c:"표현·숙어",w:"beat around the bush",k:"돌려 말하다",p:"비트 어라운드 더 부시",ex:"Don't beat around the bush, just tell me.",exk:"돌려 말하지 말고 그냥 말해 줘요."},
+  {lv:9,c:"표현·숙어",w:"throw in the towel",k:"포기하다",p:"스로우 인 더 타월",ex:"I'm not ready to throw in the towel yet.",exk:"아직 포기할 생각 없어요."},
+  {lv:9,c:"표현·숙어",w:"get cold feet",k:"막판에 겁먹다",p:"겟 콜드 피트",ex:"I always get cold feet right before a zip line.",exk:"저는 짚라인 타기 직전에 꼭 겁이 나요."},
+  {lv:9,c:"표현·숙어",w:"once in a blue moon",k:"아주 가끔",p:"원스 인 어 블루 문",ex:"It only rains here once in a blue moon.",exk:"여긴 아주 가끔만 비가 와요."},
+  {lv:9,c:"표현·숙어",w:"bite off more than you can chew",k:"감당 못 할 일을 벌이다",p:"바이트 오프 모어 댄 유 캔 츄",ex:"Don't bite off more than you can chew with the hikes.",exk:"등산은 감당 못 할 만큼 잡지 마세요."},
+  {lv:9,c:"표현·숙어",w:"out of the woods",k:"위기를 벗어난",p:"아웃 오브 더 우즈",ex:"The storm passed, but we're not out of the woods yet.",exk:"폭풍은 지나갔지만 아직 안심은 일러요."},
+  {lv:9,c:"표현·숙어",w:"the last straw",k:"더는 못 참는 마지막 한 가지",p:"더 라스트 스트로",ex:"The cold shower was the last straw.",exk:"찬물 샤워가 결정타였어요."},
+  {lv:9,c:"표현·숙어",w:"burn the midnight oil",k:"밤늦게까지 일하다",p:"번 더 미드나잇 오일",ex:"I burned the midnight oil to finish before the trip.",exk:"여행 전에 끝내려고 밤늦게까지 일했어요."},
+  {lv:9,c:"표현·숙어",w:"a whole new ball game",k:"완전히 다른 상황",p:"어 홀 뉴 볼 게임",ex:"Driving in Cancun is a whole new ball game.",exk:"칸쿤에서 운전하는 건 완전 다른 얘기예요."},
+  {lv:9,c:"표현·숙어",w:"in hot water",k:"곤경에 빠진",p:"인 핫 워터",ex:"He got in hot water for being late again.",exk:"그는 또 늦어서 곤란해졌어요."},
+  {lv:9,c:"표현·숙어",w:"hit the nail on the head",k:"정곡을 찌르다",p:"힛 더 네일 온 더 헤드",ex:"You hit the nail on the head with that comment.",exk:"그 말 정곡을 찔렀어요."},
+  {lv:9,c:"표현·숙어",w:"by and large",k:"대체로",p:"바이 앤드 라지",ex:"By and large, the trip went smoothly.",exk:"대체로 여행은 순조로웠어요."},
+  {lv:9,c:"표현·숙어",w:"in the long run",k:"결국엔, 길게 보면",p:"인 더 롱 런",ex:"Booking early saves money in the long run.",exk:"일찍 예약하면 길게 보면 돈이 아껴져요."},
+  {lv:9,c:"표현·숙어",w:"take it with a grain of salt",k:"곧이곧대로 믿지 않다",p:"테이크 잇 위드 어 그레인 오브 솔트",ex:"He exaggerates, so take it with a grain of salt.",exk:"그 사람 과장하니까 걸러 들으세요."},
+  {lv:9,c:"표현·숙어",w:"the bottom line",k:"결론, 핵심",p:"더 바텀 라인",ex:"The bottom line is we need a cheaper hotel.",exk:"결론은 더 싼 호텔이 필요하다는 거예요."},
+  {lv:10,c:"표현·숙어",w:"have a chip on your shoulder",k:"불만을 품고 시비조이다",p:"해브 어 칩 온 유어 숄더",ex:"He seems to have a chip on his shoulder.",exk:"그 사람 뭔가 불만 있는 것처럼 굴어요."},
+  {lv:10,c:"표현·숙어",w:"the whole nine yards",k:"전부 다, 끝까지",p:"더 홀 나인 야즈",ex:"They gave us flowers, champagne, the whole nine yards.",exk:"꽃에 샴페인까지 전부 다 해 줬어요."},
+  {lv:10,c:"표현·숙어",w:"a tall order",k:"무리한 요구",p:"어 톨 오더",ex:"Seeing everything in two days is a tall order.",exk:"이틀 만에 다 보는 건 무리예요."},
+  {lv:10,c:"표현·숙어",w:"rest on your laurels",k:"현실에 안주하다",p:"레스트 온 유어 로럴즈",ex:"Don't rest on your laurels, keep studying.",exk:"안주하지 말고 계속 공부해요."},
+  {lv:10,c:"표현·숙어",w:"a double-edged sword",k:"양날의 검",p:"어 더블 엣지드 소드",ex:"Cheap flights are a double-edged sword.",exk:"싼 항공권은 양날의 검이에요."},
+  {lv:10,c:"표현·숙어",w:"par for the course",k:"흔히 있는 일",p:"파 포 더 코스",ex:"Delays are par for the course in summer.",exk:"여름엔 지연이 흔한 일이에요."},
+  {lv:10,c:"표현·숙어",w:"steal the show",k:"주목을 다 받다",p:"스틸 더 쇼",ex:"The sunset is going to steal the show tonight.",exk:"오늘 밤은 노을이 주인공일 거예요."},
+  {lv:10,c:"표현·숙어",w:"the devil is in the details",k:"작은 것에 함정이 있다",p:"더 데블 이즈 인 더 디테일즈",ex:"Read the contract, the devil is in the details.",exk:"계약서 읽어 보세요, 작은 데 함정이 있어요."},
 ];
 /* ── 문장 데이터 ── 새 문장은 이 배열 끝에 한 줄씩 추가됩니다 ── */
 const SENTS = [
@@ -6370,39 +6426,39 @@ const SENTS = [
   {lv:7,c:"촬영·영상",en:"The final cut is due Friday.",ko:"최종본은 금요일까지예요."},
   {lv:7,c:"촬영·영상",en:"Let's nail down the shoot schedule.",ko:"촬영 일정 딱 정하죠.",t:"nail down = 확실히 정하다."},
   {lv:7,c:"촬영·영상",en:"The footage needs color correction.",ko:"영상에 색보정이 필요해요."},
-  {lv:7,c:"말·표현",en:"I can't promise anything yet.",ko:"아직 약속은 못 드려요."},
+  {lv:6,c:"말·표현",en:"I can't promise anything yet.",ko:"아직 약속은 못 드려요."},
   {lv:7,c:"쇼핑·돈",en:"Our margins are getting thinner.",ko:"수익이 점점 줄고 있어요."},
-  {lv:7,c:"촬영·영상",en:"Please back up the raw files.",ko:"원본 파일을 백업해 주세요."},
-  {lv:8,c:"일·업무",en:"We have to stick to the guidelines.",ko:"지침대로 해야 해요.",t:"stick to = ~을 지키다, 고수하다."},
-  {lv:8,c:"일·업무",en:"The budget got set last quarter.",ko:"예산은 지난 분기에 정해졌어요."},
-  {lv:8,c:"일·업무",en:"They've got a really efficient workflow.",ko:"그쪽은 일하는 방식이 정말 효율적이에요."},
+  {lv:6,c:"촬영·영상",en:"Please back up the raw files.",ko:"원본 파일을 백업해 주세요."},
+  {lv:7,c:"일·업무",en:"We have to stick to the guidelines.",ko:"지침대로 해야 해요.",t:"stick to = ~을 지키다, 고수하다."},
+  {lv:7,c:"일·업무",en:"The budget got set last quarter.",ko:"예산은 지난 분기에 정해졌어요."},
+  {lv:7,c:"일·업무",en:"They've got a really efficient workflow.",ko:"그쪽은 일하는 방식이 정말 효율적이에요."},
   {lv:8,c:"시간·숫자",en:"We're expecting a slight delay.",ko:"조금 늦어질 것 같아요.",t:"anticipate보다 expect가 일상적이에요."},
   {lv:8,c:"일·업무",en:"The proposal needs a bit more explaining.",ko:"제안서 설명이 좀 더 필요해요."},
-  {lv:8,c:"쇼핑·돈",en:"Please submit the invoice by Monday.",ko:"월요일까지 청구서를 제출해 주세요."},
+  {lv:7,c:"쇼핑·돈",en:"Please submit the invoice by Monday.",ko:"월요일까지 청구서를 제출해 주세요."},
   {lv:8,c:"일·업무",en:"The campaign did way better than we expected.",ko:"캠페인이 생각보다 훨씬 잘됐어요.",t:"way better = 훨씬 나은 (구어)."},
   {lv:8,c:"일·업무",en:"We're looking at a few different vendors.",ko:"업체 몇 군데 알아보고 있어요."},
   {lv:8,c:"일·업무",en:"This clause seems really strict.",ko:"이 조항 너무 빡빡해 보여요."},
-  {lv:8,c:"일·업무",en:"The results were pretty consistent.",ko:"결과가 꽤 일정했어요.",t:"pretty = 꽤 (fairly의 구어)."},
+  {lv:7,c:"일·업무",en:"The results were pretty consistent.",ko:"결과가 꽤 일정했어요.",t:"pretty = 꽤 (fairly의 구어)."},
   {lv:9,c:"말·표현",en:"The nuance is hard to translate.",ko:"그 뉘앙스는 번역하기 어려워요."},
   {lv:9,c:"촬영·영상",en:"We can use the footage we already have.",ko:"이미 있는 영상 쓰면 돼요."},
-  {lv:9,c:"일·업무",en:"Their branding feels all over the place.",ko:"그쪽 브랜드가 중구난방이에요.",t:"all over the place = 뒤죽박죽인."},
-  {lv:9,c:"일·업무",en:"The brief was way too vague.",ko:"지침이 너무 애매했어요."},
-  {lv:9,c:"일·업무",en:"There's always some risk with this kind of thing.",ko:"이런 일엔 늘 위험이 좀 있어요."},
+  {lv:7,c:"일·업무",en:"Their branding feels all over the place.",ko:"그쪽 브랜드가 중구난방이에요.",t:"all over the place = 뒤죽박죽인."},
+  {lv:7,c:"일·업무",en:"The brief was way too vague.",ko:"지침이 너무 애매했어요."},
+  {lv:6,c:"일·업무",en:"There's always some risk with this kind of thing.",ko:"이런 일엔 늘 위험이 좀 있어요."},
   {lv:9,c:"말·표현",en:"Let's focus on clarity over style.",ko:"멋보다 알아보기 쉽게 가죠."},
-  {lv:9,c:"말·표현",en:"Her feedback was spot on.",ko:"그분 피드백이 딱 맞았어요.",t:"spot on = 딱 맞는, 정확한."},
+  {lv:7,c:"말·표현",en:"Her feedback was spot on.",ko:"그분 피드백이 딱 맞았어요.",t:"spot on = 딱 맞는, 정확한."},
   {lv:9,c:"촬영·영상",en:"We totally underestimated how big the shoot would be.",ko:"촬영 규모를 완전 얕봤어요."},
-  {lv:9,c:"촬영·영상",en:"The story feels kind of flat.",ko:"이야기가 좀 밋밋해요.",t:"flat = (감정이) 밋밋한."},
-  {lv:9,c:"사람·관계",en:"Being upfront builds trust over time.",ko:"솔직하게 하면 갈수록 믿음이 쌓여요.",t:"upfront = 숨김없이 솔직한."},
-  {lv:10,c:"촬영·영상",en:"Short-form videos are literally everywhere now.",ko:"요즘 숏폼은 진짜 어디에나 있어요.",t:"literally = 말 그대로, 진짜로 (강조할 때 정말 많이 써요)."},
-  {lv:10,c:"말·표현",en:"This is a total game changer.",ko:"이건 완전 판도를 바꾸는 거예요.",t:"game changer = 판도를 바꾸는 것."},
-  {lv:10,c:"일·업무",en:"Everyone looked really closely at the contract.",ko:"다들 계약서를 정말 꼼꼼히 봤어요."},
+  {lv:6,c:"촬영·영상",en:"The story feels kind of flat.",ko:"이야기가 좀 밋밋해요.",t:"flat = (감정이) 밋밋한."},
+  {lv:7,c:"사람·관계",en:"Being upfront builds trust over time.",ko:"솔직하게 하면 갈수록 믿음이 쌓여요.",t:"upfront = 숨김없이 솔직한."},
+  {lv:7,c:"촬영·영상",en:"Short-form videos are literally everywhere now.",ko:"요즘 숏폼은 진짜 어디에나 있어요.",t:"literally = 말 그대로, 진짜로 (강조할 때 정말 많이 써요)."},
+  {lv:7,c:"말·표현",en:"This is a total game changer.",ko:"이건 완전 판도를 바꾸는 거예요.",t:"game changer = 판도를 바꾸는 것."},
+  {lv:7,c:"일·업무",en:"Everyone looked really closely at the contract.",ko:"다들 계약서를 정말 꼼꼼히 봤어요."},
   {lv:10,c:"말·표현",en:"He actually made a really good point.",ko:"그 사람 말이 의외로 일리 있었어요.",t:"make a good point = 일리 있는 말을 하다."},
-  {lv:10,c:"촬영·영상",en:"We try to keep the look consistent.",ko:"분위기를 일정하게 유지하려고 해요."},
+  {lv:7,c:"촬영·영상",en:"We try to keep the look consistent.",ko:"분위기를 일정하게 유지하려고 해요."},
   {lv:10,c:"말·표현",en:"It's basically just a matter of wording.",ko:"결국 그냥 표현 차이예요."},
-  {lv:10,c:"사람·관계",en:"She's almost obsessive about her work.",ko:"그분은 일에 거의 집착해요."},
+  {lv:6,c:"사람·관계",en:"She's almost obsessive about her work.",ko:"그분은 일에 거의 집착해요."},
   {lv:10,c:"말·표현",en:"Being real connects more than being polished.",ko:"꾸민 것보다 진짜가 더 와닿아요."},
-  {lv:10,c:"촬영·영상",en:"The visuals give off a quiet, nostalgic vibe.",ko:"화면이 잔잔하고 옛날 느낌이 나요.",t:"vibe = 분위기, 느낌 (요즘 정말 많이 써요)."},
-  {lv:10,c:"촬영·영상",en:"In editing, less is more.",ko:"편집은 덜어 낼수록 좋아요.",t:"less is more = 적을수록 좋다 (자주 쓰는 표현)."},
+  {lv:7,c:"촬영·영상",en:"The visuals give off a quiet, nostalgic vibe.",ko:"화면이 잔잔하고 옛날 느낌이 나요.",t:"vibe = 분위기, 느낌 (요즘 정말 많이 써요)."},
+  {lv:7,c:"촬영·영상",en:"In editing, less is more.",ko:"편집은 덜어 낼수록 좋아요.",t:"less is more = 적을수록 좋다 (자주 쓰는 표현)."},
   {d:10,lv:1,c:"동작·행동",en:"He works at a restaurant.",ko:"그는 식당에서 일해요."},
   {d:10,lv:1,c:"동작·행동",en:"She speaks Spanish.",ko:"그녀는 스페인어를 해요."},
   {d:10,lv:1,c:"동작·행동",en:"My husband likes soccer.",ko:"제 남편은 축구를 좋아해요."},
@@ -6718,70 +6774,145 @@ const SENTS = [
   {lv:6,c:"시간·숫자",en:"By the time we got there, the shop was already closed.",ko:"저희가 갔을 땐 가게가 벌써 닫았어요."},
   {lv:6,c:"여행·교통",en:"They say the water here is really clear.",ko:"여기 물이 진짜 맑대요.",t:"'It is said that'은 글말이에요. 말할 땐 'They say'."},
   {lv:6,c:"숙소·생활",en:"Breakfast starts at seven on the terrace.",ko:"조식은 7시부터 테라스에서 해요."},
-  {lv:7,c:"여행·교통",en:"If we'd left earlier, we wouldn't have missed the ferry.",ko:"좀 더 일찍 나왔으면 배 안 놓쳤을 거예요.",t:"'Had we left'는 글말이에요. 말할 땐 'If we'd left'."},
-  {lv:7,c:"여행·교통",en:"The tour got canceled because of the wind.",ko:"바람 때문에 투어가 취소됐어요.",t:"due to보다 because of를 말할 때 써요."},
-  {lv:7,c:"여행·교통",en:"Is there any way I can get on an earlier flight?",ko:"더 이른 비행기 탈 방법 있을까요?"},
-  {lv:7,c:"숙소·생활",en:"The view from our balcony is just unreal.",ko:"발코니 경치가 말도 안 돼요.",t:"unreal = 믿기지 않을 만큼 좋은."},
-  {lv:7,c:"숙소·생활",en:"Would you mind holding our bags until noon?",ko:"정오까지 짐 좀 맡아 주실래요?",t:"hold = (잠깐) 맡아 두다."},
-  {lv:7,c:"음식·식당",en:"What's in this dish?",ko:"이 요리에 뭐 들어가요?"},
-  {lv:7,c:"음식·식당",en:"We want to try something this area's known for.",ko:"이 동네에서 유명한 거 먹어 보고 싶어요."},
-  {lv:7,c:"쇼핑·돈",en:"I got charged twice for the same meal.",ko:"같은 식사가 두 번 결제됐어요.",t:"'was charged'보다 'got charged'가 구어예요."},
-  {lv:7,c:"쇼핑·돈",en:"Could you do a little better on the price?",ko:"가격 조금만 깎아 주실래요?",t:"흥정할 때 쓰는 표현이에요."},
+  {lv:6,c:"여행·교통",en:"If we'd left earlier, we wouldn't have missed the ferry.",ko:"좀 더 일찍 나왔으면 배 안 놓쳤을 거예요.",t:"'Had we left'는 글말이에요. 말할 땐 'If we'd left'."},
+  {lv:6,c:"여행·교통",en:"The tour got canceled because of the wind.",ko:"바람 때문에 투어가 취소됐어요.",t:"due to보다 because of를 말할 때 써요."},
+  {lv:6,c:"여행·교통",en:"Is there any way I can get on an earlier flight?",ko:"더 이른 비행기 탈 방법 있을까요?"},
+  {lv:6,c:"숙소·생활",en:"The view from our balcony is just unreal.",ko:"발코니 경치가 말도 안 돼요.",t:"unreal = 믿기지 않을 만큼 좋은."},
+  {lv:6,c:"숙소·생활",en:"Would you mind holding our bags until noon?",ko:"정오까지 짐 좀 맡아 주실래요?",t:"hold = (잠깐) 맡아 두다."},
+  {lv:6,c:"음식·식당",en:"What's in this dish?",ko:"이 요리에 뭐 들어가요?"},
+  {lv:6,c:"음식·식당",en:"We want to try something this area's known for.",ko:"이 동네에서 유명한 거 먹어 보고 싶어요."},
+  {lv:6,c:"쇼핑·돈",en:"I got charged twice for the same meal.",ko:"같은 식사가 두 번 결제됐어요.",t:"'was charged'보다 'got charged'가 구어예요."},
+  {lv:6,c:"쇼핑·돈",en:"Could you do a little better on the price?",ko:"가격 조금만 깎아 주실래요?",t:"흥정할 때 쓰는 표현이에요."},
   {lv:7,c:"동작·행동",en:"It took us a while to get used to the heat.",ko:"더위에 익숙해지는 데 시간이 좀 걸렸어요."},
-  {lv:7,c:"동작·행동",en:"We ended up staying an extra day.",ko:"결국 하루 더 머물게 됐어요."},
-  {lv:7,c:"감정·상태",en:"I couldn't have asked for a better trip.",ko:"이보다 더 좋은 여행은 없었을 거예요."},
+  {lv:6,c:"동작·행동",en:"We ended up staying an extra day.",ko:"결국 하루 더 머물게 됐어요."},
+  {lv:6,c:"감정·상태",en:"I couldn't have asked for a better trip.",ko:"이보다 더 좋은 여행은 없었을 거예요."},
   {lv:7,c:"감정·상태",en:"Honestly, I didn't expect it to be this crowded.",ko:"솔직히 이렇게 붐빌 줄 몰랐어요."},
-  {lv:7,c:"사람·관계",en:"Everyone we met along the way was super nice.",ko:"가는 길에 만난 사람들이 다 엄청 친절했어요."},
-  {lv:7,c:"몸·건강",en:"My ankle's swollen, so I'd rather not walk too far.",ko:"발목이 부어서 너무 멀리는 안 걷고 싶어요."},
+  {lv:6,c:"사람·관계",en:"Everyone we met along the way was super nice.",ko:"가는 길에 만난 사람들이 다 엄청 친절했어요."},
+  {lv:6,c:"몸·건강",en:"My ankle's swollen, so I'd rather not walk too far.",ko:"발목이 부어서 너무 멀리는 안 걷고 싶어요."},
   {lv:7,c:"말·표현",en:"Sorry, I didn't mean to interrupt you.",ko:"죄송해요, 말을 끊으려던 건 아니었어요."},
   {lv:7,c:"말·표현",en:"Would you mind explaining that one more time?",ko:"한 번만 더 설명해 주실 수 있을까요?"},
   {lv:7,c:"시간·숫자",en:"The market is busiest early in the morning.",ko:"시장은 이른 아침에 가장 붐벼요."},
-  {lv:7,c:"여행·교통",en:"Not only is the beach clean, it's quiet too.",ko:"해변이 깨끗한 데다 조용하기까지 해요."},
+  {lv:6,c:"여행·교통",en:"Not only is the beach clean, it's quiet too.",ko:"해변이 깨끗한 데다 조용하기까지 해요."},
   {lv:7,c:"숙소·생활",en:"The staff went out of their way to help us.",ko:"직원들이 일부러 애써서 도와줬어요."},
-  {lv:8,c:"여행·교통",en:"You should carry a copy of your passport.",ko:"여권 사본 들고 다니세요.",t:"안내문 말투 대신 'You should ~'로 말해요."},
-  {lv:8,c:"여행·교통",en:"The ferry times can change without notice.",ko:"배 시간은 예고 없이 바뀔 수 있어요."},
-  {lv:8,c:"숙소·생활",en:"We were upgraded to a suite at no extra cost.",ko:"추가 요금 없이 스위트룸으로 업그레이드됐어요."},
-  {lv:8,c:"숙소·생활",en:"Please keep the noise down.",ko:"조용히 해 주세요.",t:"keep the noise down = 소리를 줄이다."},
+  {lv:6,c:"여행·교통",en:"You should carry a copy of your passport.",ko:"여권 사본 들고 다니세요.",t:"안내문 말투 대신 'You should ~'로 말해요."},
+  {lv:7,c:"여행·교통",en:"The ferry times can change without notice.",ko:"배 시간은 예고 없이 바뀔 수 있어요."},
+  {lv:7,c:"숙소·생활",en:"We were upgraded to a suite at no extra cost.",ko:"추가 요금 없이 스위트룸으로 업그레이드됐어요."},
+  {lv:6,c:"숙소·생활",en:"Please keep the noise down.",ko:"조용히 해 주세요.",t:"keep the noise down = 소리를 줄이다."},
   {lv:8,c:"음식·식당",en:"The chef accommodated all of our dietary requests.",ko:"셰프가 저희 음식 요청을 다 맞춰 줬어요."},
   {lv:8,c:"음식·식당",en:"The flavors were way more complex than I expected.",ko:"맛이 생각보다 훨씬 복잡했어요."},
   {lv:8,c:"쇼핑·돈",en:"The airline agreed to compensate us for the delay.",ko:"항공사가 지연에 대해 보상해 주기로 했어요."},
-  {lv:8,c:"쇼핑·돈",en:"The tip's already included in the bill.",ko:"팁은 계산서에 이미 들어가 있어요."},
-  {lv:8,c:"동작·행동",en:"We made the most of every single day there.",ko:"거기서 하루하루를 알차게 보냈어요."},
-  {lv:8,c:"동작·행동",en:"It's worth arriving early to avoid the crowds.",ko:"사람 많은 걸 피하려면 일찍 가는 게 좋아요."},
-  {lv:8,c:"감정·상태",en:"I still can't get over how beautiful it was.",ko:"얼마나 예뻤는지 아직도 못 잊겠어요.",t:"can't get over = 잊히지 않다, 계속 감탄하다."},
-  {lv:8,c:"사람·관계",en:"The locals were so welcoming.",ko:"현지 사람들이 정말 반겨 줬어요."},
-  {lv:8,c:"몸·건강",en:"If it doesn't get better, see a doctor.",ko:"안 나아지면 병원 가 보세요."},
+  {lv:7,c:"쇼핑·돈",en:"The tip's already included in the bill.",ko:"팁은 계산서에 이미 들어가 있어요."},
+  {lv:6,c:"동작·행동",en:"We made the most of every single day there.",ko:"거기서 하루하루를 알차게 보냈어요."},
+  {lv:7,c:"동작·행동",en:"It's worth arriving early to avoid the crowds.",ko:"사람 많은 걸 피하려면 일찍 가는 게 좋아요."},
+  {lv:7,c:"감정·상태",en:"I still can't get over how beautiful it was.",ko:"얼마나 예뻤는지 아직도 못 잊겠어요.",t:"can't get over = 잊히지 않다, 계속 감탄하다."},
+  {lv:6,c:"사람·관계",en:"The locals were so welcoming.",ko:"현지 사람들이 정말 반겨 줬어요."},
+  {lv:6,c:"몸·건강",en:"If it doesn't get better, see a doctor.",ko:"안 나아지면 병원 가 보세요."},
   {lv:8,c:"말·표현",en:"Can you tell me more about the cancellation policy?",ko:"취소 규정 좀 더 알려 주실래요?"},
-  {lv:8,c:"말·표현",en:"I'd like to see the room before I decide.",ko:"정하기 전에 방부터 보고 싶어요."},
-  {lv:8,c:"시간·숫자",en:"You need to confirm your booking at least a day ahead.",ko:"적어도 하루 전에 예약을 확정해야 해요."},
-  {lv:8,c:"여행·교통",en:"Whatever you do, don't leave valuables in the car.",ko:"무슨 일이 있어도 귀중품을 차에 두지 마세요."},
-  {lv:8,c:"숙소·생활",en:"If I'd known about the construction, I would've stayed somewhere else.",ko:"공사하는 줄 알았으면 다른 데 묵었을 거예요."},
-  {lv:9,c:"여행·교통",en:"The ruins give you a real glimpse of ancient life.",ko:"유적에 가면 옛날 생활을 진짜 엿볼 수 있어요."},
-  {lv:9,c:"여행·교통",en:"It doesn't get much more peaceful than this lagoon.",ko:"이 석호보다 평화로운 데는 별로 없어요.",t:"'It doesn't get much more ~ than' = 이보다 더 ~한 건 없다."},
-  {lv:9,c:"숙소·생활",en:"The resort blends right into the jungle.",ko:"리조트가 정글이랑 딱 어우러져요."},
-  {lv:9,c:"음식·식당",en:"It's the perfect mix of sweet and spicy.",ko:"단맛이랑 매운맛이 딱 맞아요."},
-  {lv:9,c:"음식·식당",en:"Every course looked perfect, down to the last detail.",ko:"모든 코스가 하나하나 완벽했어요.",t:"down to the last detail = 아주 작은 것까지."},
-  {lv:9,c:"쇼핑·돈",en:"Stuff's way more expensive in the touristy areas.",ko:"관광지에선 물건이 훨씬 비싸요.",t:"touristy = 관광객이 많은. stuff = 물건들 (구어)."},
-  {lv:9,c:"동작·행동",en:"We really didn't want to leave such a peaceful place.",ko:"그렇게 평화로운 곳을 정말 떠나기 싫었어요."},
-  {lv:9,c:"동작·행동",en:"It's a good idea to get the details in writing.",ko:"자세한 건 글로 받아 두는 게 좋아요."},
-  {lv:9,c:"감정·상태",en:"I felt so calm by the water.",ko:"물가에 있으니 마음이 너무 편했어요."},
-  {lv:9,c:"사람·관계",en:"Our host went all out to make us feel at home.",ko:"주인이 집처럼 편하게 해 주려고 엄청 신경 썼어요.",t:"go all out = 온 힘을 다하다. feel at home = 편하게 느끼다."},
+  {lv:7,c:"말·표현",en:"I'd like to see the room before I decide.",ko:"정하기 전에 방부터 보고 싶어요."},
+  {lv:7,c:"시간·숫자",en:"You need to confirm your booking at least a day ahead.",ko:"적어도 하루 전에 예약을 확정해야 해요."},
+  {lv:6,c:"여행·교통",en:"Whatever you do, don't leave valuables in the car.",ko:"무슨 일이 있어도 귀중품을 차에 두지 마세요."},
+  {lv:6,c:"숙소·생활",en:"If I'd known about the construction, I would've stayed somewhere else.",ko:"공사하는 줄 알았으면 다른 데 묵었을 거예요."},
+  {lv:6,c:"여행·교통",en:"The ruins give you a real glimpse of ancient life.",ko:"유적에 가면 옛날 생활을 진짜 엿볼 수 있어요."},
+  {lv:7,c:"여행·교통",en:"It doesn't get much more peaceful than this lagoon.",ko:"이 석호보다 평화로운 데는 별로 없어요.",t:"'It doesn't get much more ~ than' = 이보다 더 ~한 건 없다."},
+  {lv:6,c:"숙소·생활",en:"The resort blends right into the jungle.",ko:"리조트가 정글이랑 딱 어우러져요."},
+  {lv:6,c:"음식·식당",en:"It's the perfect mix of sweet and spicy.",ko:"단맛이랑 매운맛이 딱 맞아요."},
+  {lv:7,c:"음식·식당",en:"Every course looked perfect, down to the last detail.",ko:"모든 코스가 하나하나 완벽했어요.",t:"down to the last detail = 아주 작은 것까지."},
+  {lv:6,c:"쇼핑·돈",en:"Stuff's way more expensive in the touristy areas.",ko:"관광지에선 물건이 훨씬 비싸요.",t:"touristy = 관광객이 많은. stuff = 물건들 (구어)."},
+  {lv:6,c:"동작·행동",en:"We really didn't want to leave such a peaceful place.",ko:"그렇게 평화로운 곳을 정말 떠나기 싫었어요."},
+  {lv:7,c:"동작·행동",en:"It's a good idea to get the details in writing.",ko:"자세한 건 글로 받아 두는 게 좋아요."},
+  {lv:7,c:"감정·상태",en:"I felt so calm by the water.",ko:"물가에 있으니 마음이 너무 편했어요."},
+  {lv:6,c:"사람·관계",en:"Our host went all out to make us feel at home.",ko:"주인이 집처럼 편하게 해 주려고 엄청 신경 썼어요.",t:"go all out = 온 힘을 다하다. feel at home = 편하게 느끼다."},
   {lv:9,c:"말·표현",en:"Honestly, the two tours are pretty similar.",ko:"솔직히 두 투어 거의 비슷해요."},
-  {lv:9,c:"말·표현",en:"Could you break down the costs for me?",ko:"비용 좀 나눠서 알려 주실래요?",t:"break down = 항목별로 나누다."},
-  {lv:9,c:"시간·숫자",en:"It's a lot cheaper to go in the off-season.",ko:"비수기에 가면 훨씬 싸요."},
-  {lv:9,c:"여행·교통",en:"We would've gotten lost without the guide.",ko:"가이드 없었으면 길 잃었을 거예요."},
-  {lv:10,c:"여행·교통",en:"The coast is still totally untouched.",ko:"해안이 아직 완전 그대로예요."},
-  {lv:10,c:"여행·교통",en:"Wandering the old town felt like stepping back in time.",ko:"구시가지를 거니는 건 과거로 돌아간 느낌이었어요."},
-  {lv:10,c:"숙소·생활",en:"The villa is classy without being over the top.",ko:"빌라가 과하지 않게 고급스러워요.",t:"over the top = 지나친, 오버하는."},
-  {lv:10,c:"음식·식당",en:"Every bite had something new going on.",ko:"한 입 먹을 때마다 새로운 맛이 났어요."},
-  {lv:10,c:"동작·행동",en:"We soaked up every moment, knowing it'd be over soon.",ko:"곧 끝날 걸 알아서 모든 순간을 만끽했어요.",t:"soak up = 흠뻑 즐기다."},
-  {lv:10,c:"감정·상태",en:"The sunset left us speechless.",ko:"노을 보고 말이 안 나왔어요.",t:"speechless = 말문이 막힌."},
-  {lv:10,c:"사람·관계",en:"Our guide was really honest, so we got the real local take.",ko:"가이드가 솔직해서 진짜 현지인 생각을 들었어요.",t:"take = (어떤 일에 대한) 생각, 의견."},
-  {lv:10,c:"말·표현",en:"I can't even put into words how moving it was.",ko:"얼마나 감동적이었는지 말로 못 하겠어요.",t:"put into words = 말로 표현하다."},
-  {lv:10,c:"말·표현",en:"The menu was kind of confusing if you're not from here.",ko:"여기 사람 아니면 메뉴가 좀 헷갈려요."},
-  {lv:10,c:"시간·숫자",en:"Looking back, we should've stayed a little longer.",ko:"돌이켜 보면 좀 더 있을걸 그랬어요.",t:"'In hindsight'보다 'Looking back'이 말할 때 자연스러워요."},
-  {lv:10,c:"여행·교통",en:"I've never seen water this clear in my life.",ko:"이렇게 맑은 물은 태어나서 처음 봐요."},
-  {lv:10,c:"쇼핑·돈",en:"Haggling's normal here, just be respectful about it.",ko:"여긴 흥정이 흔해요, 예의만 지키면 돼요."}
+  {lv:7,c:"말·표현",en:"Could you break down the costs for me?",ko:"비용 좀 나눠서 알려 주실래요?",t:"break down = 항목별로 나누다."},
+  {lv:6,c:"시간·숫자",en:"It's a lot cheaper to go in the off-season.",ko:"비수기에 가면 훨씬 싸요."},
+  {lv:6,c:"여행·교통",en:"We would've gotten lost without the guide.",ko:"가이드 없었으면 길 잃었을 거예요."},
+  {lv:6,c:"여행·교통",en:"The coast is still totally untouched.",ko:"해안이 아직 완전 그대로예요."},
+  {lv:7,c:"여행·교통",en:"Wandering the old town felt like stepping back in time.",ko:"구시가지를 거니는 건 과거로 돌아간 느낌이었어요."},
+  {lv:6,c:"숙소·생활",en:"The villa is classy without being over the top.",ko:"빌라가 과하지 않게 고급스러워요.",t:"over the top = 지나친, 오버하는."},
+  {lv:6,c:"음식·식당",en:"Every bite had something new going on.",ko:"한 입 먹을 때마다 새로운 맛이 났어요."},
+  {lv:7,c:"동작·행동",en:"We soaked up every moment, knowing it'd be over soon.",ko:"곧 끝날 걸 알아서 모든 순간을 만끽했어요.",t:"soak up = 흠뻑 즐기다."},
+  {lv:6,c:"감정·상태",en:"The sunset left us speechless.",ko:"노을 보고 말이 안 나왔어요.",t:"speechless = 말문이 막힌."},
+  {lv:7,c:"사람·관계",en:"Our guide was really honest, so we got the real local take.",ko:"가이드가 솔직해서 진짜 현지인 생각을 들었어요.",t:"take = (어떤 일에 대한) 생각, 의견."},
+  {lv:6,c:"말·표현",en:"I can't even put into words how moving it was.",ko:"얼마나 감동적이었는지 말로 못 하겠어요.",t:"put into words = 말로 표현하다."},
+  {lv:7,c:"말·표현",en:"The menu was kind of confusing if you're not from here.",ko:"여기 사람 아니면 메뉴가 좀 헷갈려요."},
+  {lv:6,c:"시간·숫자",en:"Looking back, we should've stayed a little longer.",ko:"돌이켜 보면 좀 더 있을걸 그랬어요.",t:"'In hindsight'보다 'Looking back'이 말할 때 자연스러워요."},
+  {lv:6,c:"여행·교통",en:"I've never seen water this clear in my life.",ko:"이렇게 맑은 물은 태어나서 처음 봐요."},
+  {lv:6,c:"쇼핑·돈",en:"Haggling's normal here, just be respectful about it.",ko:"여긴 흥정이 흔해요, 예의만 지키면 돼요."},
+  {lv:8,c:"여행·교통",en:"Honestly, the tour was a bit of a debacle.",ko:"솔직히 투어는 좀 엉망이었어요.",t:"debacle = 대실패, 엉망진창."},
+  {lv:8,c:"숙소·생활",en:"The hotel waived the late checkout fee for us.",ko:"호텔에서 늦은 체크아웃 비용을 빼 줬어요.",t:"waive = (요금을) 면제해 주다."},
+  {lv:8,c:"여행·교통",en:"Security is always the bottleneck at this airport.",ko:"이 공항은 늘 보안 검색에서 막혀요.",t:"bottleneck = 병목, 막히는 곳."},
+  {lv:8,c:"숙소·생활",en:"The only drawback is that it's a bit far from the beach.",ko:"유일한 단점은 해변에서 좀 멀다는 거예요."},
+  {lv:8,c:"숙소·생활",en:"We got a complimentary upgrade, which was a nice surprise.",ko:"무료 업그레이드를 받아서 깜짝 선물 같았어요.",t:"complimentary = 무료로 주는."},
+  {lv:8,c:"촬영·영상",en:"Let's brainstorm a few ideas before the shoot.",ko:"촬영 전에 아이디어 좀 같이 짜 봐요."},
+  {lv:8,c:"일·업무",en:"I don't really have the bandwidth for another project right now.",ko:"지금은 프로젝트 하나 더 할 여유가 없어요.",t:"bandwidth = (일할) 여력. 회사에서 정말 많이 써요."},
+  {lv:8,c:"여행·교통",en:"Rebooking was free, so it wasn't a huge deal.",ko:"예약 변경이 무료라 큰일은 아니었어요."},
+  {lv:8,c:"여행·교통",en:"Check the travel advisory before you head out.",ko:"나가기 전에 여행 경보 확인하세요."},
+  {lv:8,c:"일·업무",en:"The crux of the problem is that nobody's in charge.",ko:"문제의 핵심은 담당자가 없다는 거예요.",t:"crux = 핵심."},
+  {lv:8,c:"여행·교통",en:"It's an unprecedented number of tourists for this time of year.",ko:"이맘때 관광객 수로는 전례 없는 수준이에요."},
+  {lv:8,c:"쇼핑·돈",en:"There's a lot of price fluctuation, so book while it's cheap.",ko:"가격이 많이 오르내리니까 쌀 때 예약하세요."},
+  {lv:8,c:"말·표현",en:"I'd take those reviews with a grain of salt, they're pretty anecdotal.",ko:"그 후기들은 걸러 들으세요, 개인 경험담이라.",t:"take with a grain of salt = 곧이곧대로 믿지 않다."},
+  {lv:8,c:"일·업무",en:"That's a fair point, but it's not really feasible on our budget.",ko:"일리는 있지만 우리 예산으론 어려워요.",t:"feasible = 실현 가능한."},
+  {lv:8,c:"여행·교통",en:"Our stopover in Mexico City was a fortuitous bonus.",ko:"멕시코시티 경유가 뜻밖의 덤이었어요."},
+  {lv:8,c:"사람·관계",en:"Our guide was super forthright about which places to avoid.",ko:"가이드가 피해야 할 곳을 솔직하게 말해 줬어요."},
+  {lv:8,c:"일·업무",en:"We'll need to sort out the logistics before Friday.",ko:"금요일 전에 세부 진행을 정리해야 해요.",t:"sort out = 정리하다, 해결하다."},
+  {lv:8,c:"여행·교통",en:"Missing that ferry ended up being a pivotal moment.",ko:"그 배를 놓친 게 결정적인 순간이 됐어요."},
+  {lv:8,c:"숙소·생활",en:"The resort has a really holistic approach to wellness.",ko:"그 리조트는 몸과 마음을 같이 챙겨 줘요."},
+  {lv:8,c:"감정·상태",en:"I just want to reiterate how grateful we are.",ko:"저희가 얼마나 고마운지 다시 한번 말하고 싶어요."},
+  {lv:8,c:"여행·교통",en:"You might incur extra fees if you return the car late.",ko:"차를 늦게 반납하면 추가 요금이 붙을 수 있어요."},
+  {lv:8,c:"말·표현",en:"That's kind of an archaic rule, don't you think?",ko:"그거 좀 구시대적인 규칙 아니에요?",t:"don't you think? = 그렇지 않아요? (동의를 구할 때)"},
+  {lv:8,c:"여행·교통",en:"It's not a bona fide tour company, so be careful.",ko:"정식 투어 업체가 아니니까 조심하세요."},
+  {lv:8,c:"일·업무",en:"The workload's been insane this week.",ko:"이번 주 일이 미친 듯이 많았어요.",t:"insane = 말도 안 되게 (구어에서 강조)."},
+  {lv:8,c:"사람·관계",en:"He's a coffee connoisseur, so let him pick the place.",ko:"그 사람 커피 전문가니까 가게 고르라고 해요."},
+  {lv:9,c:"사람·관계",en:"Our driver was pretty garrulous, but in a fun way.",ko:"기사님이 말이 꽤 많았는데 재밌는 쪽이었어요."},
+  {lv:9,c:"사람·관계",en:"The camaraderie on the boat tour was amazing.",ko:"보트 투어에서 다들 금방 친해졌어요.",t:"camaraderie = 동료애, 끈끈함."},
+  {lv:9,c:"여행·교통",en:"It was a totally impromptu trip, and it worked out great.",ko:"완전 즉흥 여행이었는데 잘 풀렸어요.",t:"work out = (일이) 잘 풀리다."},
+  {lv:9,c:"숙소·생활",en:"The service was impeccable from start to finish.",ko:"서비스가 처음부터 끝까지 흠잡을 데 없었어요."},
+  {lv:9,c:"음식·식당",en:"I have a real penchant for spicy street food.",ko:"저는 매운 길거리 음식을 진짜 좋아해요."},
+  {lv:9,c:"쇼핑·돈",en:"There's a plethora of options, so take your time.",ko:"선택지가 엄청 많으니까 천천히 고르세요."},
+  {lv:9,c:"사람·관계",en:"Her answer was a little glib, if you ask me.",ko:"제가 보기엔 그분 대답이 좀 가벼웠어요.",t:"if you ask me = 내 생각엔."},
+  {lv:9,c:"쇼핑·돈",en:"The town has such an eclectic mix of shops.",ko:"그 동네는 가게들이 정말 다양하게 섞여 있어요."},
+  {lv:9,c:"말·표현",en:"That excuse sounds plausible, but I'm not buying it.",ko:"그럴듯한 변명인데 전 안 믿어요.",t:"I'm not buying it = 안 믿어."},
+  {lv:9,c:"쇼핑·돈",en:"Petty theft is rife in crowded markets, so watch your bag.",ko:"붐비는 시장엔 좀도둑이 많으니 가방 조심하세요."},
+  {lv:9,c:"음식·식당",en:"The salsa was kind of insipid, to be honest.",ko:"솔직히 살사가 좀 밍밍했어요."},
+  {lv:9,c:"쇼핑·돈",en:"I was a little nonplussed when they asked for a deposit.",ko:"보증금을 달라길래 좀 어리둥절했어요."},
+  {lv:9,c:"사람·관계",en:"He gave me a wry smile and said nothing.",ko:"그가 쓴웃음만 짓고 아무 말도 안 했어요."},
+  {lv:9,c:"음식·식당",en:"There's a slight discrepancy between the bill and the menu.",ko:"계산서랑 메뉴 가격이 조금 달라요."},
+  {lv:9,c:"숙소·생활",en:"The lobby is a bit ostentatious for my taste.",ko:"로비가 제 취향엔 좀 과시적이에요.",t:"for my taste = 내 취향엔."},
+  {lv:9,c:"숙소·생활",en:"It was a languid afternoon by the pool.",ko:"수영장 옆에서 나른한 오후를 보냈어요."},
+  {lv:9,c:"여행·교통",en:"I'm a total neophyte when it comes to diving.",ko:"다이빙은 제가 완전 초보예요.",t:"when it comes to = ~에 관해서라면."},
+  {lv:9,c:"여행·교통",en:"The walk back to the hotel was pretty circuitous.",ko:"호텔로 돌아가는 길이 꽤 빙 돌아갔어요."},
+  {lv:9,c:"쇼핑·돈",en:"Paying that much for a cab is just egregious.",ko:"택시비로 그만큼 내는 건 말도 안 돼요."},
+  {lv:9,c:"감정·상태",en:"She was surprisingly sanguine about losing her luggage.",ko:"짐을 잃어버렸는데도 그녀는 의외로 태평했어요."},
+  {lv:9,c:"감정·상태",en:"The trip left an indelible mark on all of us.",ko:"그 여행은 우리 모두에게 잊지 못할 기억을 남겼어요."},
+  {lv:9,c:"감정·상태",en:"I was a little jaded at first, but this place won me over.",ko:"처음엔 좀 시큰둥했는데 여기에 반했어요.",t:"win someone over = 마음을 사로잡다."},
+  {lv:9,c:"말·표현",en:"Let's keep it pithy, nobody wants a long speech.",ko:"짧게 해요, 긴 연설 좋아하는 사람 없어요."},
+  {lv:9,c:"여행·교통",en:"The sunset was the zenith of the whole trip.",ko:"노을이 여행 전체의 절정이었어요."},
+  {lv:9,c:"사람·관계",en:"Our host was so affable, we felt at home right away.",ko:"주인이 너무 상냥해서 바로 편해졌어요."},
+  {lv:10,c:"여행·교통",en:"There's a certain ineffable charm to this little town.",ko:"이 작은 마을엔 말로 설명 못 할 매력이 있어요."},
+  {lv:10,c:"음식·식당",en:"Finding that cafe was totally serendipitous.",ko:"그 카페를 찾은 건 완전 우연한 행운이었어요.",t:"serendipitous = 우연히 좋은 걸 발견한."},
+  {lv:10,c:"여행·교통",en:"The water in the cenote was so limpid, it looked fake.",ko:"세노테 물이 너무 맑아서 가짜 같았어요."},
+  {lv:10,c:"여행·교통",en:"Honestly, the whole night was pure pandemonium.",ko:"솔직히 그날 밤은 완전 난리였어요."},
+  {lv:10,c:"사람·관계",en:"Our guide is a born raconteur, you'll love him.",ko:"가이드가 타고난 이야기꾼이라 좋아하실 거예요."},
+  {lv:10,c:"음식·식당",en:"The dessert was a bit cloying for me.",ko:"디저트가 제겐 좀 너무 달았어요."},
+  {lv:10,c:"말·표현",en:"Wearing shoes inside the temple is a real faux pas.",ko:"사원 안에서 신발 신는 건 큰 실례예요.",t:"faux pas = 실례, 결례 (프랑스어에서 온 말)."},
+  {lv:10,c:"여행·교통",en:"It's an idyllic spot, but it gets crowded by noon.",ko:"그림 같은 곳인데 정오쯤 되면 붐벼요."},
+  {lv:10,c:"말·표현",en:"That rule is a bit of a misnomer, it's more of a suggestion.",ko:"그건 이름만 규칙이고 사실 권장 사항이에요.",t:"more of a ~ = 오히려 ~에 가까운."},
+  {lv:10,c:"숙소·생활",en:"The hotel's breakfast is pretty spartan, so eat out.",ko:"호텔 조식이 꽤 소박하니까 밖에서 드세요.",t:"eat out = 외식하다."},
+  {lv:10,c:"감정·상태",en:"I could ruminate on this trip for weeks.",ko:"이 여행은 몇 주 동안 곱씹을 수 있을 것 같아요."},
+  {lv:10,c:"감정·상태",en:"There's something so ephemeral about a perfect sunset.",ko:"완벽한 노을은 왠지 너무 덧없어요."},
+  {lv:10,c:"음식·식당",en:"The smell of tacos really whets your appetite.",ko:"타코 냄새가 진짜 식욕을 돋워요."},
+  {lv:10,c:"쇼핑·돈",en:"Haggling here is de rigueur, so don't be shy.",ko:"여기선 흥정이 기본이니까 쑥스러워하지 마세요."},
+  {lv:10,c:"여행·교통",en:"The street art gives the whole area real panache.",ko:"거리 예술이 동네 전체에 멋을 더해요."},
+  {lv:10,c:"감정·상태",en:"It was such a quotidian thing, but it made my day.",ko:"정말 일상적인 일이었는데 그날 기분이 좋아졌어요.",t:"make my day = 하루를 기분 좋게 만들다."},
+  {lv:10,c:"여행·교통",en:"The old town feels like a palimpsest of different eras.",ko:"구시가지는 여러 시대가 겹겹이 쌓인 느낌이에요."},
+  {lv:10,c:"감정·상태",en:"We reminisced about the trip all the way home.",ko:"집에 오는 내내 여행 얘기를 했어요."},
+  {lv:10,c:"사람·관계",en:"Her laugh is so effervescent, it's contagious.",ko:"그녀 웃음이 너무 밝아서 옮아요."},
+  {lv:10,c:"여행·교통",en:"The whole visa process felt totally byzantine.",ko:"비자 절차 전체가 완전 복잡하게 느껴졌어요."},
+  {lv:10,c:"감정·상태",en:"I've got a serious case of wanderlust lately.",ko:"요즘 여행병이 제대로 도졌어요.",t:"a case of ~ = (병처럼) ~이 도지다."},
+  {lv:10,c:"음식·식당",en:"It's the quintessential Mexican breakfast, you have to try it.",ko:"이게 멕시코 아침의 정석이에요, 꼭 드셔 보세요."},
+  {lv:10,c:"숙소·생활",en:"The concierge was meticulous about every detail.",ko:"컨시어지가 모든 걸 꼼꼼하게 챙겼어요."},
+  {lv:10,c:"감정·상태",en:"Words can't capture how sublime that view was.",ko:"그 경치가 얼마나 장엄했는지 말로 못 담아요."},
+  {lv:10,c:"사람·관계",en:"He's got a nebulous plan to move here someday.",ko:"그는 언젠가 여기로 이사 올 막연한 계획이 있어요."},
 ];
 /* ── 데이터 끝 ── */
 
@@ -6836,6 +6967,19 @@ const LEARN_CAP = 20;
 const LVNAME = {1:"왕기초",2:"기초",3:"초급",4:"초중급",5:"중급 진입",
                 6:"중급",7:"중상급",8:"상급 진입",9:"상급",10:"최상급"};
 let myLevel = store.get("vb.level", 0, Number.isFinite);
+/* 내 레벨 ±1에서 고를 때, 문장 수가 많은 쉬운 레벨에 쏠리지 않게 — 절반은 내 레벨, 나머지는 한 단계 아래·위에서 */
+function levelMix(pool, n){
+  const L = Math.round(myLevel || 0);
+  if (!L) return shuffle([...pool]).slice(0, n);
+  const at = d => shuffle(pool.filter(x => x.lv === L + d));
+  const own = at(0), lo = at(-1), hi = at(1);
+  const out = own.slice(0, Math.ceil(n / 2));
+  let k = 0;
+  while (out.length < n && (k < lo.length || k < hi.length)){ if (k < hi.length) out.push(hi[k]); if (out.length < n && k < lo.length) out.push(lo[k]); k++; }
+  own.slice(Math.ceil(n / 2)).forEach(x => { if (out.length < n) out.push(x); });   // 위아래가 모자라면 내 레벨로 채움
+  shuffle(pool.filter(x => !out.includes(x))).forEach(x => { if (out.length < n) out.push(x); });
+  return shuffle(out);
+}
 const inMyLevel = x => { if (!myLevel || x.lv == null) return true;            // 레벨은 4.6처럼 소수 — 반올림한 레벨 ±1
   const L = Math.round(myLevel); return x.lv >= L - 1 && x.lv <= L + 1; };
 const DAY_MS = 86400000, WAIT3 = [7, 14, 30, 60];
@@ -6870,8 +7014,10 @@ function todayWords(){
   const t0 = new Date(); t0.setHours(0, 0, 0, 0);
   const learn = pool.filter(x => boxOf(keyOf(x)) === 1 && stampOf(keyOf(x)) < t0.getTime())   // 오늘 이미 푼 건 내일 다시
                     .sort((a,b) => stampOf(keyOf(a)) - stampOf(keyOf(b))).slice(0, LEARN_CAP);
+  const L = Math.round(myLevel || 0);
   const fresh = pool.filter(x => boxOf(keyOf(x)) === 0)
-                    .sort((a, b) => (a.lv || 0) - (b.lv || 0))                              // 쉬운 단어(레벨 낮은 것)부터
+                    .sort((a, b) => L ? (Math.abs(a.lv - L) - Math.abs(b.lv - L)) || (a.lv - b.lv)   // 내 레벨 단어부터, 그다음 한 단계 아래·위
+                                      : (a.lv || 0) - (b.lv || 0))
                     .slice(0, Math.max(0, goalW() - (+todayLog().n || 0)));                  // 새 단어는 하루 목표만큼
   const seen = new Set(), out = [];
   [...due, ...learn, ...fresh].forEach(x => {
@@ -7095,6 +7241,9 @@ function ding(){
 
 /* ══ 문장 조립 ══ */
 let deck=[], idx=0, picked=[], bankWords=[], streak=0, correct=0, missed=[], locked=false;
+/* 틀린 문장은 넘어가지 않고 2문장 뒤에 다시 나옴 — 맞힐 때까지 반복. deckN = 처음 문장 수, correct = 한 번에 맞힌 수 */
+let deckN = 0;
+const RETRY_GAP = 2;
 
 function shuffle(a){ return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]); }
 
@@ -7123,10 +7272,10 @@ function newRound(day, from, label){
   } else {
     const lvPool = SENTS.filter(inMyLevel);
     const pool = lvPool.length >= 4 ? lvPool : SENTS;
-    deck = shuffle([...pool]).slice(0, Math.min(goalS(), pool.length));          // 한 판 = 하루 문장 목표
+    deck = levelMix(pool, Math.min(goalS(), pool.length));                        // 한 판 = 하루 문장 목표
   }
   drawMode();
-  idx=0; correct=0; missed=[]; streak=0;
+  idx=0; correct=0; missed=[]; streak=0; deckN = deck.length;
   $("#gameDone").hidden = true;
   $("#gameWrap").hidden = false;
   draw();
@@ -7145,7 +7294,8 @@ function draw(){
   $("#gCount").textContent = (idx+1)+" / "+deck.length;
   $("#gBar").style.width = (idx/deck.length*100)+"%";
   $("#gStreak").textContent = "연속 "+streak;
-  $("#gDay").textContent = (s.c || "문장") + (s.lv ? " · 레벨 " + s.lv : "");   // Day 대신 분야·레벨
+  $("#gDay").textContent = (missed.includes(s) ? "다시 나온 문장 · " : "")
+    + (s.c || "문장") + (s.lv ? " · 레벨 " + s.lv : "");   // Day 대신 분야·레벨
   $("#gKo").textContent = s.ko;
   $("#gAns").innerHTML = "";
   $("#gSlot").className = "slot";
@@ -7257,16 +7407,19 @@ $("#gCheck").addEventListener("click", () => {
   logAct("s");
   $("#gSlot").className = "slot " + (ok?"right":"wrong");
   if (ok){
-    correct++; streak++; ding();
+    if (!missed.includes(s)) correct++;           // 한 번에 맞힌 것만 점수
+    streak++; ding();
     if (streak>best){ best=streak; store.set("vb.best",best); headStats(); }
     $("#gAns").innerHTML = '<span style="color:var(--ok);font-weight:600">맞았습니다</span>' + tipHtml(s);
     speak(s.en, 1);
   } else {
     streak = 0;
-    missed.push(s);
+    if (!missed.includes(s)) missed.push(s);
+    deck.splice(Math.min(deck.length, idx + 1 + RETRY_GAP), 0, s);   // 맞힐 때까지 조금 뒤에 다시 나옴
     const trap = picked.filter(p => p.d).map(p => p.w);
     $("#gAns").innerHTML = `<span class="lab">정답</span><span class="en">${s.en}</span>`
-      + (trap.length ? `<span class="trapNote">함정 조각 <b>${esc(trap.join(", "))}</b>을(를) 골랐어요</span>` : "") + tipHtml(s);
+      + (trap.length ? `<span class="trapNote">함정 조각 <b>${esc(trap.join(", "))}</b>을(를) 골랐어요</span>` : "")
+      + `<span class="trapNote" style="color:var(--accent)">이 문장은 조금 뒤에 다시 나와요</span>` + tipHtml(s);
     speak(s.en, 0.75);
   }
   renderSlot(); renderBank();                     // 함정 조각을 줄 그어 보여 줌
@@ -7281,8 +7434,8 @@ function finishRound(){
   d.hidden = false;
   d.innerHTML = `
     <div class="done">
-      <p class="score">${correct} / ${deck.length}</p>
-      <p class="lab">${missed.length? "틀린 문장은 아래에서 다시 보세요." : "전부 맞히셨습니다."}</p>
+      <p class="score">${correct} / ${deckN}</p>
+      <p class="lab">${missed.length? `${deckN}문장을 다 맞혔어요. 한 번에 맞힌 건 ${correct}개 — 틀렸다가 맞힌 문장을 한 번 더 보세요.` : "전부 한 번에 맞히셨습니다."}</p>
       ${missed.length ? `<div class="missed">${missed.map(m=>
         `<div class="row"><span class="en">${m.en}</span><span class="ko">${m.ko}</span></div>`).join("")}</div>` : ""}
       <div class="qBtns"><button class="btn${gFrom ? "" : " go"}" id="gAgain">한 번 더</button>
@@ -8203,7 +8356,7 @@ function drawCount(){
 const LISTEN_N = 5;                               // 한 번에 5문장 — 아래로 덜 내려가게, '다른 문장 5개'로 바꿔 가며
 function renderListen(){
   const lvPool = SENTS.filter(inMyLevel);
-  const pool = shuffle([...(lvPool.length >= LISTEN_N ? lvPool : SENTS)]).slice(0, LISTEN_N);
+  const pool = levelMix(lvPool.length >= LISTEN_N ? lvPool : SENTS, LISTEN_N);
   $("#listen").innerHTML = `<div class="lcount" id="lCount"></div>`
     + (myLevel ? `<p class="lead" style="margin:0 0 2px">내 레벨(${lvShow(myLevel)})에 맞는 문장 ${LISTEN_N}개예요.</p>` : "")
     + pool.map((s,i)=>`
@@ -9350,7 +9503,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=42"></script>
-<script src="sync.js?v=42"></script>
+<script src="firebase-config.js?v=43"></script>
+<script src="sync.js?v=43"></script>
 
 </body></html>

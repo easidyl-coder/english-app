@@ -49,7 +49,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=47"></script>
+<script src="ipa.js?v=48"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -63,7 +63,7 @@
     color-scheme:light;
     --ground:#F0F1F8; --raise:#FFFFFF; --raise-2:#F7F7FC;
     --ink:#16183A; --ink-2:#4A4C68; --ink-3:#62647F;
-    --line:var(--line); --line-2:#ECEDF5;
+    --line:#E2E3EF; --line-2:#ECEDF5;
     --accent:#2A2FA8; --accent-fill:#2A2FA8; --accent-soft:#E6E7F7;
     --ok:#1E7A55; --ok-soft:#D3EADF; --bad:#B4432C; --bad-soft:#F3DCD5; --warn:#8A5A00;
     --honey:#EDBE4E; --honey-dark:#C99A2E; --mint:#D3EADF; --pink:#F3DCD5; --tint:#D8DAF5;
@@ -744,6 +744,7 @@
   .hWho{flex:0 1 auto;min-width:0}
   .hHello{font-family:"Jua",sans-serif;font-size:24px;line-height:1.25}
   .hDate{font-size:13px;font-weight:600;color:var(--ink-2);margin-top:2px}
+  .hChip.xp{background:var(--accent-soft);border-color:var(--tint);color:var(--accent)}
   .hChip.fire{background:var(--fire-bg);border-color:var(--fire-line);color:var(--fire-ink)}
   .hHero{background:linear-gradient(135deg,#2A2FA8 0%,#4D52CC 100%);position:relative;overflow:hidden}
   .hHero::after{content:"";position:absolute;right:-50px;top:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08)}
@@ -849,6 +850,28 @@
   .stWeek span{font-size:11.5px;color:var(--ink-2)}
   .stWeek .now span{color:var(--accent);font-weight:800}
   .stNote{font-size:12px;color:var(--ink-3);margin:10px 0 0}
+  .stBig small{display:block;margin-top:6px;font-size:11.5px;opacity:.85}
+  .bdN{font-family:inherit;font-size:13px;color:var(--ink-3);font-weight:700;margin-left:4px}
+  .bdGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .bd{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:8px 2px;border-radius:14px;background:var(--raise-2);border:1px solid var(--line)}
+  .bd i{font-style:normal;font-size:26px;line-height:1.2}
+  .bd b{font-size:11.5px;line-height:1.25;word-break:keep-all}
+  .bd span{font-size:10.5px;color:var(--ink-3);line-height:1.3}
+  .bd.off i{filter:grayscale(1);opacity:.35}
+  .bd.off b{color:var(--ink-3)}
+  .lgP{font-size:13.5px;color:var(--ink-2);margin:0 0 12px;line-height:1.55}
+  .lgForm{padding:0}
+  .lgMsg{font-size:12.5px;color:var(--bad);margin:8px 0 0;min-height:1em}
+  .lgHead{display:flex;gap:8px;margin-bottom:12px}
+  .lgHead div{flex:1;display:flex;flex-direction:column;align-items:center;background:var(--accent-soft);border-radius:14px;padding:10px 4px}
+  .lgHead b{font-family:"Jua",sans-serif;font-weight:400;font-size:24px;line-height:1.15;color:var(--accent)}
+  .lgHead span{font-size:12px;color:var(--ink-2)}
+  .lgList{list-style:none;margin:0 0 12px;padding:0;max-height:330px;overflow:auto}
+  .lgList li{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid var(--line-2)}
+  .lgList li.me{background:var(--honey-soft);border-radius:10px}
+  .lgList em{font-style:normal;font-weight:800;width:24px;text-align:center;color:var(--ink-3)}
+  .lgList span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lgList b{font-size:13px;color:var(--accent)}
   /* ═══ 복습 ═══ */
   .rvCard{background:var(--raise);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-top:12px}
   .rvCard.main{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -1039,7 +1062,7 @@
   <section class="panel on" id="p3">
     <div class="hTop">
       <div class="hWho"><span id="hMs"></span><div><div class="hHello" id="hHello">오늘도 영어 한 걸음</div><div class="hDate" id="hDate"></div></div></div>
-      <div class="hChips"><span class="hChip fire" id="hStreak">0일 연속</span><button class="hChip" id="hLv" type="button">Lv.?</button></div>
+      <div class="hChips"><span class="hChip fire" id="hStreak">0일 연속</span><span class="hChip xp" id="hXp">0 XP</span><button class="hChip" id="hLv" type="button">Lv.?</button></div>
     </div>
     <div class="hTrip" id="hTrip" hidden></div>
     <div class="hInstall" id="hInstall" hidden></div>
@@ -1138,6 +1161,9 @@
   <section class="panel" id="p7">
     <div class="allHead"><h2>나</h2><p>내 공부 기록과 설정이에요.</p></div>
     <div id="stBody"></div>
+    <h3 class="allSub">XP · 배지</h3>
+    <div id="xpBody"></div>
+    <div id="lgWrap"><h3 class="allSub">주간 리그</h3><div id="lgBody"></div></div>
     <h3 class="allSub">내 레벨</h3>
     <div class="lvHero" id="lvCard">
       <div class="lvTop">
@@ -7396,7 +7422,113 @@ function logAct(kind){
   while (keys.length > 90) delete actLog[keys.shift()];
   store.set("vb.log", actLog);
   celeCheck(kind, before, actLog[k][kind]);
+  addXP(XP_OF[kind] || 0);
 }
+/* ── XP ── 공부한 만큼 쌓이는 점수. vb.xp = {"2026-10-05": 35, …} 날짜별 (계정에 저장, 400일만 남김)
+   단어 문제 하나 2 · 문장 하나 3 · 말한 문장 하나 3 · 레슨 끝내기 20 */
+const XP_OF = { w: 2, s: 3, t: 3 }, XP_LESSON = 20;
+let xpLog = store.get("vb.xp", {}, x => x && typeof x === "object" && !Array.isArray(x));
+function addXP(n){
+  if (!n) return;
+  const k = dkey(); xpLog[k] = (+xpLog[k] || 0) + n;
+  const keys = Object.keys(xpLog).sort(); while (keys.length > 400) delete xpLog[keys.shift()];
+  store.set("vb.xp", xpLog);
+  const hx = document.getElementById("hXp"); if (hx) hx.textContent = xpToday() + " XP";
+  badgeCheck(); leagueSoon();
+}
+const xpToday = () => +xpLog[dkey()] || 0;
+const xpAll = () => Object.values(xpLog).reduce((a, b) => a + (+b || 0), 0);
+function weekStart(d){ const x = new Date(d || Date.now()); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }   // 그 주 월요일
+const weekKey = d => dkey(weekStart(d));
+function xpWeek(){ const s = weekStart(); let n = 0; for (let i = 0; i < 7; i++){ const d = new Date(s); d.setDate(s.getDate() + i); n += +xpLog[dkey(d)] || 0; } return n; }
+
+/* ── 배지 ── 조건을 처음 채운 날을 vb.badge = {id: "날짜"}에 남김 (계정에 저장 — 연속이 끊겨도 받은 배지는 그대로) */
+let badges = store.get("vb.badge", {}, x => x && typeof x === "object" && !Array.isArray(x));
+const sumLog = f => Object.values(actLog).reduce((a, d) => a + (+(d || {})[f] || 0), 0);
+const learnedAll = () => Object.values(boxes || {}).filter(v => v && v.b >= 2).length;
+const goalDays = () => Object.values(actLog).filter(d => d && ((+d.n || 0) >= goalW() || (+d.s || 0) >= goalS())).length;
+const BADGES = [
+  ["first", "🌱", "첫걸음", "처음 공부하기", () => xpAll() > 0 || Object.keys(actLog).some(dayTotal)],
+  ["lv", "🔍", "내 레벨 찾기", "레벨 테스트 끝내기", () => myLevel > 0],
+  ["st3", "🔥", "3일 연속", "3일 연속 공부하기", () => streakDays() >= 3],
+  ["st7", "🌟", "일주일 연속", "7일 연속 공부하기", () => streakDays() >= 7],
+  ["st30", "🏆", "한 달 연속", "30일 연속 공부하기", () => streakDays() >= 30],
+  ["goal7", "🎯", "목표 달성 7번", "하루 목표 7번 채우기", () => goalDays() >= 7],
+  ["d10", "📘", "레슨 10개", "Day 10 레슨까지 끝내기", () => curDay > 10],
+  ["d40", "📚", "레슨 40개", "Day 40 레슨까지 끝내기", () => curDay > 40],
+  ["w100", "🧠", "단어 100개", "단어 100개 외우기", () => learnedAll() >= 100],
+  ["w500", "🎓", "단어 500개", "단어 500개 외우기", () => learnedAll() >= 500],
+  ["talk50", "🗣️", "50문장 말하기", "소리 내어 50문장 말하기", () => sumLog("t") >= 50],
+  ["xp1000", "⚡", "1000 XP", "XP 1000 모으기", () => xpAll() >= 1000]
+];
+function badgeCheck(quiet){
+  const got = [];
+  BADGES.forEach(([id, ic, nm, ds, ok]) => { try{ if (!badges[id] && ok()){ badges[id] = dkey(); got.push([ic, nm, ds]); } }catch(e){} });
+  if (!got.length) return;
+  store.set("vb.badge", badges);
+  if (quiet) return;
+  const el = document.getElementById("cele"), wait = el && !el.hidden ? 2700 : 0;   // 다른 축하가 떠 있으면 끝난 뒤에
+  setTimeout(() => celebrate(`${got[0][0]} 배지: ${got[0][1]}`, got[0][2] + " 성공!" + (got.length > 1 ? ` (외 ${got.length - 1}개)` : "")), wait);
+}
+
+/* ── 주간 리그 ── 로그인한 사람만, 직접 '참여'를 눌러야 시작 (기본은 꺼짐). 별명과 이번 주 XP만 다른 참가자에게 보임.
+   vb.league = {on, nick, t: 바꾼 시각} (계정에 저장). 서버: league/{그 주 월요일}/members/{uid} = {nick, xp, at} */
+let league = store.get("vb.league", {}, x => x && typeof x === "object" && !Array.isArray(x));
+const leagueOn = () => !!(league.on && league.nick && loggedIn() && window.appLeague);
+let leagueTimer = null, leagueList = null, leagueErr = "";
+function leagueSoon(){
+  if (!leagueOn()) return;
+  clearTimeout(leagueTimer);
+  leagueTimer = setTimeout(() => window.appLeague.save(weekKey(), league.nick, xpWeek()).catch(() => {}), 4000);
+}
+async function leagueLoad(){
+  if (!leagueOn()) return;
+  try{
+    await window.appLeague.save(weekKey(), league.nick, xpWeek());
+    leagueList = await window.appLeague.top(weekKey()); leagueErr = "";
+  }catch(e){ leagueList = null; leagueErr = "리그 순위를 불러오지 못했어요. 인터넷 연결을 확인하고 잠시 뒤 다시 열어 주세요."; }
+  if (document.getElementById("lgBody")) $("#lgBody").innerHTML = leagueHtml();
+}
+const nickOk = s => /^[0-9A-Za-z가-힣_ ]{2,10}$/.test(s) && !/@/.test(s);
+function leagueHtml(){
+  if (!loginOn()) return "";
+  if (!loggedIn()) return `<div class="stCard lgCard"><p class="lgP">로그인하면 별명으로 주간 리그에 참여할 수 있어요. 매주 월요일에 새로 시작해요.</p>
+    <button class="btn go" type="button" data-login>구글로 로그인</button></div>`;
+  if (!league.on || !league.nick) return `<div class="stCard lgCard">
+    <p class="lgP">이번 주에 모은 XP로 같이 공부하는 사람들과 순위를 겨뤄요. 매주 월요일에 새로 시작해요.<br>
+      <b>다른 사람에게는 별명과 이번 주 XP만 보여요.</b> 실명 말고 별명을 써 주세요.</p>
+    <div class="setForm lgForm"><input id="lgNick" type="text" maxlength="10" placeholder="별명 (2~10자, 예: 칸쿤가자)" value="${esc(league.nick || "")}">
+      <button class="btn go" type="button" data-lg="join">참여하기</button></div>
+    <p class="lgMsg" id="lgMsg"></p></div>`;
+  const me = { nick: league.nick, xp: xpWeek(), me: true };
+  const list = leagueList ? (leagueList.some(x => x.me) ? leagueList.map(x => x.me ? me : x) : leagueList) : null;
+  const sorted = list ? [...list].sort((a, b) => b.xp - a.xp) : null;
+  const rank = sorted ? sorted.findIndex(x => x.me) + 1 : 0;
+  return `<div class="stCard lgCard">
+    <div class="lgHead"><div><b>${rank ? rank + "위" : "—"}</b><span>이번 주 내 순위</span></div><div><b>${me.xp}</b><span>이번 주 XP</span></div></div>
+    ${leagueErr ? `<p class="lgMsg">${esc(leagueErr)}</p>` : !sorted ? `<p class="lgP">순위를 불러오는 중…</p>`
+      : `<ol class="lgList">${sorted.slice(0, 30).map((x, i) => `<li class="${x.me ? "me" : ""}"><em>${i + 1}</em><span>${esc(x.nick)}${x.me ? " (나)" : ""}</span><b>${x.xp} XP</b></li>`).join("")}</ol>
+        ${rank ? "" : `<p class="lgP">아직 30위 안에 없어요. 공부하면 XP가 올라가요!</p>`}`}
+    <div class="row2"><button class="btn" type="button" data-lg="nick">별명 바꾸기</button><button class="btn" type="button" data-lg="leave">리그 그만하기</button></div></div>`;
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-lg]"); if (!b) return;
+  const a = b.dataset.lg;
+  if (a === "join"){
+    const nick = $("#lgNick").value.trim().replace(/\s+/g, " ");
+    if (!nickOk(nick)){ $("#lgMsg").textContent = "별명은 한글·영어·숫자로 2~10자예요."; return; }
+    league = { on: true, nick, t: Date.now() }; store.set("vb.league", league);
+    leagueList = null; $("#lgBody").innerHTML = leagueHtml(); leagueLoad();
+  } else if (a === "nick"){
+    league = Object.assign({}, league, { on: false, t: Date.now() }); store.set("vb.league", league);   // 참여 화면에서 새 별명으로 다시 '참여하기'
+    $("#lgBody").innerHTML = leagueHtml();
+  } else if (a === "leave"){
+    if (!confirm("리그를 그만할까요? 이번 주 순위에서 내 이름이 빠져요.")) return;
+    try{ await window.appLeague.leave(weekKey()); }catch(err){}
+    league = Object.assign({}, league, { on: false, t: Date.now() }); store.set("vb.league", league);
+    leagueList = null; $("#lgBody").innerHTML = leagueHtml();
+  }
+});
 /* 하루 목표에 딱 닿은 순간 · 오늘 첫 공부로 연속 공부일이 늘어난 순간에 작게 축하 */
 function celeCheck(kind, before, now){
   try{
@@ -7413,12 +7545,20 @@ const GOAL_W = [5, 10, 20, 30], GOAL_S = [5, 10, 15, 20], GOAL_Q = [5, 10, 15, 2
 let goal = store.get("vb.goal", null, x => x && typeof x === "object" && Number.isFinite(x.w) && Number.isFinite(x.s));
 const goalW = () => goal ? goal.w : 20, goalS = () => goal ? goal.s : 10;
 const goalQ = () => goal && GOAL_Q.includes(goal.q) ? goal.q : 10;   // q: 단어 퀴즈 한 판 문제 수 (없던 옛 기록은 10)
-function streakDays(){
-  const d = new Date(); let n = 0;
+/* 연속 공부일 — 쉬는 날 보호: 한 주(월~일)에 하루는 건너뛰어도 이어져요. 쉰 날은 숫자에 더하지 않음 */
+function streakInfo(){
+  const d = new Date(), rest = []; let n = 0;
   if (!dayTotal(dkey(d))) d.setDate(d.getDate() - 1);          // 오늘 아직 안 했으면 어제부터 셉니다
-  while (dayTotal(dkey(d))){ n++; d.setDate(d.getDate() - 1); }
-  return n;
+  for (let i = 0; i < 400; i++){
+    if (dayTotal(dkey(d))){ n++; d.setDate(d.getDate() - 1); continue; }
+    const p = new Date(d); p.setDate(p.getDate() - 1);
+    if (!rest.some(r => weekKey(new Date(r + "T00:00:00")) === weekKey(d)) && dayTotal(dkey(p))){ rest.push(dkey(d)); d.setDate(d.getDate() - 1); continue; }
+    break;
+  }
+  return { n, rest: n ? rest : [] };
 }
+const streakDays = () => streakInfo().n;
+const restUsedThisWeek = () => streakInfo().rest.some(r => weekKey(new Date(r + "T00:00:00")) === weekKey());
 
 /* ── 3단계 단어장 ──
    b:1 외우는 중 · b:2 외운 단어 · b:3 외외운 단어 · 없으면 아직 안 배운 단어
@@ -7645,6 +7785,7 @@ function dayNo(){ return curDay; }
 function finishDay(){
   if (curDay < LASTDAY){ curDay++; store.set("vb.day", curDay); }
   store.set("vb.dayDone", dkey());                // 오늘 레슨을 끝냈다는 표시 → 홈 큰 버튼이 '오늘의 복습'으로 바뀜 (이 기기에만)
+  addXP(XP_LESSON);
   renderHome();
 }
 const lessonDoneToday = () => store.get("vb.dayDone", "") === dkey();
@@ -7684,6 +7825,7 @@ function renderHome(){
   $("#hDate").textContent = `${now.getMonth() + 1}월 ${now.getDate()}일 ${"일월화수목금토"[now.getDay()]}요일`;
   const st = streakDays();
   $("#hStreak").textContent = st ? `${st}일 연속` : "오늘 첫 공부";
+  $("#hXp").textContent = xpToday() + " XP";
   $("#hLv").hidden = !myLevel;                    // 레벨은 '나' 탭에 — 홈에는 작은 칩 하나만
   $("#hLv").textContent = myLevel ? "Lv." + lvShow(myLevel) : "";
   const act = homeAction(), tw = todayWords().length;
@@ -9769,7 +9911,7 @@ function renderStats(){
   const cell = (b, s) => `<div><b>${b}</b><span>${s}</span></div>`;
   $("#stBody").innerHTML = `
     <div class="stTop">
-      <div class="stBig"><b>${streakDays()}</b><span>일 연속 공부 중</span></div>
+      <div class="stBig"><b>${streakDays()}</b><span>일 연속 공부 중</span><small>${restUsedThisWeek() ? "이번 주 쉬는 날을 썼어요" : "이번 주 하루는 쉬어도 이어져요"}</small></div>
       <div class="stSide">${cell(`Day ${curDay}`, `레슨 진도 (전체 ${LASTDAY})`)}${cell(`${c[2] + c[3]}개`, "외운 단어")}</div>
     </div>
     <div class="stCard"><h3>오늘 한 공부</h3>
@@ -9858,8 +10000,20 @@ document.addEventListener("click", e => {
   store.set("vb.theme", b.dataset.themeSet); applyTheme();
   document.querySelectorAll("[data-theme-set]").forEach(x => x.setAttribute("aria-pressed", x === b));
 });
+function xpHtml(){
+  const n = BADGES.filter(b => badges[b[0]]).length, next = BADGES.find(b => !badges[b[0]]);
+  return `<div class="stCard"><div class="stRow"><div><b>${xpToday()}</b><span>오늘 XP</span></div><div><b>${xpWeek()}</b><span>이번 주 XP</span></div><div><b>${xpAll()}</b><span>모은 XP</span></div></div>
+    <p class="stNote">단어 문제 2 · 문장 3 · 말하기 3 · 레슨 끝내기 20 XP</p></div>
+    <div class="stCard"><h3>배지 <small class="bdN">${n}/${BADGES.length}</small></h3><div class="bdGrid">${BADGES.map(([id, ic, nm, ds]) =>
+      `<div class="bd${badges[id] ? "" : " off"}" title="${esc(ds)}"><i>${ic}</i><b>${esc(nm)}</b></div>`).join("")}</div>
+      ${next ? `<p class="stNote">다음 배지 · <b>${next[1]} ${esc(next[2])}</b> — ${esc(next[3])}</p>` : `<p class="stNote">배지를 모두 모았어요!</p>`}</div>`;
+}
 function renderMine(){
   renderStats(); renderLevel();
+  badgeCheck(true);
+  $("#xpBody").innerHTML = xpHtml();
+  $("#lgWrap").hidden = !loginOn();
+  $("#lgBody").innerHTML = leagueHtml(); leagueLoad();
   $("#mineRows").innerHTML = mineHtml();
   $("#acctNote").textContent = loggedIn() ? "로그인됨 · 기록이 계정에 저장돼요" : "로그인하면 휴대폰을 바꿔도 기록이 남아요";
   fillBackup();
@@ -10037,13 +10191,13 @@ $("#hInstall").addEventListener("click", e => {
 });
 
 /* 시작 — 한 곳에서 오류가 나도 나머지는 계속 실행됩니다 */
-[drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), renderHome, renderInstall,
+[drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), () => badgeCheck(true), renderHome, renderInstall,
  () => { if (!isReturning()) openOnboard(); }]
   .forEach(fn => { try{ fn(); }catch(e){ console.error(e); } });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=47"></script>
-<script src="sync.js?v=47"></script>
+<script src="firebase-config.js?v=48"></script>
+<script src="sync.js?v=48"></script>
 
 </body></html>

@@ -1,0 +1,31 @@
+rules_version = '2';
+// 톡톡 잉글리시 — Firestore 보안 규칙
+// Firebase 콘솔 → Firestore Database → 규칙(Rules) 탭에 통째로 붙여 넣고 '게시'를 누르세요.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 내 공부 기록: 로그인한 본인만 읽고 쓸 수 있음
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // 주간 리그: 로그인한 사람은 누구나 순위를 볼 수 있고, 내 칸은 나만 쓰고 지울 수 있음
+    // 저장할 수 있는 건 별명(nick, 10자 이하)·이번 주 XP(xp)·시각(at)뿐
+    match /league/{week}/members/{uid} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['nick', 'xp', 'at'])
+        && request.resource.data.nick is string
+        && request.resource.data.nick.size() >= 2 && request.resource.data.nick.size() <= 10
+        && request.resource.data.xp is int
+        && request.resource.data.xp >= 0 && request.resource.data.xp <= 100000
+        && request.resource.data.at is int;
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // 그 밖의 곳은 모두 막음
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

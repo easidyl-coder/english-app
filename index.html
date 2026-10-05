@@ -51,7 +51,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=51"></script>
+<script src="ipa.js?v=52"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -853,16 +853,6 @@
   .stWeek .now span{color:var(--accent);font-weight:800}
   .stNote{font-size:12px;color:var(--ink-3);margin:10px 0 0}
   .stBig small{display:block;margin-top:6px;font-size:11.5px;opacity:.85}
-  #hMs{position:relative;display:inline-block;cursor:pointer}
-  .msLv{position:absolute;right:-6px;bottom:-2px;min-width:22px;padding:1px 5px;border-radius:10px;border:2px solid var(--ground);
-        background:var(--honey);color:var(--on-honey);font-size:11px;font-weight:800;line-height:1.3;text-align:center}
-  .tokTop{display:flex;align-items:center;gap:12px}
-  .tokTop .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-  .tokLv{align-self:flex-start;font-size:12px;font-weight:800;color:var(--on-honey);background:var(--honey);border-radius:10px;padding:1px 8px}
-  .tokTop b{font-family:"Jua",sans-serif;font-weight:400;font-size:21px;line-height:1.2}
-  .tokTop .tx span:last-child{font-size:12.5px;color:var(--ink-2)}
-  .tokBar{height:10px;border-radius:5px;background:var(--line-2);overflow:hidden;margin-top:12px}
-  .tokBar i{display:block;height:100%;border-radius:5px;background:var(--honey)}
   .shopRow{display:flex;align-items:center;gap:10px}
   .shopIc{font-size:30px;line-height:1}
   .shopRow .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -899,6 +889,9 @@
   .rvCard .n{font-family:"Jua",sans-serif;font-size:40px;line-height:1.1;margin-top:6px}
   .rvCard .n small{font-size:15px;margin-left:3px}
   .rvCard p{margin:4px 0 0;font-size:13px;color:var(--ink-2)}
+  .rvGram{margin-top:8px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);display:flex;flex-direction:column;gap:2px}
+  .rvGram b{font-size:15px;color:var(--accent)}
+  .rvGram span{font-size:12.5px;color:var(--ink-2)}
   .rvCard.main p{color:var(--tint)}
   .rvCard .row2{display:flex;gap:8px;margin-top:12px}
   .rvCard .row2 .btn{flex:1;min-height:48px}
@@ -930,7 +923,8 @@
   .lTile .hIcon svg{width:20px;height:20px}
   .lTile .tx{display:flex;flex-direction:column;gap:1px;min-width:0}
   .lTile .nm{font-family:"Jua",sans-serif;font-size:17px;line-height:1.2}
-  .lTile .ds{font-size:11.5px;color:var(--ink-2);line-height:1.35}
+  .lTile .ds{font-size:11.5px;color:var(--ink-2);line-height:1.35;word-break:keep-all}
+  .lTile .nm{word-break:keep-all}
   /* 나 — 설정 목록 */
   .setList{background:var(--raise);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-top:10px;overflow:hidden}
   .setRow{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 14px;border:0;border-top:1px solid var(--line-2);
@@ -1020,7 +1014,8 @@
   :root[data-theme="dark"] input,:root[data-theme="dark"] textarea{color-scheme:dark}
   /* 마스코트 · 축하 */
   .mascot{display:block;flex:0 0 auto}
-  .cele{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:95;width:min(92vw,420px);cursor:pointer}
+  .cele{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:95;width:min(92vw,420px);pointer-events:none}
+  .cele.big{pointer-events:auto}
   .cele .celeBox{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;background:var(--raise);border:2px solid var(--honey);
     border-radius:20px;padding:10px 16px 10px 10px;box-shadow:0 8px 24px rgba(10,12,40,.25);animation:celeIn .35s ease-out}
   .cele .celeTx{display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -7454,27 +7449,18 @@ function logAct(kind){
   celeCheck(kind, before, actLog[k][kind]);
   addXP(XP_OF[kind] || 0);
 }
-/* ── XP ── 공부한 만큼 쌓이는 점수. vb.xp = {"2026-10-05": 35, …} 날짜별 (계정에 저장. 모은 XP가 줄면 톡이 레벨이 내려가니 거의 지우지 않음)
+/* ── XP ── 공부한 만큼 쌓이는 점수. vb.xp = {"2026-10-05": 35, …} 날짜별 (계정에 저장. '모은 XP'가 줄지 않게 거의 지우지 않음)
    단어 문제 하나 2 · 문장 하나 3 · 말한 문장 하나 3 · 레슨 끝내기 20 */
 const XP_OF = { w: 2, s: 3, t: 3 }, XP_LESSON = 20;
 let xpLog = store.get("vb.xp", {}, x => x && typeof x === "object" && !Array.isArray(x));
 function addXP(n){
   if (!n) return;
-  const was = tokLevel();
   const k = dkey(); xpLog[k] = (+xpLog[k] || 0) + n;
   const keys = Object.keys(xpLog).sort(); while (keys.length > 4000) delete xpLog[keys.shift()];
   store.set("vb.xp", xpLog);
   const hx = document.getElementById("hXp"); if (hx) hx.textContent = xpToday() + " XP";
-  const L = tokLevel(), ml = document.querySelector("#hMs .msLv"); if (ml) ml.textContent = "★" + L;
-  if (L > was) celeLater(`톡이 ★${L} 달성!`, `톡이가 자랐어요. 새 칭호: ${tokTitle(L)}`);
   badgeCheck(); leagueSoon();
 }
-/* ── 톡이 레벨(★) ── 모은 XP로 자람 (상점에서 XP를 써도 내려가지 않음). ★N이 되려면 50×N×(N−1) XP: ★2 100 · ★3 300 · ★4 600 · ★5 1000 … */
-const TITLES = ["새싹 톡이", "첫걸음 여행자", "단어 탐험가", "문장 조립공", "여행 새내기", "길 찾기 선수", "주문 척척",
-                "수다쟁이", "현지인 흉내", "여행 고수", "회화 달인", "영어 마스터", "전설의 톡이"];
-const xpNeed = L => 50 * L * (L - 1);
-function tokLevel(x){ x = x == null ? xpAll() : x; let L = 1; while (xpNeed(L + 1) <= x) L++; return L; }
-const tokTitle = L => TITLES[Math.min(L, TITLES.length) - 1];
 
 /* ── XP 상점: 쉬는 날 이용권 ── 사 두면 공부를 못 한 날 자동으로 써서 연속을 지켜 줌 (매주 무료 쉬는 날 하루가 먼저 쓰임)
    vb.shop = {buy: {id: {d: 산 날, p: 값}}, used: {"쉰 날": id}} — 계정에 저장, 두 기기에서 산 것도 합쳐짐
@@ -7906,10 +7892,9 @@ function renderHome(){
   const st = streakDays();
   $("#hStreak").textContent = st ? `${st}일 연속` : "오늘 첫 공부";
   $("#hXp").textContent = xpToday() + " XP";
-  $("#hLv").hidden = !myLevel;                    // 레벨은 '나' 탭에 — 홈에는 작은 칩 하나만
-  $("#hLv").textContent = myLevel ? "Lv." + lvShow(myLevel) : "";
+  $("#hLv").textContent = myLevel ? "레벨 " + lvShow(myLevel) : "레벨 ?";   // '레벨'은 영어 레벨에만 씀. 홈 칩은 연속·XP·레벨 3개
   const act = homeAction(), tw = todayWords().length;
-  $("#hMs").innerHTML = mascot(act === "ahead" ? "happy" : act === "review" ? "cheer" : "base", 50) + `<span class="msLv">★${tokLevel()}</span>`;
+  $("#hMs").innerHTML = mascot(act === "ahead" ? "happy" : act === "review" ? "cheer" : "base", 50);
   $("#hStage").textContent = act === "lesson" ? `오늘 할 일 · Day ${day} 레슨` : act === "review" ? "오늘 할 일 · 복습" : "오늘 할 일 끝!";
   $("#hTitle").textContent = act === "review" ? `오늘 볼 단어 ${tw}개` : g ? g.t : `Day ${day} 레슨`;
   $("#hForm").textContent = act === "review" ? "" : g ? g.f : "";
@@ -7942,7 +7927,6 @@ $("#hLogin").addEventListener("click", e => {
 });
 $("#p3").addEventListener("click", e => {
   if (e.target.closest("#hGoalEdit")){ openSetup(); return; }
-  if (e.target.closest("#hMs")){ go(7); const x = document.getElementById("xpBody"); if (x) (x.previousElementSibling || x).scrollIntoView({ block: "start" }); return; }
   if (e.target.closest("[data-resume]")){ resumeQuiz(); return; }
   if (e.target.closest("#hMain")){
     const act = homeAction();
@@ -7958,7 +7942,7 @@ document.addEventListener("click", e => {                      // 화면 안의 
   const t = e.target.closest(".panel [data-go]"); if (t){ go(+t.dataset.go); return; }
   if (e.target.closest(".panel [data-back]")) go(backTab);
 });
-$("#hLv").addEventListener("click", () => go(7));
+$("#hLv").addEventListener("click", () => { if (myLevel) go(7); else startLevelTest(); });
 
 /* ── 소리 ── */
 const hasTTS = "speechSynthesis" in window;
@@ -9456,7 +9440,7 @@ function renderLesson(day){
         <div class="miss"><b>자주 하는 실수</b>${esc(g.x)}</div>
       </div></section>` : ""}
 
-    ${(yw.length || yestS.length) ? `<section class="lsSec"><h2>${N()}. 어제 복습</h2>
+    ${(yw.length || yestS.length) ? `<section class="lsSec"><h2>${N()}. 지난 레슨 복습</h2>
       <p class="hint">Day ${day - 1}에서 본 것부터 입으로 한 번 말해 보세요.</p>
       ${yw.map(wCard).join("")}${yestS.map(sCard).join("")}</section>` : ""}
 
@@ -9920,9 +9904,9 @@ const LTILES = [
 ];
 function learnDesc(k){
   const lv = myLevel ? `내 레벨 ${lvShow(myLevel)}` : "";
-  if (k === "sent") return `뜻 보고 순서대로 · 한 판 ${goalS()}문장`;
-  if (k === "wquiz") return lv ? `${lv} 단어 빈칸 퀴즈` : "예문 빈칸 채우기";
-  if (k === "listen") return "듣고 소리 내어 말하기";
+  if (k === "sent") return `한 판 ${goalS()}문장`;
+  if (k === "wquiz") return lv ? `${lv} 빈칸 퀴즈` : "예문 빈칸 채우기";
+  if (k === "listen") return "듣고 따라 말하기";
   if (k === "talk") return `여행 상황 ${TALK.length}가지`;
   if (k === "vocab") return `표현·숙어 ${vocabPool().length}개`;
   if (k === "gram") return `레슨 문법 ${Object.keys(GRAM).length}개`;
@@ -10025,7 +10009,8 @@ function renderReview(){
       <div class="row2"><button class="btn go" data-rv="miss"${miss.length ? "" : " disabled"}>퀴즈 풀기</button>
         <button class="btn" data-rv="misslist"${miss.length ? "" : " disabled"}>목록 보기</button></div></div>
     ${prev >= 1 ? `<div class="rvCard"><h3>지난 레슨 · Day ${prev}</h3>
-      <p>${GRAM[prev] ? esc(GRAM[prev].t) + " · " : ""}어제 배운 문장을 다시 조립해 보세요.</p>
+      ${GRAM[prev] ? `<div class="rvGram"><b>${esc(GRAM[prev].t)}</b><span>${esc(GRAM[prev].f)}</span></div>` : ""}
+      <p>지난 레슨 문장을 다시 조립하거나 레슨을 다시 볼 수 있어요.</p>
       <div class="row2"><button class="btn go" data-rv="prevsent">문장 조립</button>
         <button class="btn" data-rv="prevlesson">레슨 다시 보기</button></div></div>` : ""}
     <div class="rvCard"><h3>막혔던 말 메모</h3>
@@ -10109,18 +10094,14 @@ document.addEventListener("click", e => {
 });
 function xpHtml(){
   const n = BADGES.filter(b => badges[b[0]]).length, next = BADGES.find(b => !badges[b[0]]);
-  const x = xpAll(), L = tokLevel(x), lo = xpNeed(L), hi = xpNeed(L + 1), own = freezesOwned().length, left = xpLeft();
+  const own = freezesOwned().length, left = xpLeft();
   const full = own >= FREEZE_MAX, poor = left < FREEZE_PRICE;
-  return `<div class="stCard tokCard"><div class="tokTop">${mascot(L >= 5 ? "cheer" : "happy", 58)}
-      <div class="tx"><span class="tokLv">톡이 ★${L}</span><b>${esc(tokTitle(L))}</b>
-        <span>다음 ★${L + 1} '${esc(tokTitle(L + 1))}'까지 ${hi - x} XP</span></div></div>
-      <div class="tokBar"><i style="width:${Math.round((x - lo) / (hi - lo) * 100)}%"></i></div></div>
-    <div class="stCard"><h3>XP 상점</h3>
+  return `<div class="stCard"><h3>XP 상점</h3>
       <div class="shopRow"><span class="shopIc">🧊</span>
         <div class="tx"><b>쉬는 날 이용권</b><span>공부를 못 한 날 자동으로 써서 연속을 지켜 줘요. 매주 무료 쉬는 날 하루가 먼저 쓰여요.</span>
           <span class="own">가진 이용권 ${own}/${FREEZE_MAX}개</span></div>
         <button class="btn go" type="button" data-shop="freeze"${full || poor ? " disabled" : ""}>${full ? "다 가졌어요" : FREEZE_PRICE + " XP"}</button></div>
-      <p class="stNote">쓸 수 있는 XP <b>${left}</b>${!full && poor ? ` · ${FREEZE_PRICE - left} XP 더 모으면 살 수 있어요` : ""} · XP를 써도 톡이 레벨은 내려가지 않아요</p></div>
+      <p class="stNote">쓸 수 있는 XP <b>${left}</b>${!full && poor ? ` · ${FREEZE_PRICE - left} XP 더 모으면 살 수 있어요` : ""} · 써도 '모은 XP'는 그대로예요</p></div>
     <div class="stCard"><div class="stRow"><div><b>${xpToday()}</b><span>오늘 XP</span></div><div><b>${xpWeek()}</b><span>이번 주 XP</span></div><div><b>${xpAll()}</b><span>모은 XP</span></div></div>
     <p class="stNote">단어 문제 2 · 문장 3 · 말하기 3 · 레슨 끝내기 20 XP</p></div>
     <div class="stCard"><h3>배지 <small class="bdN">${n}/${BADGES.length}</small></h3><div class="bdGrid">${BADGES.map(([id, ic, nm, ds]) =>
@@ -10318,7 +10299,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=51"></script>
-<script src="sync.js?v=51"></script>
+<script src="firebase-config.js?v=52"></script>
+<script src="sync.js?v=52"></script>
 
 </body></html>

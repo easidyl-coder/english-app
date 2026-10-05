@@ -51,7 +51,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=52"></script>
+<script src="ipa.js?v=53"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -824,6 +824,19 @@
   .allS .row2 .btn{flex:0 0 auto;font-size:13px;padding:6px 12px;min-height:38px}
   #p4 .lvHero{margin-top:14px}
   /* 아래 탭에 없는 화면(문장 조립·단어장·듣기) 맨 위 뒤로 가기 */
+  #p7 .mineSec{display:none}
+  #p7[data-view="home"] .mineHome{display:block}
+  #p7:not([data-view="home"]) .mineHome{display:none}
+  #p7[data-view="rec"] .mineSec[data-sec="rec"], #p7[data-view="badge"] .mineSec[data-sec="badge"],
+  #p7[data-view="set"] .mineSec[data-sec="set"], #p7[data-view="acct"] .mineSec[data-sec="acct"]{display:block}
+  .mySum{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--accent);color:#fff;border-radius:22px;padding:16px 8px;box-shadow:var(--shadow)}
+  .mySum button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-width:0}
+  .mySum b{font-family:"Jua",sans-serif;font-weight:400;font-size:23px;line-height:1.15;white-space:nowrap}
+  .mySum span{font-size:11.5px;opacity:.85;white-space:nowrap}
+  .mySum button:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:8px}
+  .mineMenu{margin-top:14px}
+  .mineMenu .setRow .ic{flex:0 0 auto;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:var(--ink)}
+  .mineMenu .setRow .ic svg{width:20px;height:20px}
   .subTop{display:flex;align-items:center;gap:12px;padding-top:18px;margin-bottom:4px}
   .subTop h2{font-family:"Jua",sans-serif;font-weight:400;font-size:22px;margin:0}
   .subTop .btn{min-height:40px;padding:0 14px}
@@ -1175,13 +1188,16 @@
   </section>
 
   <!-- 나 -->
-  <section class="panel" id="p7">
-    <div class="allHead"><h2>나</h2><p>내 공부 기록과 설정이에요.</p></div>
+  <section class="panel" id="p7" data-view="home">
+    <div class="mineHome">
+      <div class="allHead"><h2>나</h2><p>내 공부 기록과 설정이에요.</p></div>
+      <div id="mySum"></div>
+      <div class="setList mineMenu" id="mineMenu"></div>
+    </div>
+    <div class="mineSec" data-sec="rec">
+    <div class="subTop"><button class="btn" type="button" data-mv="home">‹ 나</button><h2>공부 기록</h2></div>
     <div id="stBody"></div>
-    <h3 class="allSub">XP · 배지</h3>
-    <div id="xpBody"></div>
-    <div id="lgWrap"><h3 class="allSub">주간 리그</h3><div id="lgBody"></div></div>
-    <h3 class="allSub">내 레벨</h3>
+    <h3 class="allSub">내 영어 레벨</h3>
     <div class="lvHero" id="lvCard">
       <div class="lvTop">
         <div class="lvRing" id="lvRing"><b id="lvNum">?</b></div>
@@ -1190,15 +1206,26 @@
       </div>
       <button class="btn go" id="lvGo" type="button">레벨 테스트</button>
     </div>
-    <h3 class="allSub">설정</h3>
+    </div>
+    <div class="mineSec" data-sec="badge">
+    <div class="subTop"><button class="btn" type="button" data-mv="home">‹ 나</button><h2>배지 · XP 상점</h2></div>
+    <div id="xpBody"></div>
+    <div id="lgWrap"><h3 class="allSub">주간 리그</h3><div id="lgBody"></div></div>
+    </div>
+    <div class="mineSec" data-sec="set">
+    <div class="subTop"><button class="btn" type="button" data-mv="home">‹ 나</button><h2>설정</h2></div>
     <div class="setList" id="mineRows"></div>
+    </div>
+    <div class="mineSec" data-sec="acct">
+    <div class="subTop"><button class="btn" type="button" data-mv="home">‹ 나</button><h2>계정</h2></div>
     <div class="setList">
-      <div class="setRow acctRow"><span class="tx"><b>계정</b><span id="acctNote">로그인하면 휴대폰을 바꿔도 기록이 남아요</span></span>
+      <div class="setRow acctRow"><span class="tx"><b>구글 로그인</b><span id="acctNote">로그인하면 휴대폰을 바꿔도 기록이 남아요</span></span>
         <button class="btn" id="hAcct" type="button" hidden>로그인</button></div>
       <button class="setRow danger" id="acctDel" type="button" data-mine="delacct" hidden><span class="tx"><b>계정 삭제</b><span>서버에 저장된 내 기록을 모두 지워요</span></span></button>
     </div>
+    <div class="setList" id="acctRows"></div>
     <details class="backup adv">
-      <summary>고급</summary>
+      <summary>고급 · 마이크 테스트 · 진도 백업</summary>
       <div class="micTest" id="micTest">
         <h3>마이크 테스트</h3>
         <p class="lead" id="micMsg">'말하기'가 잘 안 되면 여기서 마이크와 영어 음성 인식을 확인해 보세요.</p>
@@ -1216,6 +1243,7 @@
       </div>
       <p class="bmsg" id="bkMsg"></p>
     </details>
+    </div>
   </section>
 
 </div>
@@ -7746,6 +7774,7 @@ function go(i){
   if (sub && !SUBTAB.includes(curTab)) backTab = curTab;
   curTab = i;
   if (i === 3) drawNoteTile();
+  if (i === 7) $("#p7").dataset.view = "home";       // 나 탭은 늘 요약부터
   TABS.forEach(j => $("#t" + j).setAttribute("aria-selected", j === (sub ? backTab : i)));
   PANELS.forEach(j => $("#p" + j).classList.toggle("on", j === i));
   window.scrollTo(0,0);
@@ -10048,7 +10077,10 @@ function mineHtml(){
         ${has ? `<button class="btn" type="button" data-mine="tripDel">지우기</button>` : ""}</div></details>`
     + themeRow()
     + (canInstall() ? row("install", "앱으로 설치", "휴대폰 홈 화면에 앱처럼 설치하기", "") : "")
-    + `<a class="setRow" href="privacy.html"><span class="tx"><b>개인정보 처리방침</b><span>어떤 정보를 왜 저장하는지</span></span>${CHEV}</a>`
+;
+}
+function acctRowsHtml(){
+  return `<a class="setRow" href="privacy.html"><span class="tx"><b>개인정보 처리방침</b><span>어떤 정보를 왜 저장하는지</span></span>${CHEV}</a>`
     + (CONTACT_EMAIL ? `<a class="setRow" href="mailto:${esc(CONTACT_EMAIL)}?subject=${encodeURIComponent("톡톡 잉글리시 문의")}"><span class="tx"><b>문의하기</b><span>메일로 의견·오류 알려 주기</span></span>${CHEV}</a>`
       : `<div class="setRow"><span class="tx"><b>문의하기</b><span>문의처를 준비하고 있어요</span></span></div>`);
 }
@@ -10108,7 +10140,38 @@ function xpHtml(){
       `<div class="bd${badges[id] ? "" : " off"}" title="${esc(ds)}"><i>${ic}</i><b>${esc(nm)}</b></div>`).join("")}</div>
       ${next ? `<p class="stNote">다음 배지 · <b>${next[1]} ${esc(next[2])}</b> — ${esc(next[3])}</p>` : `<p class="stNote">배지를 모두 모았어요!</p>`}</div>`;
 }
+/* 나 탭 화면: home(요약 + 메뉴) · rec 공부 기록 · badge 배지·XP 상점 · set 설정 · acct 계정 */
+function mineView(v){ $("#p7").dataset.view = v; window.scrollTo(0, 0); }
+const MINE_MENU = [
+  ["rec", "공부 기록", "오늘·최근 7일·내 단어·영어 레벨", "var(--tint)", '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path>'],
+  ["badge", "배지 · XP 상점", "", "var(--honey)", '<circle cx="12" cy="9" r="6"></circle><path d="M8.5 14 7 22l5-3 5 3-1.5-8"></path>'],
+  ["set", "설정", "하루 목표·매일 알림·여행 D-day·화면", "var(--mint)", '<circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"></path>'],
+  ["acct", "계정", "", "var(--pink)", '<circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path>']
+];
+function mySumHtml(){
+  const st = streakDays();
+  return `<div class="mySum">
+    <button type="button" data-mv="rec"><b>${st}일</b><span>연속 공부</span></button>
+    <button type="button" data-mv="badge"><b>${xpAll().toLocaleString()}</b><span>모은 XP</span></button>
+    <button type="button" data-mv="${myLevel ? "rec" : "lvtest"}"><b>${myLevel ? lvShow(myLevel) : "?"}</b><span>영어 레벨</span></button>
+    <button type="button" data-mv="rec"><b>Day ${curDay}</b><span>레슨 진도</span></button></div>`;
+}
+function mineMenuHtml(){
+  const nb = BADGES.filter(b => badges[b[0]]).length, own = freezesOwned().length;
+  const ds = { badge: `배지 ${nb}/${BADGES.length}${own ? ` · 쉬는 날 이용권 ${own}개` : ""}${loginOn() ? " · 주간 리그" : ""}`,
+               acct: (loggedIn() ? "로그인됨" : "로그인") + " · 개인정보 · 문의 · 백업" };
+  return MINE_MENU.map(([k, nm, d, bg, ic]) => `<button class="setRow" type="button" data-mv="${k}">
+    <span class="ic" style="background:${bg}">${ico(ic)}</span><span class="tx"><b>${nm}</b><span>${esc(ds[k] || d)}</span></span>${CHEV}</button>`).join("");
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-mv]"); if (!b) return;
+  if (b.dataset.mv === "lvtest"){ startLevelTest(); return; }
+  mineView(b.dataset.mv);
+});
 function renderMine(){
+  $("#mySum").innerHTML = mySumHtml();
+  $("#mineMenu").innerHTML = mineMenuHtml();
+  $("#acctRows").innerHTML = acctRowsHtml();
   renderStats(); renderLevel();
   badgeCheck(true);
   $("#xpBody").innerHTML = xpHtml();
@@ -10299,7 +10362,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=52"></script>
-<script src="sync.js?v=52"></script>
+<script src="firebase-config.js?v=53"></script>
+<script src="sync.js?v=53"></script>
 
 </body></html>

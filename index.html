@@ -51,7 +51,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=54"></script>
+<script src="ipa.js?v=55"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -952,6 +952,7 @@
   .setRow .btn{min-height:40px;padding:0 14px;font-size:13px;flex:0 0 auto}
   .setRow .val{font-size:13px;font-weight:700;color:var(--accent);flex:0 0 auto}
   .setRow.acctRow{cursor:default}
+  .setHint{font-size:12px;color:var(--ink-2);line-height:1.55;margin:-4px 14px 14px;word-break:keep-all}
   .setForm{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px}
   .setForm input{flex:1 1 140px;min-width:0;font:inherit;font-size:16px;min-height:46px;padding:0 12px;border:1px solid var(--line);
     border-radius:12px;background:var(--ground);color:var(--ink)}
@@ -10069,7 +10070,14 @@ function mineHtml(){
   const row = (key, nm, ds, val) => `<button class="setRow" type="button" data-mine="${key}">
     <span class="tx"><b>${nm}</b><span>${ds}</span></span>${val ? `<span class="val">${val}</span>` : ""}${CHEV}</button>`;
   const td = tripDays(), has = !!(trip && trip.d);
+  const rt = remindTime();
   return row("goal", "하루 목표", `새 단어 ${goalW()}개 · 문장 ${goalS()}개 · 퀴즈 한 판 ${goalQ()}문제`, "바꾸기")
+    + `<details class="tripSet"><summary class="setRow"><span class="tx"><b>매일 알림</b>
+        <span>${rt ? `매일 ${rt} · 휴대폰 캘린더가 알려 줘요` : "시간을 고르면 휴대폰 캘린더가 매일 알려 줘요"}</span></span>${CHEV}</summary>
+      <div class="setForm"><input id="rmT" type="time" value="${rt || "20:00"}" aria-label="알림 시간">
+        <button class="btn go" type="button" data-mine="remind">캘린더에 추가</button></div>
+      <p class="setHint">받은 파일(.ics)을 열고 <b>추가</b>를 누르면 매일 그 시간에 알림이 와요. 아이폰은 받은 뒤 화면 위·아래의 다운로드 표시에서 파일을 눌러 주세요.
+        시간을 바꾸려면 캘린더에서 예전 일정을 지우고 새로 추가하세요.</p></details>`
     + `<details class="tripSet"><summary class="setRow"><span class="tx"><b>여행 D-day</b>
         <span>${has ? `${esc(trip.p || "여행")} · ${esc(trip.d)}` : "여행지와 날짜를 넣으면 홈에 D-day가 보여요"}</span></span>
         ${td != null && td >= 0 ? `<span class="val">D-${td}</span>` : ""}${CHEV}</summary>
@@ -10093,6 +10101,42 @@ document.addEventListener("click", e => {
     if (buyFreeze()){ celebrate("쉬는 날 이용권을 샀어요", "못 한 날이 생기면 알아서 연속을 지켜 줄게요."); renderMine(); }
   }
 });
+/* ── 매일 알림 ── 앱 알림(푸시) 대신, 매일 반복되는 캘린더 일정(.ics)을 만들어 줌. 고른 시간은 vb.remind (이 기기에만)
+   시간대 없이(floating) 적어서 여행지에 가도 그곳 시각으로 울림 */
+const remindTime = () => { const v = store.get("vb.remind", ""); return /^\d\d:\d\d$/.test(v) ? v : ""; };
+function icsFold(line){                          // .ics는 한 줄 75바이트까지 — 넘으면 다음 줄을 공백으로 시작
+  const enc = new TextEncoder(), out = []; let cur = "", n = 0;
+  for (const ch of line){
+    const b = enc.encode(ch).length;
+    if (n + b > (out.length ? 74 : 75)){ out.push(cur); cur = ""; n = 0; }
+    cur += ch; n += b;
+  }
+  out.push(cur);
+  return out.join("\r\n ");
+}
+function remindIcs(hhmm){
+  const [h, m] = hhmm.split(":").map(Number), now = new Date(), d = new Date(now);
+  d.setHours(h, m, 0, 0);
+  if (d <= now) d.setDate(d.getDate() + 1);       // 오늘 시간이 지났으면 내일부터
+  const p = x => String(x).padStart(2, "0");
+  const local = `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}T${p(h)}${p(m)}00`;
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  const url = location.origin + location.pathname.replace(/[^/]*$/, "");
+  const title = "톡톡 잉글리시 · 오늘 영어 10분";
+  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//TokTok English//Daily Reminder//KO", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "BEGIN:VEVENT", `UID:toktok-daily-${Date.now()}@toktok-english`, `DTSTAMP:${stamp}`, `DTSTART:${local}`, "DURATION:PT10M", "RRULE:FREQ=DAILY",
+    `SUMMARY:${title}`, `DESCRIPTION:오늘의 레슨이나 복습을 해 볼까요? ${url}`, `URL:${url}`,
+    "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${title}`, "TRIGGER:PT0M", "END:VALARM",
+    "END:VEVENT", "END:VCALENDAR"].map(icsFold).join("\r\n") + "\r\n";
+}
+function downloadRemind(hhmm){
+  const blob = new Blob([remindIcs(hhmm)], { type: "text/calendar;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "toktok-english-daily.ics";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  celebrate("캘린더 파일을 받았어요", `파일을 열고 '추가'를 누르면 매일 ${hhmm}에 알려 줘요.`);
+}
 /* 계정 삭제 — 서버의 내 기록·리그 기록을 지우고 로그아웃. 이 기기 기록까지 지울지는 따로 물어봄 */
 async function deleteAccount(){
   if (!loggedIn() || !window.appDeleteAccount) return;
@@ -10194,6 +10238,11 @@ $("#p7").addEventListener("click", e => {
     trip = { p, d, t: Date.now() }; store.set("vb.trip", trip); renderMine(); renderHome();
   }
   else if (k === "delacct") deleteAccount();
+  else if (k === "remind"){
+    const v = $("#rmT").value;
+    if (!/^\d\d:\d\d$/.test(v)){ $("#rmT").focus(); return; }
+    store.set("vb.remind", v); downloadRemind(v); renderMine();
+  }
   else if (k === "tripDel"){ trip = { p: "", d: "", t: Date.now() }; store.set("vb.trip", trip); renderMine(); renderHome(); }   // 빈 값으로 남겨야 다른 기기와 합칠 때 되살아나지 않음
   else if (k === "install"){                         // 안 보기로 숨겼어도 여기서는 다시 보여 줌
     store.set("vb.noinstall", false); installOpen = !installEvt; go(3); renderInstall();
@@ -10364,7 +10413,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=54"></script>
-<script src="sync.js?v=54"></script>
+<script src="firebase-config.js?v=55"></script>
+<script src="sync.js?v=55"></script>
 
 </body></html>

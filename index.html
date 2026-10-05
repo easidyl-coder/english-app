@@ -59,7 +59,9 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
 </head>
 <body>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gothic+A1:wght@400;600;800&display=swap">
+<!-- 글꼴은 화면 그리기를 막지 않게 따로 받음 (받기 전엔 기본 글꼴로 보임) -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gothic+A1:wght@400;600;800&display=swap" media="print" onload="this.media='all'">
 <style>
   :root{
     color-scheme:light;
@@ -1316,8 +1318,9 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   </div>
 </div>
 
-<script src="ipa.js?v=58"></script>
-<script>
+<script src="ipa.js?v=59"></script>
+<!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
+<script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
 const DAYS = {
   1: "나는 ~이다 (I am)",
@@ -10545,7 +10548,22 @@ bootDone();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=58"></script>
-<script src="sync.js?v=58"></script>
+<script>
+/* 로딩 화면(#boot)이 먼저 보이게: 브라우저가 화면을 한 번 그린 다음 앱 코드(#appMain)를 실행 */
+(function(){
+  var done = false;
+  function run(){
+    if (done) return; done = true;
+    window.appStartAt = performance.now();        // 확인용: 앱 코드가 시작한 시각
+    var s = document.createElement("script");
+    s.text = document.getElementById("appMain").textContent;
+    document.body.appendChild(s);
+  }
+  if (window.requestAnimationFrame) requestAnimationFrame(function(){ setTimeout(run, 0); });
+  setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
+})();
+</script>
+<script src="firebase-config.js?v=59"></script>
+<script src="sync.js?v=59"></script>
 
 </body></html>

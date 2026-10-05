@@ -51,7 +51,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=49"></script>
+<script src="ipa.js?v=50"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -7408,7 +7408,7 @@ function celebrate(title, sub, big){
     ${big ? `<button class="btn go" type="button" id="celeOk">좋아요!</button>` : ""}</div>`;
   el.hidden = false;
   try{ ding(); }catch(e){}
-  try{ if (navigator.vibrate && /android/i.test(navigator.userAgent)) navigator.vibrate(big ? [60, 40, 90] : 40); }catch(e){}
+  try{ if (navigator.vibrate && /android/i.test(navigator.userAgent) && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(big ? [60, 40, 90] : 40); }catch(e){}
   if (!big) celeTimer = setTimeout(() => { el.hidden = true; }, 2600);
 }
 document.addEventListener("click", e => {
@@ -10223,7 +10223,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=49"></script>
-<script src="sync.js?v=49"></script>
+<script src="firebase-config.js?v=50"></script>
+<script src="sync.js?v=50"></script>
 
 </body></html>

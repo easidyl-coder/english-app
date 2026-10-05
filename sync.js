@@ -41,8 +41,10 @@
              notes: Array.isArray(notes) ? notes : [], notesAt: num(get("vb.at.notes", 0)),
              goal: goal && Number.isFinite(goal.w) && Number.isFinite(goal.s) ? pickGoal(goal) : null,
              goalAt: num(get("vb.at.goal", 0)),
-             log: obj(get("vb.log", {})), stage: obj(get("vb.stage", {})) };
+             log: obj(get("vb.log", {})), stage: obj(get("vb.stage", {})), trip: tripOf(get("vb.trip", null)) };
   }
+  /* 여행 D-day {p: 여행지, d: 날짜, t: 바꾼 시각} — 더 최근에 바꾼 쪽 */
+  function tripOf(v){ return v && typeof v === "object" && typeof v.d === "string" ? { p: String(v.p || ""), d: v.d, t: num(v.t) } : null; }
   /* 단계 코스 진도: 단계별 끝낸 과 수·열린 단계 수 모두 큰 값 (진도가 줄지 않게) */
   function mergeStage(a, b){
     const s = {};
@@ -77,7 +79,8 @@
              day: Math.max(num(a.day), num(b.day), 1),
              notes: useNotes ? bNotes : a.notes, notesAt: Math.max(num(a.notesAt), num(b.notesAt)),
              goal: useGoal ? pickGoal(bGoal) : a.goal, goalAt: Math.max(num(a.goalAt), num(b.goalAt)),
-             log, stage: mergeStage(a.stage, b.stage) };
+             log, stage: mergeStage(a.stage, b.stage),
+             trip: (() => { const x = tripOf(a.trip), y = tripOf(b.trip); return !x ? y : !y ? x : (y.t > x.t ? y : x); })() };
   }
 
   async function pull(){
@@ -88,12 +91,13 @@
       const mine = local();
       const merged = merge(mine, snap.exists ? snap.data() : {});
       const same = k => JSON.stringify(merged[k]) === JSON.stringify(mine[k]);
-      const changed = !["box", "level", "best", "day", "notes", "goal", "log", "stage"].every(same);
+      const changed = !["box", "level", "best", "day", "notes", "goal", "log", "stage", "trip"].every(same);
       put("vb.box", merged.box); put("vb.level", merged.level); put("vb.at.level", merged.levelAt);
       put("vb.best", merged.best); put("vb.day", merged.day);
       put("vb.notes", merged.notes); put("vb.at.notes", merged.notesAt);
       if (merged.goal){ put("vb.goal", merged.goal); put("vb.at.goal", merged.goalAt); }
       put("vb.log", merged.log); put("vb.stage", merged.stage);
+      if (merged.trip) put("vb.trip", merged.trip);
       await ref.set(Object.assign({ name: user.displayName || "", updatedAt: Date.now() }, merged));
       if (changed) location.reload();          // 합친 기록으로 화면을 다시 그립니다
     } catch(e){ console.warn("동기화 실패", e); }
@@ -109,7 +113,7 @@
         .catch(e => console.warn("저장 실패", e));
     }, 1500);
   }
-  const SYNCED = ["vb.box", "vb.level", "vb.best", "vb.day", "vb.notes", "vb.goal", "vb.log", "vb.stage"];
+  const SYNCED = ["vb.box", "vb.level", "vb.best", "vb.day", "vb.notes", "vb.goal", "vb.log", "vb.stage", "vb.trip"];
   window.onStoreSet = k => {
     if (k === "vb.level") put("vb.at.level", Date.now());    // 언제 바꿨는지 남겨야 두 기기 중 최신을 고릅니다
     if (k === "vb.notes") put("vb.at.notes", Date.now());

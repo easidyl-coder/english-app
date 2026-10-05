@@ -51,7 +51,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=53"></script>
+<script src="ipa.js?v=54"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -867,7 +867,8 @@
   .stNote{font-size:12px;color:var(--ink-3);margin:10px 0 0}
   .stBig small{display:block;margin-top:6px;font-size:11.5px;opacity:.85}
   .shopRow{display:flex;align-items:center;gap:10px}
-  .shopIc{font-size:30px;line-height:1}
+  .shopIc{flex:0 0 auto;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:var(--tint);color:var(--ink)}
+  .shopIc svg{width:24px;height:24px}
   .shopRow .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
   .shopRow .tx b{font-size:15px}
   .shopRow .tx span{font-size:12px;color:var(--ink-2);line-height:1.45}
@@ -877,10 +878,11 @@
   .bdN{font-family:inherit;font-size:13px;color:var(--ink-3);font-weight:700;margin-left:4px}
   .bdGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
   .bd{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:8px 2px;border-radius:14px;background:var(--raise-2);border:1px solid var(--line)}
-  .bd i{font-style:normal;font-size:26px;line-height:1.2}
+  .bdIc{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--ink);margin-bottom:3px}
+  .bdIc svg{width:22px;height:22px}
   .bd b{font-size:11.5px;line-height:1.25;word-break:keep-all}
   .bd span{font-size:10.5px;color:var(--ink-3);line-height:1.3}
-  .bd.off i{filter:grayscale(1);opacity:.35}
+  .bd.off .bdIc{background:var(--line-2) !important;color:var(--ink-3);opacity:.7}
   .bd.off b{color:var(--ink-3)}
   .lgP{font-size:13.5px;color:var(--ink-2);margin:0 0 12px;line-height:1.55}
   .lgForm{padding:0}
@@ -7516,7 +7518,7 @@ function useFreezes(){
   const r = streakInfo(true), ks = Object.keys(r.take);
   if (!ks.length) return;
   shop = { buy: shopBuy(), used: Object.assign({}, shopUsed(), r.take) }; store.set("vb.shop", shop);
-  celeLater("🧊 쉬는 날 이용권을 썼어요", `못 한 ${ks.length}일을 이용권이 지켜 줬어요. 연속 ${r.n}일 그대로!`);
+  celeLater("쉬는 날 이용권을 썼어요", `못 한 ${ks.length}일을 이용권이 지켜 줬어요. 연속 ${r.n}일 그대로!`);
 }
 document.addEventListener("visibilitychange", () => { if (!document.hidden){ try{ useFreezes(); }catch(e){} } });
 const xpToday = () => +xpLog[dkey()] || 0;
@@ -7531,26 +7533,26 @@ const sumLog = f => Object.values(actLog).reduce((a, d) => a + (+(d || {})[f] ||
 const learnedAll = () => Object.values(boxes || {}).filter(v => v && v.b >= 2).length;
 const goalDays = () => Object.values(actLog).filter(d => d && ((+d.n || 0) >= goalW() || (+d.s || 0) >= goalS())).length;
 const BADGES = [
-  ["first", "🌱", "첫걸음", "처음 공부하기", () => xpAll() > 0 || Object.keys(actLog).some(dayTotal)],
-  ["lv", "🔍", "내 레벨 찾기", "레벨 테스트 끝내기", () => myLevel > 0],
-  ["st3", "🔥", "3일 연속", "3일 연속 공부하기", () => streakDays() >= 3],
-  ["st7", "🌟", "일주일 연속", "7일 연속 공부하기", () => streakDays() >= 7],
-  ["st30", "🏆", "한 달 연속", "30일 연속 공부하기", () => streakDays() >= 30],
-  ["goal7", "🎯", "목표 달성 7번", "하루 목표 7번 채우기", () => goalDays() >= 7],
-  ["d10", "📘", "레슨 10개", "Day 10 레슨까지 끝내기", () => curDay > 10],
-  ["d40", "📚", "레슨 40개", "Day 40 레슨까지 끝내기", () => curDay > 40],
-  ["w100", "🧠", "단어 100개", "단어 100개 외우기", () => learnedAll() >= 100],
-  ["w500", "🎓", "단어 500개", "단어 500개 외우기", () => learnedAll() >= 500],
-  ["talk50", "🗣️", "50문장 말하기", "소리 내어 50문장 말하기", () => sumLog("t") >= 50],
-  ["xp1000", "⚡", "1000 XP", "XP 1000 모으기", () => xpAll() >= 1000]
+  ["first", "<path d=\"M12 21v-9\"></path><path d=\"M12 12C12 8 9 6 5 6c0 4 3 6 7 6z\"></path><path d=\"M12 10c0-3.5 2.5-5.5 6.5-5.5 0 3.5-2.5 5.5-6.5 5.5z\"></path>", "var(--mint)", "첫걸음", "처음 공부하기", () => xpAll() > 0 || Object.keys(actLog).some(dayTotal)],
+  ["lv", "<circle cx=\"11\" cy=\"11\" r=\"6.5\"></circle><path d=\"m20 20-4.2-4.2\"></path>", "var(--tint)", "내 레벨 찾기", "레벨 테스트 끝내기", () => myLevel > 0],
+  ["st3", "<path d=\"M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.3 3 2.3 3C11 8 11 5.5 12 3z\"></path>", "var(--pink)", "3일 연속", "3일 연속 공부하기", () => streakDays() >= 3],
+  ["st7", "<path d=\"m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z\"></path>", "var(--honey)", "일주일 연속", "7일 연속 공부하기", () => streakDays() >= 7],
+  ["st30", "<path d=\"M8 4h8v5a4 4 0 0 1-8 0z\"></path><path d=\"M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4\"></path><path d=\"M12 13v5M8.5 21h7\"></path>", "var(--honey)", "한 달 연속", "30일 연속 공부하기", () => streakDays() >= 30],
+  ["goal7", "<circle cx=\"12\" cy=\"12\" r=\"8\"></circle><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><circle cx=\"12\" cy=\"12\" r=\"1\"></circle>", "var(--pink)", "목표 달성 7번", "하루 목표 7번 채우기", () => goalDays() >= 7],
+  ["d10", "<path d=\"M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2z\"></path><path d=\"M5 18a2 2 0 0 1 2-2h11\"></path>", "var(--tint)", "레슨 10개", "Day 10 레슨까지 끝내기", () => curDay > 10],
+  ["d40", "<rect x=\"3\" y=\"4\" width=\"4.5\" height=\"16\" rx=\"1\"></rect><rect x=\"9.5\" y=\"4\" width=\"4.5\" height=\"16\" rx=\"1\"></rect><path d=\"m15.8 6.2 3.4-.9 3.2 13.2-3.4.9z\"></path>", "var(--mint)", "레슨 40개", "Day 40 레슨까지 끝내기", () => curDay > 40],
+  ["w100", "<path d=\"M9 18h6M10 21h4\"></path><path d=\"M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z\"></path>", "var(--honey)", "단어 100개", "단어 100개 외우기", () => learnedAll() >= 100],
+  ["w500", "<path d=\"m2 9 10-5 10 5-10 5z\"></path><path d=\"M6 11v5c3 2.5 9 2.5 12 0v-5\"></path><path d=\"M22 9v6\"></path>", "var(--tint)", "단어 500개", "단어 500개 외우기", () => learnedAll() >= 500],
+  ["talk50", "<path d=\"M4 5h16v11H9l-5 4z\"></path><path d=\"M8 9.5h8M8 12.5h5\"></path>", "var(--mint)", "50문장 말하기", "소리 내어 50문장 말하기", () => sumLog("t") >= 50],
+  ["xp1000", "<path d=\"M13 2 4 14h7l-1 8 9-12h-7z\"></path>", "var(--honey)", "1000 XP", "XP 1000 모으기", () => xpAll() >= 1000]
 ];
 function badgeCheck(quiet){
   const got = [];
-  BADGES.forEach(([id, ic, nm, ds, ok]) => { try{ if (!badges[id] && ok()){ badges[id] = dkey(); got.push([ic, nm, ds]); } }catch(e){} });
+  BADGES.forEach(([id, ic, bg, nm, ds, ok]) => { try{ if (!badges[id] && ok()){ badges[id] = dkey(); got.push([nm, ds]); } }catch(e){} });
   if (!got.length) return;
   store.set("vb.badge", badges);
   if (quiet) return;
-  celeLater((`${got[0][0]} 배지: ${got[0][1]}`, got[0][2] + " 성공!" + (got.length > 1 ? ` (외 ${got.length - 1}개)` : "")));
+  celeLater(`배지 획득: ${got[0][0]}`, got[0][1] + " 성공!" + (got.length > 1 ? ` (외 ${got.length - 1}개)` : ""));
 }
 
 /* ── 주간 리그 ── 로그인한 사람만, 직접 '참여'를 눌러야 시작 (기본은 꺼짐). 별명과 이번 주 XP만 다른 참가자에게 보임.
@@ -10005,7 +10007,7 @@ function renderStats(){
   const cell = (b, s) => `<div><b>${b}</b><span>${s}</span></div>`;
   $("#stBody").innerHTML = `
     <div class="stTop">
-      <div class="stBig"><b>${streakDays()}</b><span>일 연속 공부 중</span><small>${restUsedThisWeek() ? "이번 주 무료 쉬는 날을 썼어요" : "이번 주 하루는 쉬어도 이어져요"}${freezesOwned().length ? ` · 🧊 이용권 ${freezesOwned().length}개` : ""}</small></div>
+      <div class="stBig"><b>${streakDays()}</b><span>일 연속 공부 중</span><small>${restUsedThisWeek() ? "이번 주 무료 쉬는 날을 썼어요" : "이번 주 하루는 쉬어도 이어져요"}${freezesOwned().length ? ` · 쉬는 날 이용권 ${freezesOwned().length}개` : ""}</small></div>
       <div class="stSide">${cell(`Day ${curDay}`, `레슨 진도 (전체 ${LASTDAY})`)}${cell(`${c[2] + c[3]}개`, "외운 단어")}</div>
     </div>
     <div class="stCard"><h3>오늘 한 공부</h3>
@@ -10088,7 +10090,7 @@ document.addEventListener("click", e => {
   const b = e.target.closest("[data-shop]"); if (!b || b.disabled) return;
   if (b.dataset.shop === "freeze"){
     if (!confirm(`${FREEZE_PRICE} XP로 쉬는 날 이용권을 살까요?`)) return;
-    if (buyFreeze()){ celebrate("🧊 쉬는 날 이용권을 샀어요", "못 한 날이 생기면 알아서 연속을 지켜 줄게요."); renderMine(); }
+    if (buyFreeze()){ celebrate("쉬는 날 이용권을 샀어요", "못 한 날이 생기면 알아서 연속을 지켜 줄게요."); renderMine(); }
   }
 });
 /* 계정 삭제 — 서버의 내 기록·리그 기록을 지우고 로그아웃. 이 기기 기록까지 지울지는 따로 물어봄 */
@@ -10129,16 +10131,16 @@ function xpHtml(){
   const own = freezesOwned().length, left = xpLeft();
   const full = own >= FREEZE_MAX, poor = left < FREEZE_PRICE;
   return `<div class="stCard"><h3>XP 상점</h3>
-      <div class="shopRow"><span class="shopIc">🧊</span>
+      <div class="shopRow"><span class="shopIc">${ico('<path d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7"></path><path d="m9 4 3 2 3-2M9 20l3-2 3 2M4 10.5l3.4-.4L6 7M18 7l-1.4 3.1 3.4.4M4 13.5l3.4.4L6 17M18 17l-1.4-3.1 3.4-.4"></path>')}</span>
         <div class="tx"><b>쉬는 날 이용권</b><span>공부를 못 한 날 자동으로 써서 연속을 지켜 줘요. 매주 무료 쉬는 날 하루가 먼저 쓰여요.</span>
           <span class="own">가진 이용권 ${own}/${FREEZE_MAX}개</span></div>
         <button class="btn go" type="button" data-shop="freeze"${full || poor ? " disabled" : ""}>${full ? "다 가졌어요" : FREEZE_PRICE + " XP"}</button></div>
       <p class="stNote">쓸 수 있는 XP <b>${left}</b>${!full && poor ? ` · ${FREEZE_PRICE - left} XP 더 모으면 살 수 있어요` : ""} · 써도 '모은 XP'는 그대로예요</p></div>
     <div class="stCard"><div class="stRow"><div><b>${xpToday()}</b><span>오늘 XP</span></div><div><b>${xpWeek()}</b><span>이번 주 XP</span></div><div><b>${xpAll()}</b><span>모은 XP</span></div></div>
     <p class="stNote">단어 문제 2 · 문장 3 · 말하기 3 · 레슨 끝내기 20 XP</p></div>
-    <div class="stCard"><h3>배지 <small class="bdN">${n}/${BADGES.length}</small></h3><div class="bdGrid">${BADGES.map(([id, ic, nm, ds]) =>
-      `<div class="bd${badges[id] ? "" : " off"}" title="${esc(ds)}"><i>${ic}</i><b>${esc(nm)}</b></div>`).join("")}</div>
-      ${next ? `<p class="stNote">다음 배지 · <b>${next[1]} ${esc(next[2])}</b> — ${esc(next[3])}</p>` : `<p class="stNote">배지를 모두 모았어요!</p>`}</div>`;
+    <div class="stCard"><h3>배지 <small class="bdN">${n}/${BADGES.length}</small></h3><div class="bdGrid">${BADGES.map(([id, ic, bg, nm, ds]) =>
+      `<div class="bd${badges[id] ? "" : " off"}" title="${esc(ds)}"><span class="bdIc" style="background:${bg}">${ico(ic)}</span><b>${esc(nm)}</b></div>`).join("")}</div>
+      ${next ? `<p class="stNote">다음 배지 · <b>${esc(next[3])}</b> — ${esc(next[4])}</p>` : `<p class="stNote">배지를 모두 모았어요!</p>`}</div>`;
 }
 /* 나 탭 화면: home(요약 + 메뉴) · rec 공부 기록 · badge 배지·XP 상점 · set 설정 · acct 계정 */
 function mineView(v){ $("#p7").dataset.view = v; window.scrollTo(0, 0); }
@@ -10362,7 +10364,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=53"></script>
-<script src="sync.js?v=53"></script>
+<script src="firebase-config.js?v=54"></script>
+<script src="sync.js?v=54"></script>
 
 </body></html>

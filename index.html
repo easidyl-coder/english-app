@@ -8,7 +8,8 @@
 <meta name="apple-mobile-web-app-title" content="톡톡 잉글리시">
 <meta name="application-name" content="톡톡 잉글리시">
 <script>
-/* 화면 테마(자동·밝게·어둡게)를 그리기 전에 먼저 정해서 하얗게 깜빡이지 않게 */
+/* 화면 테마(자동·밝게·어둡게)를 그리기 전에 먼저 정해서 하얗게 깜빡이지 않게 · 로딩 화면은 늦어도 10초 뒤 사라짐 */
+setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(); }, 10000);
 (function(){
   try{
     var m = localStorage.getItem("vb.theme"); m = m ? JSON.parse(m) : "auto";
@@ -51,7 +52,6 @@
   });
 })();
 </script>
-<script src="ipa.js?v=57"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -1030,6 +1030,25 @@
   :root[data-theme="dark"] input,:root[data-theme="dark"] textarea{color-scheme:dark}
   /* 마스코트 · 축하 */
   .mascot{display:block;flex:0 0 auto}
+  #boot{position:fixed;inset:0;z-index:9999;background:var(--ground);display:grid;place-items:center;transition:opacity .25s}
+  #boot.off{opacity:0;pointer-events:none}
+  #boot .bootIn{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--ink)}
+  #boot b{font-family:"Jua",sans-serif;font-weight:400;font-size:24px;margin-top:6px}
+  #boot span{font-size:14px;color:var(--ink-2)}
+  #boot .bootBar{display:block;width:140px;height:6px;border-radius:3px;background:var(--line-3);overflow:hidden;margin-top:10px}
+  #boot .bootBar i{display:block;width:40%;height:100%;border-radius:3px;background:var(--honey);animation:bootMove 1.1s ease-in-out infinite}
+  @keyframes bootMove{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+  #busy{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:96;display:flex;align-items:center;gap:8px;
+        padding:8px 14px;border-radius:20px;background:var(--raise);border:1px solid var(--line);box-shadow:var(--shadow);font-size:13px;color:var(--ink-2);pointer-events:none;white-space:nowrap}
+  #busy[hidden]{display:none}
+  .spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line-2);border-top-color:var(--accent);animation:spin .8s linear infinite;flex:0 0 auto}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion: reduce){ #boot .bootBar i,.spin{animation-duration:2.4s} }
+  .gWhy{margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--accent-soft);display:flex;flex-direction:column;gap:6px}
+  .gWhy > b{font-size:14px;color:var(--accent)}
+  .gWhy p{margin:0;font-size:14px;line-height:1.6;color:var(--ink);word-break:keep-all}
+  .gWhy p b{color:var(--ok)}
+  .gWhy p s{color:var(--bad);text-decoration-thickness:2px}
   .cele{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:95;width:min(92vw,420px);pointer-events:none}
   .cele.big{pointer-events:auto}
   .cele .celeBox{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;background:var(--raise);border:2px solid var(--honey);
@@ -1068,6 +1087,12 @@
   .anRow .go2,.plan .go2{min-height:40px}
 </style>
 
+<!-- 로딩 화면 — 앱 코드가 다 읽힐 때까지 (끝나면 시작 코드가 지움) -->
+<div id="boot" role="status" aria-live="polite">
+  <div class="bootIn"><svg class="mascot" viewBox="0 0 120 120" width="84" height="84" aria-hidden="true"><path d="M60 22v-10" stroke="#3E9C6E" stroke-width="4" stroke-linecap="round"/><path d="M60 14c-9-9-18-6-19 1 8 4 15 3 19-1zM60 14c8-9 17-7 19 0-8 5-15 4-19 0z" fill="#4CC38A"/><path d="M18 64 6 74M102 64l12 10" stroke="#2E33A8" stroke-width="9" stroke-linecap="round"/><path d="M36 22h48a24 24 0 0 1 24 24v22a24 24 0 0 1-24 24H56l-20 16 4-16h-4A24 24 0 0 1 12 68V46a24 24 0 0 1 24-24z" fill="#3D42C9"/><ellipse cx="33" cy="68" rx="7" ry="4.5" fill="#EDBE4E" opacity=".85"/><ellipse cx="87" cy="68" rx="7" ry="4.5" fill="#EDBE4E" opacity=".85"/><path d="M36 55q9-12 18 0M66 55q9-12 18 0" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M49 67q11 16 22 0z" fill="#16183A"/><path d="M54 72q6 5 12 0" fill="#F08068"/></svg><b>톡톡 잉글리시</b><span>불러오는 중…</span><i class="bootBar"><i></i></i></div>
+</div>
+<!-- 잠깐 기다리는 일이 있을 때 위에 뜨는 작은 표시 (appBusy) -->
+<div id="busy" role="status" aria-live="polite" hidden><i class="spin"></i><span></span></div>
 <div class="shell">
   <header>
     <p class="eyebrow">여행 영어 연습</p>
@@ -1291,6 +1316,7 @@
   </div>
 </div>
 
+<script src="ipa.js?v=58"></script>
 <script>
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
 const DAYS = {
@@ -8113,7 +8139,7 @@ function draw(){
   $("#gCheck").disabled = false;
 
   const words = s.en.split(" ");
-  const traps = decoysFor(words, trapCount(words.length)).map(w => ({ w, i: -1, d: true }));
+  const traps = decoysFor(words, trapCount(words.length)).map(o => ({ w: o.w, i: -1, d: true, from: o.from }));
   bankWords = shuffle(words.map((w,i)=>({w,i})).concat(traps));
   if (bankWords.length>1 && bankWords.every((b,k)=>b.i===k)) bankWords = shuffle(bankWords);
   renderSlot(); renderBank();
@@ -8152,6 +8178,50 @@ function pastOf(v){
 /* 분야를 '동작·행동'에서 다른 곳(음식·여행 등)으로 옮긴 동사 — 함정에는 계속 동사로 씀 */
 const MOVED_VERBS = new Set("boil bake chew swallow fry chop pour cater feed savor quench sail navigate migrate wander stroll explore visit overtake steer borrow earn spend afford donate calculate reimburse wipe sweep sew recycle accommodate vacate reside marry hug kiss greet invite introduce congratulate forgive mingle swim sing dance draw paint perform".split(" "));
 let VSET = null;                                // 동사 (동작·행동) — -s·-ed 함정은 동사에만 (명사 단수·복수는 뜻으로 구별이 안 돼서 뺌)
+/* ── 함정 조각을 골랐을 때 '왜' ── 정답 자리 단어와 고른 조각의 뜻 차이를 두 줄로 비교해 보여 줌 */
+const TRAP_DESC = {
+  am: "I와 쓰는 be동사 (~이에요)", is: "he·she·it·한 개와 쓰는 be동사 (~이에요)", are: "you·we·they·여러 개와 쓰는 be동사 (~이에요)",
+  was: "지난 일 be동사 (~였어요) — I·he·she·it", were: "지난 일 be동사 (~였어요) — you·we·they",
+  a: "자음 소리 앞의 '하나'", an: "모음 소리(아·에·이·오·우) 앞의 '하나'",
+  do: "질문·부정 도우미 — 지금·평소, I·you·we·they", does: "질문·부정 도우미 — 지금·평소, he·she·it", did: "질문·부정 도우미 — 지난 일",
+  "don't": "지금·평소 '안 ~해요' — I·you·we·they", "doesn't": "지금·평소 '안 ~해요' — he·she·it", "didn't": "지난 일 '안 ~했어요'",
+  have: "'가지고 있다' — I·you·we·they", has: "'가지고 있다' — he·she·it",
+  this: "가까운 것 하나", these: "가까운 것 여러 개", that: "먼 것 하나 (또는 앞 말을 받는 '그거')", those: "먼 것 여러 개",
+  in: "공간 안 · 월 · 연도", on: "표면 위 · 요일 · 날짜", at: "한 지점 · 시각",
+  to: "'~로, ~에게' (방향·도착점)", for: "'~를 위해, ~동안'", from: "'~에서' (출발점·출신)", of: "'~의, ~ 중에서'",
+  my: "'나의' (뒤에 명사)", me: "'나를, 나에게' (동사·전치사 뒤)", i: "'내가' (주어)",
+  we: "'우리가' (주어)", us: "'우리를, 우리에게'", they: "'그들이' (주어)", them: "'그들을, 그들에게'",
+  he: "'그가' (주어)", him: "'그를, 그에게'", she: "'그녀가' (주어)", her: "'그녀를, 그녀의'",
+  many: "셀 수 있는 것(사람·가방)이 많은", much: "셀 수 없는 것(물·돈·시간)이 많은",
+  there: "'거기' 또는 There is (~가 있어요)", their: "'그들의'", than: "'~보다' (비교)", then: "'그때, 그다음에'",
+  "it's": "it is의 줄임 (그건 ~예요)", its: "'그것의'", "you're": "you are의 줄임 (당신은 ~예요)", your: "'당신의'",
+  "i'm": "I am의 줄임 — 지금 '저는 ~예요'", "i'll": "I will의 줄임 — 앞으로 '~할게요'",
+  good: "'좋은' (명사 앞·be동사 뒤)", well: "'잘' (동사를 꾸밈)", more: "'더' (비교)", most: "'가장' (최상급)",
+  when: "'언제, ~할 때'", where: "'어디, ~하는 곳'"
+};
+const BASE_AFTER = new Set("can could will would should must may might to don't doesn't didn't do does did let's please".split(" "));
+const FORM_DESC = { base: "동사 원래 모양 (지금·평소)", past: "지난 일 모양 (~했어요)", s: "he·she·it이 주어일 때 모양 (-s)", ing: "'~하는 중' 모양 (-ing)" };
+// x가 other에 -s·-es·-ies를 붙인 모양인지 (like→likes, go→goes, try→tries)
+const sForm = (x, other) => x.endsWith("s") && (x.slice(0, -1) === other || x.slice(0, -2) === other || (x.endsWith("ies") && x.slice(0, -3) + "y" === other));
+function trapWhy(wrong, right, prev){
+  const core = x => String(x || "").toLowerCase().replace(/[^a-z']/g, "");
+  const show = x => esc(String(x).replace(/[.,!?]+$/, ""));
+  const w = core(wrong), r = core(right), pv = core(prev);
+  if (TRAP_DESC[w] && TRAP_DESC[r])
+    return `정답 자리 <b>${show(right)}</b>: ${TRAP_DESC[r]}<br>고른 <s>${show(wrong)}</s>: ${TRAP_DESC[w]}`;
+  const grp = CONFUSE.find(g => g.includes(w) && g.includes(r));            // go·went·going 같은 불규칙 짝
+  const form = x => x.endsWith("ing") ? "ing" : (grp && grp.indexOf(x) === 1) || x.endsWith("ed") ? "past"
+    : sForm(x, x === w ? r : w) ? "s" : "base";
+  const fr = form(r), fw = form(w);
+  if (fr === fw) return `정답 자리 <b>${show(right)}</b> · 고른 조각 <s>${show(wrong)}</s> — 뜻이 달라져요.`;
+  const plural = ["i", "you", "we", "they"].includes(pv), single = ["he", "she", "it"].includes(pv);
+  const rDesc = fr === "base" ? (BASE_AFTER.has(pv) ? `앞의 <b>${show(prev)}</b> 뒤에는 동사 원래 모양`
+      : plural ? `주어 <b>${show(prev)}</b> 뒤에는 -s 없는 원래 모양 (지금·평소)` : "지금·평소 일이라 동사 원래 모양")
+    : fr === "past" ? "지난 일이라 과거 모양 (~했어요)"
+    : fr === "s" ? (single ? `주어 <b>${show(prev)}</b>(한 사람·한 개) 뒤, 지금·평소 일이라 -s를 붙인 모양` : "주어가 한 사람·한 개(he·she·it)이고 지금·평소 일이라 -s를 붙인 모양")
+    : "'~하는 중'(be동사 + -ing)이거나 enjoy·like 뒤라서 -ing 모양";
+  return `정답 자리 <b>${show(right)}</b>: ${rDesc}<br>고른 <s>${show(wrong)}</s>: ${FORM_DESC[fw]}`;
+}
 function decoysFor(tokens, want){
   if (!WSET){ WSET = new Set(WORDS.map(x => x.w.toLowerCase())); VSET = new Set(WORDS.filter(x => x.c === "동작·행동" || MOVED_VERBS.has(x.w.toLowerCase())).map(x => x.w.toLowerCase())); }
   const has = w => WSET.has(w), isVerb = w => VSET.has(w);
@@ -8179,7 +8249,7 @@ function decoysFor(tokens, want){
   const out = [], usedKey = new Set(), usedTok = new Set();
   shuffle(cands).sort((a, b) => a.pr - b.pr).forEach(c => {      // 문법 짝 먼저, 한 조각당 함정 하나
     if (out.length >= want || usedKey.has(c.key) || usedTok.has(c.i)) return;
-    usedKey.add(c.key); usedTok.add(c.i); out.push(c.word);
+    usedKey.add(c.key); usedTok.add(c.i); out.push({ w: c.word, from: tokens[c.i] });   // from = 이 함정이 대신한 정답 조각
   });
   return out;
 }
@@ -8200,7 +8270,7 @@ $("#gBank").addEventListener("click", e => {
   const b = e.target.closest("[data-bank]"); if(!b||locked) return;
   const k = +b.dataset.bank;
   if (picked.some(p=>p.k===k)) return;
-  picked.push({k, w:bankWords[k].w, d:!!bankWords[k].d});
+  picked.push({k, w:bankWords[k].w, d:!!bankWords[k].d, from:bankWords[k].from});
   renderSlot(); renderBank();
 });
 $("#gSlot").addEventListener("click", e => {
@@ -8229,10 +8299,10 @@ $("#gCheck").addEventListener("click", () => {
     streak = 0;
     if (!missed.includes(s)) missed.push(s);
     deck.splice(Math.min(deck.length, idx + 1 + RETRY_GAP), 0, s);   // 맞힐 때까지 조금 뒤에 다시 나옴
-    const trap = picked.filter(p => p.d).map(p => p.w), ans = s.en.split(" ");
+    const ans = s.en.split(" ");
     picked.forEach((p, i) => { p.pos = p.w === ans[i] ? "ok" : "no"; });
     $("#gAns").innerHTML = `<span class="lab">정답 (밑줄이 틀린 자리)</span><span class="en">${ans.map((w, i) => picked[i] && picked[i].w === w ? esc(w) : `<u class="fix">${esc(w)}</u>`).join(" ")}</span>`
-      + (trap.length ? `<span class="trapNote">함정 조각 <b>${esc(trap.join(", "))}</b>을(를) 골랐어요</span>` : "")
+      + gWhyHtml(picked, ans)
       + `<span class="trapNote" style="color:var(--accent)">이 문장은 조금 뒤에 다시 나와요</span>` + tipHtml(s);
     speak(s.en, 0.75);
   }
@@ -8241,6 +8311,17 @@ $("#gCheck").addEventListener("click", () => {
   $("#gCheck").textContent = idx+1 < deck.length ? "다음" : "결과 보기";
 });
 
+/* 틀렸을 때 '왜 틀렸을까요?' — 함정 조각이면 뜻 차이, 아니면 빠진 단어나 순서 */
+function gWhyHtml(picked, ans){
+  const traps = picked.filter(p => p.d && p.from);
+  let lines;
+  if (traps.length) lines = traps.map(p => { const at = ans.indexOf(p.from); return trapWhy(p.w, p.from, at > 0 ? ans[at - 1] : ""); });
+  else if (picked.length < ans.length){
+    const used = picked.map(p => p.w), miss = ans.filter(w => { const k = used.indexOf(w); if (k >= 0){ used.splice(k, 1); return false; } return true; });
+    lines = [`아직 다 안 골랐어요. 빠진 조각: <b>${miss.map(w => esc(w)).join(" · ")}</b>`];
+  } else lines = ["단어는 맞게 골랐는데 순서가 달라요. 영어는 보통 <b>누가 → 한다 → 무엇을 → 어디서·언제</b> 순서예요. 밑줄 친 자리를 정답과 비교해 보세요."];
+  return `<div class="gWhy"><b>왜 틀렸을까요?</b>${lines.map(x => `<p>${x}</p>`).join("")}</div>`;
+}
 function finishRound(){
   $("#gBar").style.width = "100%";
   $("#gameWrap").hidden = true;
@@ -10183,8 +10264,9 @@ async function deleteAccount(){
   if (!confirm("계정을 삭제할까요?\n서버에 저장된 공부 기록과 주간 리그 기록이 모두 지워지고, 되돌릴 수 없어요.")) return;
   const weeks = [...new Set(Object.keys(xpLog).concat(Object.keys(actLog)).map(k => weekKey(new Date(k + "T00:00:00"))).concat(weekKey()))];
   clearTimeout(leagueTimer);
-  try{ await window.appDeleteAccount(weeks); }
-  catch(e){ alert("계정을 삭제하지 못했어요. 인터넷 연결을 확인하고 다시 해 주세요."); return; }
+  appBusy("계정을 지우는 중…");
+  try{ await window.appDeleteAccount(weeks); appBusy(false); }
+  catch(e){ appBusy(false); alert("계정을 삭제하지 못했어요. 인터넷 연결을 확인하고 다시 해 주세요."); return; }
   league = { on: false, nick: "", t: Date.now() }; store.set("vb.league", league);
   if (confirm("서버 기록을 지우고 로그아웃했어요.\n이 휴대폰에 저장된 공부 기록도 지울까요?\n(취소를 누르면 이 기기에서는 지금 기록 그대로 계속 쓸 수 있어요)")){
     Object.keys(localStorage).filter(k => k.startsWith("vb.")).forEach(k => localStorage.removeItem(k));
@@ -10446,14 +10528,24 @@ $("#hInstall").addEventListener("click", e => {
   if (e.target.closest("#insGo")) doInstall();
 });
 
+/* 로딩 화면 지우기 · 잠깐 기다리는 일 표시 — appBusy("계정 기록을 맞추는 중…") / appBusy(false) */
+function bootDone(){ const b = document.getElementById("boot"); if (!b) return; b.classList.add("off"); setTimeout(() => b.remove(), 300); }
+let busyTimer = null;
+window.appBusy = msg => {
+  const el = document.getElementById("busy"); if (!el) return;
+  clearTimeout(busyTimer);
+  if (!msg){ busyTimer = setTimeout(() => { el.hidden = true; }, 200); return; }   // 너무 짧게 깜빡이지 않게 살짝 늦게 닫음
+  el.querySelector("span").textContent = msg; el.hidden = false;
+};
 /* 시작 — 한 곳에서 오류가 나도 나머지는 계속 실행됩니다 */
 [drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), () => badgeCheck(true), useFreezes, renderHome, renderInstall,
  () => { if (!isReturning()) openOnboard(); }]
   .forEach(fn => { try{ fn(); }catch(e){ console.error(e); } });
+bootDone();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=57"></script>
-<script src="sync.js?v=57"></script>
+<script src="firebase-config.js?v=58"></script>
+<script src="sync.js?v=58"></script>
 
 </body></html>

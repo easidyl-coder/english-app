@@ -98,8 +98,10 @@
              league: (() => { const x = leagueOf(a.league), y = leagueOf(b.league); return !x ? y : !y ? x : (y.t > x.t ? y : x); })() };
   }
 
+  const busy = m => { try { if (window.appBusy) window.appBusy(m); } catch(e){} };
   async function pull(){
     pulling = true;
+    busy("계정 기록을 맞추는 중…");
     try{
       const ref = db.collection("users").doc(user.uid);
       const snap = await ref.get();
@@ -116,8 +118,9 @@
       put("vb.xp", merged.xp); put("vb.badge", merged.badge); put("vb.shop", merged.shop);
       if (merged.league) put("vb.league", merged.league);
       await ref.set(Object.assign({ updatedAt: Date.now() }, merged));
-      if (changed) location.reload();          // 합친 기록으로 화면을 다시 그립니다
+      if (changed){ busy("새 기록으로 다시 여는 중…"); location.reload(); return; }   // 합친 기록으로 화면을 다시 그립니다
     } catch(e){ console.warn("동기화 실패", e); }
+    busy(false);
     pulling = false;
   }
 

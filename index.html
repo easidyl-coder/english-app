@@ -6,6 +6,16 @@
 <meta name="theme-color" content="#2A2FA8">
 <title>영어 연습장</title>
 <script>
+/* 화면 테마(자동·밝게·어둡게)를 그리기 전에 먼저 정해서 하얗게 깜빡이지 않게 */
+(function(){
+  try{
+    var m = localStorage.getItem("vb.theme"); m = m ? JSON.parse(m) : "auto";
+    var dark = m === "dark" || (m !== "light" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  }catch(e){ document.documentElement.setAttribute("data-theme", "light"); }
+})();
+</script>
+<script>
 /* 화면 어디서든 오류가 나면 아래에 빨간 글씨로 보여줍니다 (캡처해서 보여줄 수 있게). */
 (function(){
   var box;
@@ -39,7 +49,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=45"></script>
+<script src="ipa.js?v=46"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -53,11 +63,28 @@
     color-scheme:light;
     --ground:#F0F1F8; --raise:#FFFFFF; --raise-2:#F7F7FC;
     --ink:#16183A; --ink-2:#4A4C68; --ink-3:#62647F;
-    --line:#E2E3EF; --line-2:#ECEDF5;
+    --line:var(--line); --line-2:#ECEDF5;
     --accent:#2A2FA8; --accent-fill:#2A2FA8; --accent-soft:#E6E7F7;
     --ok:#1E7A55; --ok-soft:#D3EADF; --bad:#B4432C; --bad-soft:#F3DCD5; --warn:#8A5A00;
     --honey:#EDBE4E; --honey-dark:#C99A2E; --mint:#D3EADF; --pink:#F3DCD5; --tint:#D8DAF5;
-    --shadow:0 3px 0 #D5D7EC;
+    --shadow:0 3px 0 var(--line-3);
+    --line-3:#D5D7EC; --on-honey:#16183A; --honey-soft:#FFF6DC; --honey-line:#F1DFA6;
+    --ok-ink:#1E5A45; --bad-ink:#6B3A2E; --ok-line:#A9CDBB; --bad-line:#E3B9AC;
+    --fire-bg:#FFF1E0; --fire-line:#F4D3AC; --fire-ink:#9A4E14; --slot-bg:rgba(255,255,255,.55);
+  }
+  /* ── 어두운 화면 ── 나 탭에서 자동·밝게·어둡게. 자동이면 휴대폰 설정을 따름 (html data-theme) */
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --ground:#11132A; --raise:#1B1E3B; --raise-2:#22264A;
+    --ink:#ECEDF8; --ink-2:#B9BBDA; --ink-3:#9294BA;
+    --line:#2E3260; --line-2:#262A52; --line-3:#3A3F72;
+    --accent:#6E74F2; --accent-fill:#4B50D6; --accent-soft:#272B5E;
+    --ok:#4CC38A; --ok-soft:#163A2B; --bad:#F08068; --bad-soft:#3D2420; --warn:#E8B44E;
+    --honey-dark:#A9801C; --mint:#173A30; --pink:#3E2530; --tint:#C8CAF6;
+    --shadow:0 3px 0 #0A0B1C;
+    --honey-soft:#352C12; --honey-line:#5E4C1C;
+    --ok-ink:#8FE0B8; --bad-ink:#F4B9AA; --ok-line:#2E6B50; --bad-line:#7A3F35;
+    --fire-bg:#3A2914; --fire-line:#6A471C; --fire-ink:#F6B66E; --slot-bg:rgba(255,255,255,.04);
   }
   *{box-sizing:border-box}
   body{
@@ -162,7 +189,7 @@
   /* 단어 찾기 */
   .wSearch{position:relative;display:flex;align-items:center;margin:12px 0 4px}
   .wSearch svg{position:absolute;left:16px;width:20px;height:20px;color:var(--ink-3);pointer-events:none}
-  .wSearch input[type="search"]{flex:1;min-height:54px;padding:0 44px 0 46px;border-radius:18px;border:2px solid #D5D7EC;
+  .wSearch input[type="search"]{flex:1;min-height:54px;padding:0 44px 0 46px;border-radius:18px;border:2px solid var(--line-3);
     font-size:16px;font-weight:600;box-shadow:none;-webkit-appearance:none;appearance:none}
   .wSearch input[type="search"]:focus{outline:none;border-color:var(--accent)}
   .wSearch input::-webkit-search-cancel-button{display:none}
@@ -173,7 +200,7 @@
     scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .chipRow::-webkit-scrollbar{display:none}
   .chipRow button{flex:0 0 auto;font:inherit;font-size:13px;font-weight:700;min-height:38px;padding:0 14px;border-radius:19px;
-    border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+    border:1px solid var(--line);background:var(--raise);color:var(--ink-2);cursor:pointer;white-space:nowrap}
   .chipRow button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
   .chipRow button small{font-size:11.5px;font-weight:600;opacity:.75;margin-left:4px}
   .wTools{display:flex;align-items:center;gap:8px;margin:12px 0 2px}
@@ -181,7 +208,7 @@
   .wTools .btn{min-height:38px;padding:0 12px;font-size:13px}
   .btn.more{display:block;width:100%;min-height:50px;margin:14px 0 4px}
   /* 앱 설치 안내 (홈 맨 위) */
-  .hInstall{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:2px solid var(--accent);
+  .hInstall{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--raise);border:2px solid var(--accent);
     border-radius:18px;padding:12px 10px 12px 16px;margin-top:14px}
   .hInstall .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
   .hInstall .tx b{font-size:15px;color:var(--accent)} .hInstall .tx span{font-size:12.5px;color:var(--ink-2);line-height:1.5}
@@ -194,34 +221,23 @@
   .qWhy p{margin:4px 0 0;font-size:13.5px;line-height:1.6;color:var(--ink)}
   .qWhy .whyT{margin:0;font-size:13px;font-weight:800;color:var(--accent)}
   .qWhy b{color:var(--accent)}
-  .hLvCard{display:flex;flex-direction:column;gap:12px;background:var(--honey);border-radius:20px;
-    padding:16px;margin-top:14px;box-shadow:0 3px 0 var(--honey-dark)}
-  .hLvCard .tx{display:flex;flex-direction:column;gap:3px}
-  .hLvCard .tx b{font-family:"Jua",sans-serif;font-weight:400;font-size:19px;color:var(--ink)}
-  .hLvCard .tx span{font-size:12.5px;color:#5A4410;line-height:1.5}
-  .hLvCard .btn{width:100%;min-height:48px;padding:0 16px;background:#fff;border-color:#fff;color:var(--ink);font-size:15px;
-    font-weight:800;box-shadow:0 3px 0 rgba(0,0,0,.15)}
   /* 어휘(표현·숙어) 카드 */
-  .vS{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+  .vS{background:var(--raise);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
   .vS .en{font-size:17px;font-weight:800} .vS .ko{font-size:13.5px;color:var(--ink-2)}
   .vS .vEx{font-size:13px;color:var(--ink-2);margin-top:6px;line-height:1.5}
   .vS .row2{display:flex;margin-top:8px} .vS .row2 .btn{min-height:36px;font-size:13px;padding:0 12px}
   /* 문장 조립 함정 조각 — 확인한 뒤 줄 그어 보여 줌 */
   .chip.decoy{text-decoration:line-through;opacity:.55;border-style:dashed}
   .trapNote{display:block;margin-top:6px;font-size:13px;color:var(--bad)}
-  .hResume{display:flex;align-items:center;gap:10px;background:#FFF6DC;border:2px solid var(--honey);
+  .hResume{display:flex;align-items:center;gap:10px;background:var(--honey-soft);border:2px solid var(--honey);
     border-radius:18px;padding:12px 12px 12px 16px;margin-top:14px}
   .hResume .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
   .hResume .tx b{font-size:15px} .hResume .tx span{font-size:12.5px;color:var(--ink-2)}
   .hResume .btn{min-height:40px;padding:0 16px}
-  .rvCard.resume{background:#FFF6DC;border-color:var(--honey)}
-  .catMini{display:flex;flex-wrap:wrap;gap:8px}
-  .catMini button{font:inherit;font-size:13.5px;font-weight:700;min-height:42px;padding:0 14px;border-radius:14px;
-    border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;box-shadow:var(--shadow)}
-  .catMini button small{font-size:11.5px;font-weight:600;color:var(--ink-3);margin-left:6px}
+  .rvCard.resume{background:var(--honey-soft);border-color:var(--honey)}
   .gStage{margin-bottom:10px}
   .gStage > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 16px;
-    background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+    background:var(--raise);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
   .gStage > summary::-webkit-details-marker{display:none}
   .gStage > summary .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
   .gStage > summary b{font-size:15.5px} .gStage > summary small{font-size:12.5px;color:var(--ink-2)}
@@ -232,7 +248,7 @@
   .gStage[open] > summary::after{transform:rotate(-135deg);margin-top:4px}
   .gStage .gIn{padding:10px 0 0 12px}
   .allSearchBtn{display:flex;align-items:center;gap:10px;width:100%;min-height:54px;padding:0 16px;margin:0 0 12px;
-    background:#fff;border:2px solid #D5D7EC;border-radius:18px;font:inherit;font-size:15px;font-weight:600;color:var(--ink-3);cursor:pointer;text-align:left}
+    background:var(--raise);border:2px solid var(--line-3);border-radius:18px;font:inherit;font-size:15px;font-weight:600;color:var(--ink-3);cursor:pointer;text-align:left}
   .allSearchBtn svg{width:20px;height:20px;flex:0 0 auto}
   .day{padding-block:22px 4px;border-top:1px solid var(--line-2)}
   .day:first-of-type{border-top:0}
@@ -296,11 +312,11 @@
   .lbtns{display:flex;gap:7px;flex-wrap:wrap}
   .lbtns .btn{font-size:13.5px;padding:8px 12px}
   .lrow .en.hid{filter:blur(7px);cursor:pointer}
-  .lrow.done{border-color:#A9CDBB}                /* 흐리게 하지 않음 — 결과를 보고 '다시 말하기'를 누를 수 있게 */
+  .lrow.done{border-color:var(--ok-line)}                /* 흐리게 하지 않음 — 결과를 보고 '다시 말하기'를 누를 수 있게 */
   .lrow.done .ko::after{content:" ✓";color:var(--ok);font-weight:800}
   .btn.say{border-color:var(--accent);color:var(--accent)}
   .lcount{background:var(--mint);border-radius:14px;padding:11px 14px;margin-bottom:14px;
-    font-size:13.5px;font-weight:700;color:#1E5A45}
+    font-size:13.5px;font-weight:700;color:var(--ok-ink)}
   .heard{margin:10px 0 0;font-size:13.5px;color:var(--ink-2);min-height:20px}
   .heard b{color:var(--ink);font-weight:500}
   .heard .sc{font-weight:600;margin-right:7px}
@@ -485,7 +501,7 @@
   .stat .n{font-family:"Jua",sans-serif;font-weight:400;font-size:24px}
   .stat .l{color:var(--tint)}
 
-  nav{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;border:0;background:#fff;
+  nav{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;border:0;background:var(--raise);
     border-radius:22px 22px 0 0;box-shadow:0 -2px 12px rgba(22,24,58,.06);
     padding-bottom:env(safe-area-inset-bottom,0px)}
   .navIn{gap:0}
@@ -495,17 +511,17 @@
   nav button[aria-selected="true"]{color:var(--accent);font-weight:800;border:0}
 
   .btn{border-radius:14px;min-height:44px;font-weight:700;padding:10px 16px}
-  .btn.go{background:var(--honey);border-color:var(--honey);color:var(--ink);box-shadow:0 3px 0 var(--honey-dark)}
+  .btn.go{background:var(--honey);border-color:var(--honey);color:var(--on-honey);box-shadow:0 3px 0 var(--honey-dark)}
   .btn.go:hover{filter:brightness(1.03)}
   .btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 
   .gTop{margin:20px 0 16px}
-  .gProg{height:10px;border-radius:5px;background:#D5D7EC}
+  .gProg{height:10px;border-radius:5px;background:var(--line-3)}
   .gMeta{font-weight:700;color:var(--ink-2)}
   .prompt{border-radius:20px;padding:22px 18px}
   .prompt .day{color:var(--accent);font-weight:700}
   .prompt .ko{font-size:21px;font-weight:800}
-  .slot{min-height:76px;border-radius:18px;border:2px dashed #D5D7EC;background:rgba(255,255,255,.55);padding:12px}
+  .slot{min-height:76px;border-radius:18px;border:2px dashed var(--line-3);background:var(--slot-bg);padding:12px}
   .slot .hint{font-weight:600}
   .bank{gap:9px;justify-content:center}
   .chip{font-weight:800;font-size:18px;border-radius:14px;padding:11px 16px;min-height:48px}
@@ -527,21 +543,21 @@
 
   .catHead h2{text-transform:none;letter-spacing:0;font-size:16px;color:var(--ink);font-weight:800}
   .catCard{border-radius:18px}
-  .catCard .pbar{height:6px;background:#E2E3EF}
+  .catCard .pbar{height:6px;background:var(--line)}
   .catCard[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
 
   .today{border-radius:22px;padding:18px}
   .tLab{color:var(--ink-2);font-weight:700;letter-spacing:0;font-size:13px}
   .tNum{font-size:34px}
   .boxchip{border:0;border-radius:14px;padding:10px 12px;background:var(--ground)}
-  .boxchip.b2{background:var(--mint)} .boxchip.b2 b{color:#1E5A45}
+  .boxchip.b2{background:var(--mint)} .boxchip.b2 b{color:var(--ok-ink)}
   .boxchip.b3{background:var(--accent)} .boxchip.b3 b{color:var(--honey)} .boxchip.b3 span{color:var(--tint)}
   input[type="search"]{border-radius:14px;min-height:44px}
   .filters button{min-height:36px;font-weight:600}
   .day{border-top:0;padding-top:18px}
   .dayHead h2{font-size:15px;font-weight:800;color:var(--accent)}
   .rows{gap:8px 16px}
-  .wrow{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}
+  .wrow{background:var(--raise);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}
   .wrow .w{font-size:18px;font-weight:800}
   .wrow .ex i{font-style:normal;font-weight:600;color:var(--ink-2)}
   .backup{border-top:0}
@@ -552,22 +568,22 @@
   .qMean{font-weight:800}
   .qCloze{font-weight:800}
   .qCloze u{border-bottom-width:3px}
-  .qType input{border:2px solid #D5D7EC;border-radius:16px;min-height:54px;font-weight:700;box-shadow:none}
+  .qType input{border:2px solid var(--line-3);border-radius:16px;min-height:54px;font-weight:700;box-shadow:none}
   .qType input:focus{outline:none;border-color:var(--accent)}
   .qType .btn{min-height:54px}
   .qJudge .good{color:var(--ok)}
   .opt{border-radius:16px;padding:15px 16px;font-weight:700;min-height:54px}
-  .opt.right{background:var(--mint);border-color:#A9CDBB;color:#1E5A45}
-  .opt.wrong{background:var(--pink);border-color:#E3B9AC;color:#8A3B2A}
+  .opt.right{background:var(--mint);border-color:var(--ok-line);color:var(--ok-ink)}
+  .opt.wrong{background:var(--pink);border-color:var(--bad-line);color:var(--bad-ink)}
   .an .verdict,.score2 div,.plan .step,.wrongs .wg{border-radius:16px}
   .an h3{text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink);font-weight:800}
 
-  .note{border-radius:16px;background:var(--pink);border:0;color:#5A4A45}
-  .lrow{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:12px;box-shadow:var(--shadow)}
+  .note{border-radius:16px;background:var(--pink);border:0;color:var(--bad-ink)}
+  .lrow{background:var(--raise);border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:12px;box-shadow:var(--shadow)}
   .lrow:first-of-type{border-top:1px solid var(--line)}
   .lrow .en{font-weight:800;font-size:20px}
   .lbtns .btn{border-radius:12px}
-  .btn.mic{border-color:var(--honey);background:var(--honey);color:var(--ink);box-shadow:0 3px 0 var(--honey-dark)}
+  .btn.mic{border-color:var(--honey);background:var(--honey);color:var(--on-honey);box-shadow:0 3px 0 var(--honey-dark)}
   .btn.mic.on{background:var(--bad);border-color:var(--bad);color:#fff;box-shadow:none}
   @media (max-width:480px){ h1{font-size:25px} .qWord{font-size:36px} }
   /* 터치 화면에서 '선택된 것처럼' 보이던 문제 고침 */
@@ -594,7 +610,7 @@
   .lsSec{ margin-top:22px }
   .lsSec h2{ font-family:"Jua",sans-serif; font-weight:400; font-size:19px; margin:0 0 10px }
   .lsSec .hint{ font-size:12.5px; color:var(--ink-2); margin:0 0 10px }
-  .lsCard{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:14px 16px; box-shadow:var(--shadow); margin-bottom:10px }
+  .lsCard{ background:var(--raise); border:1px solid var(--line); border-radius:18px; padding:14px 16px; box-shadow:var(--shadow); margin-bottom:10px }
   .lsCard .en{ font-size:18px; font-weight:800; line-height:1.4 }
   .lsCard .ko{ font-size:13.5px; color:var(--ink-2); margin-top:3px }
   .lsCard .row2{ display:flex; align-items:center; gap:8px; margin-top:10px }
@@ -608,12 +624,12 @@
   body.examOn #exam{ display:block } body.examOn{ overflow:hidden }
   .ntAdd{ display:flex; gap:8px; margin:14px 0 6px }
   .ntAdd input{ flex:1; min-width:0; font:inherit; font-size:16px; padding:0 14px; min-height:50px;
-    border:1px solid var(--line); border-radius:16px; background:#fff; color:var(--ink) }
+    border:1px solid var(--line); border-radius:16px; background:var(--raise); color:var(--ink) }
   .ntAdd input::placeholder{ color:var(--ink-3) }
-  .ntAdd .btn{ min-height:50px; padding:0 18px; background:var(--honey); border-color:var(--honey) }
-  .ntEmpty{ background:#fff; border:1px dashed var(--line); border-radius:18px; padding:22px 18px;
+  .ntAdd .btn{ min-height:50px; padding:0 18px; background:var(--honey); border-color:var(--honey); color:var(--on-honey) }
+  .ntEmpty{ background:var(--raise); border:1px dashed var(--line); border-radius:18px; padding:22px 18px;
     text-align:center; font-size:13.5px; line-height:1.7; color:var(--ink-2); margin-top:12px }
-  .ntCard{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:14px 16px;
+  .ntCard{ background:var(--raise); border:1px solid var(--line); border-radius:18px; padding:14px 16px;
     box-shadow:var(--shadow); margin-bottom:10px }
   .ntCard.has{ border-color:var(--ok, #2E9E6B) }
   .ntCard .q{ font-size:15.5px; font-weight:700; line-height:1.5 }
@@ -626,28 +642,28 @@
   .ntCard .ed input{ flex:1; min-width:0; font:inherit; font-size:16px; padding:0 12px; min-height:44px;
     border:1px solid var(--line); border-radius:14px; background:var(--ground); color:var(--ink) }
   .gMode{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:16px 0 0;
-    background:#fff; border:1px solid var(--line); border-radius:16px; padding:8px 8px 8px 14px }
+    background:var(--raise); border:1px solid var(--line); border-radius:16px; padding:8px 8px 8px 14px }
   .gMode span{ font-size:13px; font-weight:800; color:var(--accent); min-width:0; overflow:hidden;
     text-overflow:ellipsis; white-space:nowrap }
   .gMode .btn{ flex:0 0 auto; font-size:12.5px; padding:0 12px; min-height:36px }
-  .gram{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:var(--shadow) }
+  .gram{ background:var(--raise); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:var(--shadow) }
   .gram .f{ font-family:"Gothic A1",sans-serif; font-size:19px; font-weight:800; color:var(--accent);
     background:var(--tint-2, #E9EAF7); border-radius:12px; padding:10px 12px; text-align:center; letter-spacing:-.2px }
   .gram p{ margin:12px 0 0; font-size:14.5px; line-height:1.7 }
   .gram .miss{ margin-top:12px; background:var(--pink); border-radius:12px; padding:11px 13px;
-    font-size:13.5px; line-height:1.6; color:#6B3A2E }
+    font-size:13.5px; line-height:1.6; color:var(--bad-ink) }
   .gram .miss b{ display:block; font-size:12.5px; margin-bottom:3px }
   .btn.done{ width:100%; margin-top:14px; min-height:54px; font-size:16px; border-radius:18px;
     background:var(--accent); border-color:var(--accent); color:#fff }
-  .lsEnd{ background:var(--mint); border-radius:18px; padding:16px; font-size:14.5px; line-height:1.6; color:#1E5A45 }
+  .lsEnd{ background:var(--mint); border-radius:18px; padding:16px; font-size:14.5px; line-height:1.6; color:var(--ok-ink) }
   .micBox{ background:var(--pink); border-radius:14px; padding:12px 14px; margin-top:8px;
-    font-size:13px; line-height:1.65; color:#6B3A2E; text-align:left }
+    font-size:13px; line-height:1.65; color:var(--bad-ink); text-align:left }
   .micBox b{ display:block; margin-bottom:4px; font-size:13.5px }
   .micBox ol{ margin:6px 0 0; padding-left:18px } .micBox li{ margin:2px 0 }
   .micBox .again{ margin-top:10px; min-height:40px; font-size:13px; padding:0 14px }
   /* 레벨 테스트 — 맞히면 ▲ 틀리면 ▼ */
   .qOut .up{ color:var(--ok); font-weight:800 } .qOut .down{ color:var(--bad); font-weight:800 }
-  .lvPath{ background:#fff; border:1px solid var(--line); border-radius:18px; padding:14px; margin:0 0 18px; box-shadow:var(--shadow) }
+  .lvPath{ background:var(--raise); border:1px solid var(--line); border-radius:18px; padding:14px; margin:0 0 18px; box-shadow:var(--shadow) }
   .lvPath .lab{ font-size:13px; font-weight:800; color:var(--ink-2); margin:0 0 8px }
   .lvPath svg{ width:100%; height:auto; display:block }
   .lvPath .gl{ stroke:var(--line); stroke-width:1; stroke-dasharray:3 4 }
@@ -657,7 +673,7 @@
   .lvIntro .kick{ color:var(--accent); font-weight:800; font-size:13px; margin:0 }
   .lvIntro h2{ font-family:"Jua",sans-serif; font-weight:400; font-size:26px; line-height:1.3; margin:6px 0 16px }
   .lvIntro ul{ margin:0; padding:0; list-style:none; display:grid; gap:10px }
-  .lvIntro li{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:12px 14px;
+  .lvIntro li{ background:var(--raise); border:1px solid var(--line); border-radius:16px; padding:12px 14px;
     font-size:14px; line-height:1.55; box-shadow:var(--shadow) }
   .lvIntro .btn{ width:100%; min-height:56px; font-size:17px; margin-top:22px }
   .lvIntro .lvWait{ font-size:12.5px; color:var(--ink-2); text-align:center; margin:10px 0 0 }
@@ -673,10 +689,10 @@
   @keyframes lvPop{ 0%{ transform:scale(1.5) } 30%{ transform:scale(1) } 100%{ transform:scale(.92) } }   /* 애니메이션이 멈춰도 숫자는 보이게 투명도는 건드리지 않음 */
   @media (prefers-reduced-motion: reduce){ .lvCount b{ animation:none } }
   /* 마이크 테스트 */
-  .micTest{ background:#fff; border:1px solid var(--line); border-radius:20px; padding:16px; box-shadow:var(--shadow); margin:14px 0 4px }
+  .micTest{ background:var(--raise); border:1px solid var(--line); border-radius:20px; padding:16px; box-shadow:var(--shadow); margin:14px 0 4px }
   .micTest h3{ font-family:"Jua",sans-serif; font-weight:400; font-size:18px; margin:0 }
   .micTest .lead{ margin:6px 0 12px; font-size:13.5px }
-  .micBar{ height:12px; border-radius:6px; background:#E2E3EF; overflow:hidden; margin-bottom:12px }
+  .micBar{ height:12px; border-radius:6px; background:var(--line); overflow:hidden; margin-bottom:12px }
   .micBar i{ display:block; height:100%; width:0; background:var(--ok); border-radius:6px; transition:width .08s }
   .micTest .lbtns .btn{ flex:1 1 auto }
   #micOut{ margin-top:10px }
@@ -690,10 +706,10 @@
   .lsNav .btn[disabled]{ opacity:.35; pointer-events:none }
   .lsList{ display:grid; grid-template-columns:repeat(auto-fill,minmax(64px,1fr)); gap:8px; margin-top:6px }
   .lsDay{ font:inherit; font-size:13px; font-weight:800; min-height:46px; border-radius:14px; cursor:pointer;
-    border:1px solid var(--line); background:#fff; color:var(--ink); display:flex; flex-direction:column;
+    border:1px solid var(--line); background:var(--raise); color:var(--ink); display:flex; flex-direction:column;
     align-items:center; justify-content:center; line-height:1.15 }
   .lsDay small{ font-size:10px; font-weight:700; color:var(--ink-3) }
-  .lsDay.on{ background:var(--honey); border-color:var(--honey) }
+  .lsDay.on{ background:var(--honey); border-color:var(--honey); color:var(--on-honey) }
   .lsDay.cur{ background:var(--accent); border-color:var(--accent); color:#fff }
   .lsDay.cur small{ color:var(--tint) }
   /* ═══ 홈 ═══ */
@@ -702,9 +718,9 @@
   .hLogo{font-family:"Jua",sans-serif;font-size:24px;white-space:nowrap;flex:0 0 auto;line-height:36px}
   .hChips{display:flex;gap:8px}
   .hChip{display:flex;align-items:center;height:36px;padding:0 12px;border-radius:18px;font:inherit;
-    font-size:13px;font-weight:800;border:1px solid var(--line);background:#fff;color:var(--ink)}
-  button.hChip{cursor:pointer;background:var(--honey);border-color:var(--honey)}
-  button.hChip.acct{background:#fff;border-color:var(--line);max-width:118px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;line-height:34px}
+    font-size:13px;font-weight:800;border:1px solid var(--line);background:var(--raise);color:var(--ink)}
+  button.hChip{cursor:pointer;background:var(--honey);border-color:var(--honey);color:var(--on-honey)}
+  button.hChip.acct{background:var(--raise);border-color:var(--line);max-width:118px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;line-height:34px}
   .hChips{flex-wrap:wrap;justify-content:flex-end;flex:1 1 auto;min-width:0;row-gap:8px}
   @media (max-width:400px){ .hChip{padding:0 10px;font-size:12.5px} .hLogo{font-size:22px} }
   .hHero{background:var(--accent);color:#fff;border-radius:22px;padding:20px;margin-top:18px;display:flex;flex-direction:column;gap:12px}
@@ -714,14 +730,10 @@
   .hBar{flex:1;height:12px;border-radius:6px;background:rgba(255,255,255,.22);overflow:hidden}
   .hBar i{display:block;height:100%;background:var(--honey);border-radius:6px}
   .hFoot{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600}
-  .hOpen{display:flex;align-items:center;height:48px;padding:0 22px;background:#fff;color:var(--ink);
-    border-radius:16px;font-weight:800;font-size:15px;text-decoration:none;box-shadow:0 3px 0 rgba(0,0,0,.22)}
   .hGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
-  .hTile{display:flex;flex-direction:column;gap:10px;padding:16px;background:#fff;border:1px solid var(--line);
+  .hTile{display:flex;flex-direction:column;gap:10px;padding:16px;background:var(--raise);border:1px solid var(--line);
     border-radius:20px;box-shadow:var(--shadow);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
-  .hTile.wide{grid-column:span 2;flex-direction:row;align-items:center;gap:14px}
   .hIcon{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;flex:0 0 auto}
-  .hTile.wide .hIcon{width:52px;height:52px;border-radius:16px}
   .hIcon svg{width:22px;height:22px}
   .hTile .nm{font-family:"Jua",sans-serif;font-size:19px;line-height:1.2}
   .hTile .ds{font-size:12.5px;color:var(--ink-2)}
@@ -732,14 +744,14 @@
   .hWho{flex:0 1 auto;min-width:0}
   .hHello{font-family:"Jua",sans-serif;font-size:24px;line-height:1.25}
   .hDate{font-size:13px;font-weight:600;color:var(--ink-2);margin-top:2px}
-  .hChip.fire{background:#FFF1E0;border-color:#F4D3AC;color:#9A4E14}
+  .hChip.fire{background:var(--fire-bg);border-color:var(--fire-line);color:var(--fire-ink)}
   .hHero{background:linear-gradient(135deg,#2A2FA8 0%,#4D52CC 100%);position:relative;overflow:hidden}
   .hHero::after{content:"";position:absolute;right:-50px;top:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08)}
   .hHero::before{content:"";position:absolute;right:30px;bottom:-70px;width:120px;height:120px;border-radius:50%;background:rgba(237,190,78,.16)}
   .hHero > *{position:relative;z-index:1}
   .hForm{align-self:flex-start;background:rgba(255,255,255,.15);border-radius:12px;padding:6px 12px;font-weight:700;font-size:14px}
   .hForm:empty{display:none}
-  .hGoal{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px;margin-top:16px;box-shadow:var(--shadow)}
+  .hGoal{background:var(--raise);border:1px solid var(--line);border-radius:22px;padding:16px;margin-top:16px;box-shadow:var(--shadow)}
   .hGoalHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
   .hGoalHead h2{font-family:"Jua",sans-serif;font-weight:400;font-size:19px;margin:0}
   .hGoalHead .re{font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:none;border:0;cursor:pointer;padding:4px 0}
@@ -749,24 +761,18 @@
   .gRing .rw{position:relative;width:88px;height:88px}
   .gRing svg{width:88px;height:88px;transform:rotate(-90deg)}
   .gRing circle{fill:none;stroke-width:9}
-  .gRing .bg{stroke:#E2E3EF}
+  .gRing .bg{stroke:var(--line)}
   .gRing .fg{stroke-linecap:round;transition:stroke-dasharray .4s}
   .gRing .v{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink-2)}
   .gRing .v b{font-family:"Jua",sans-serif;font-weight:400;font-size:26px;color:var(--ink);margin-right:1px}
   .gRing .l{font-weight:800;font-size:14px;margin-top:6px}
   .gRing .s{font-size:12px;color:var(--ink-2)}
   .gRing.ok .s{color:var(--ok);font-weight:800}
-  .hDaily{background:#FFF6DC;border:1px solid #F1DFA6;border-radius:22px;padding:16px 18px;margin-top:16px}
-  .hDaily .lab{font-size:12.5px;font-weight:800;color:#8A5A00}
-  .hDaily .en{font-size:20px;font-weight:800;line-height:1.35;margin-top:6px}
-  .hDaily .ko{font-size:13.5px;color:var(--ink-2);margin-top:2px}
-  .hDaily .row2{display:flex;gap:8px;margin-top:12px}
-  .hDaily .row2 .btn{min-height:40px;font-size:13px;padding:0 14px}
   #p3 .hGrid{margin-top:16px}
   /* 하루 목표 설정 */
   body.setupOn #setup{ display:block } body.setupOn{ overflow:hidden }
   .suGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .suOpt{font:inherit;cursor:pointer;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 4px;
+  .suOpt{font:inherit;cursor:pointer;background:var(--raise);border:2px solid var(--line);border-radius:16px;padding:12px 4px;
     display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink)}
   .suOpt b{font-family:"Jua",sans-serif;font-weight:400;font-size:26px;line-height:1.1}
   .suOpt span{font-size:12px;color:var(--ink-2)}
@@ -787,54 +793,13 @@
   .allHead{padding-top:22px}
   .allHead h2{font-family:"Jua",sans-serif;font-weight:400;font-size:24px;margin:0}
   .allHead p{margin:4px 0 0;font-size:13px;color:var(--ink-2)}
-  .allChips{display:flex;gap:8px;margin:16px 0 14px;overflow-x:auto;padding-bottom:2px}
-  .allChips button{flex:0 0 auto;font:inherit;font-size:14px;font-weight:800;height:40px;padding:0 16px;
-    border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer}
-  .allChips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
   .allHint{font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
   .natTip{display:block;margin:8px 0 4px;padding:8px 10px;border-radius:10px;background:var(--accent-soft);
     font-size:13px;line-height:1.5;color:var(--ink);text-align:left}
   .natTip b{display:inline-block;margin-right:6px;font-size:11.5px;color:var(--accent)}
-  /* 단계 코스 */
-  #stageBox{margin-top:10px}
-  .stgTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-  .stgTabs button{font:inherit;font-size:15px;font-weight:800;min-height:52px;border-radius:16px;border:1px solid var(--line);
-    background:#fff;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
-  .stgTabs button small{font-size:11.5px;font-weight:700;color:var(--ink-3)}
-  .stgTabs button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-  .stgTabs button[aria-pressed="true"] small{color:var(--tint)}
-  .stgTabs button.lock{color:var(--ink-3);background:var(--line-2)}
-  .stgCard{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px}
-  .stgCard .gProg{height:8px;margin:6px 0 12px}
-  .stgTop{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-  .stgTop b{font-size:17px}
-  .stgTop small{font-size:12.5px;color:var(--ink-2);font-weight:700}
-  .stgGrid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-bottom:14px}
-  .stgGrid button{font:inherit;font-size:12px;font-weight:800;aspect-ratio:1;min-width:0;padding:0;border-radius:9px;
-    border:1px solid var(--line);background:#fff;color:var(--ink-2);cursor:pointer}
-  .stgGrid button.done{background:var(--accent-soft);color:var(--accent);border-color:transparent}
-  .stgGrid button.cur{border:2px solid var(--accent);color:var(--accent)}
-  .stgGrid button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .stgGrid button:disabled{opacity:.35;cursor:default}
-  .stgUnit h4{margin:0 0 4px;font-size:16px}
-  .stgUnit .ds{font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
-  .stgWords{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-  .stgWords span{font-size:13px;font-weight:700;background:var(--line-2);border-radius:8px;padding:4px 8px}
-  .stgWords span.ok{background:var(--accent-soft);color:var(--accent)}
-  .stgUnit .row2{display:flex;gap:8px;margin-bottom:10px}
-  .stgUnit .row2 .btn{flex:1;min-height:48px}
-  .stgList summary{font-size:13px;font-weight:700;color:var(--accent);cursor:pointer;padding:6px 0}
-  .stgList .wl{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--line-2)}
-  .stgList .wl span{color:var(--ink-2);text-align:right}
-  .stgEnd{width:100%;min-height:50px;margin-top:4px}
-  .stgNote{font-size:12.5px;color:var(--ink-2);margin:6px 0 0;text-align:center}
-  .stgExam{margin-top:12px;padding:14px;border-radius:14px;background:var(--accent-soft)}
-  .stgExam b{display:block;font-size:15px;margin-bottom:4px}
-  .stgExam p{font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
-  .stgExam .btn{width:100%;min-height:48px}
   .allSub{font-family:"Jua",sans-serif;font-weight:400;font-size:19px;margin:26px 0 0}
   .allGo{display:flex;margin:0 0 12px} .allGo .btn{flex:1;min-height:50px}
-  .allCard{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:10px}
+  .allCard{background:var(--raise);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:10px}
   .allCard summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:10px}
   .allCard summary::-webkit-details-marker{display:none}
   .allCard summary .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -866,11 +831,11 @@
   .stBig b{font-family:"Jua",sans-serif;font-weight:400;font-size:44px;line-height:1}
   .stBig span{font-size:13px;font-weight:700;color:var(--tint);margin-top:6px}
   .stSide{flex:1;display:flex;flex-direction:column;gap:12px}
-  .stSide div{flex:1;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;
+  .stSide div{flex:1;background:var(--raise);border:1px solid var(--line);border-radius:18px;padding:12px 14px;
     box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center}
   .stSide b{font-family:"Jua",sans-serif;font-weight:400;font-size:21px;line-height:1.15}
   .stSide span{font-size:12px;color:var(--ink-2)}
-  .stCard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-top:12px}
+  .stCard{background:var(--raise);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-top:12px}
   .stCard h3{font-family:"Jua",sans-serif;font-weight:400;font-size:17px;margin:0 0 12px}
   .stRow{display:flex}
   .stRow div{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -878,14 +843,14 @@
   .stRow span{font-size:12px;color:var(--ink-2)}
   .stWeek{display:flex;align-items:flex-end;gap:6px;height:118px}
   .stWeek div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%}
-  .stWeek i{display:block;width:100%;max-width:28px;border-radius:8px;background:#D5D7EC}
+  .stWeek i{display:block;width:100%;max-width:28px;border-radius:8px;background:var(--line-3)}
   .stWeek .now i{background:var(--accent)}
   .stWeek em{font-style:normal;font-size:11px;font-weight:800;color:var(--ink-2);min-height:14px}
   .stWeek span{font-size:11.5px;color:var(--ink-2)}
   .stWeek .now span{color:var(--accent);font-weight:800}
   .stNote{font-size:12px;color:var(--ink-3);margin:10px 0 0}
   /* ═══ 복습 ═══ */
-  .rvCard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-top:12px}
+  .rvCard{background:var(--raise);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-top:12px}
   .rvCard.main{background:var(--accent);border-color:var(--accent);color:#fff}
   .rvCard h3{font-family:"Jua",sans-serif;font-weight:400;font-size:18px;margin:0}
   .rvCard .n{font-family:"Jua",sans-serif;font-size:40px;line-height:1.1;margin-top:6px}
@@ -902,7 +867,7 @@
   .lsTop .gMeta{flex:1;min-width:0}
   .quiz .gTop{gap:10px}
   /* 홈 */
-  .hMain{align-self:stretch;min-height:56px;border:0;border-radius:18px;background:var(--honey);color:#16183A;font:inherit;
+  .hMain{align-self:stretch;min-height:56px;border:0;border-radius:18px;background:var(--honey);color:var(--on-honey);font:inherit;
     font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 var(--honey-dark)}
   .hHint{font-size:12.5px;font-weight:600;color:var(--tint);text-align:center;margin-top:-2px}
   .hHint:empty{display:none}
@@ -981,7 +946,7 @@
   .obOpt b{font-size:17px} .obOpt span{font-size:13px;color:var(--ink-2)}
   .obOpt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
   .obOpt[aria-pressed="true"] b{color:var(--accent)}
-  .hTip{display:flex;align-items:center;gap:8px;background:#fff;color:#16183A;border-radius:14px;padding:8px 8px 8px 12px;font-size:13px;font-weight:700;
+  .hTip{display:flex;align-items:center;gap:8px;background:#FFFFFF;color:#16183A;border-radius:14px;padding:8px 8px 8px 12px;font-size:13px;font-weight:700;
     position:relative;animation:tipIn .4s ease-out}
   .hTip::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#fff}
   .hTip span{flex:1} .hTip button{border:0;background:none;font:inherit;font-size:14px;color:#62647F;width:32px;height:32px;cursor:pointer}
@@ -990,6 +955,61 @@
   .loginAsk b{font-size:15px;color:var(--accent)} .loginAsk span{font-size:13px;color:var(--ink-2);line-height:1.55}
   .loginAsk .btn{min-height:46px;margin-top:4px}
   #hLogin .loginAsk{margin-bottom:0}
+  /* ═══ 개편 3단계 — 어두운 화면 보정 ═══ */
+  :root[data-theme="dark"] nav{box-shadow:0 -2px 14px rgba(0,0,0,.45)}
+  :root[data-theme="dark"] .hIcon{color:#16183A}
+  :root[data-theme="dark"] .hIcon[style*="--honey"]{background:#4A3A10 !important;color:#F5CF6F}
+  :root[data-theme="dark"] .hIcon[style*="--mint"]{background:#173A30 !important;color:#8FE0B8}
+  :root[data-theme="dark"] .hIcon[style*="--pink"]{background:#4A2733 !important;color:#F4B3C2}
+  :root[data-theme="dark"] .hIcon[style*="--tint"]{background:#2A2E66 !important;color:#C8CAF6}
+  :root[data-theme="dark"] .hIcon[style*="--accent-soft"]{background:#2A2E66 !important;color:#C8CAF6}
+  :root[data-theme="dark"] .lvHero,:root[data-theme="dark"] .lsHero,:root[data-theme="dark"] .rvCard.main,
+  :root[data-theme="dark"] .stBig{background:var(--accent-fill)}
+  :root[data-theme="dark"] .lvRing::before{background:var(--accent-fill)}
+  :root[data-theme="dark"] .hHero{background:linear-gradient(135deg,#2E33B0 0%,#4A50D0 100%)}
+  :root[data-theme="dark"] .gram .f{background:var(--accent-soft)}
+  :root[data-theme="dark"] .bx[data-b="3"]{color:#0E2A1E}
+  :root[data-theme="dark"] .sheet{background:var(--raise)}
+  :root[data-theme="dark"] .sheetChips button{background:var(--raise-2)}
+  :root[data-theme="dark"] .qAns.veiled{filter:blur(10px) brightness(.8)}
+  :root[data-theme="dark"] input,:root[data-theme="dark"] textarea{color-scheme:dark}
+  /* 마스코트 · 축하 */
+  .mascot{display:block;flex:0 0 auto}
+  .cele{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:95;width:min(92vw,420px);cursor:pointer}
+  .cele .celeBox{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;background:var(--raise);border:2px solid var(--honey);
+    border-radius:20px;padding:10px 16px 10px 10px;box-shadow:0 8px 24px rgba(10,12,40,.25);animation:celeIn .35s ease-out}
+  .cele .celeTx{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .cele .celeTx b{font-family:"Jua",sans-serif;font-weight:400;font-size:19px;line-height:1.25}
+  .cele .celeTx span{font-size:13px;color:var(--ink-2)}
+  .cele.big{left:0;right:0;top:0;bottom:0;width:auto;transform:none;background:rgba(10,12,40,.5);display:grid;place-items:center;padding:20px;cursor:default}
+  .cele.big .celeBox{flex-direction:column;text-align:center;width:min(100%,360px);padding:28px 22px 22px;border-radius:26px}
+  .cele.big .celeTx b{font-size:26px}
+  .cele.big .celeTx span{font-size:14.5px;line-height:1.6;margin-top:4px}
+  .cele.big .btn{width:100%;min-height:54px;font-size:17px;margin-top:8px}
+  .celeConf{position:absolute;inset:0;pointer-events:none}
+  .celeConf i{position:absolute;top:-12px;width:8px;height:12px;border-radius:2px;opacity:.9;animation:confFall 1.6s ease-in forwards}
+  @keyframes confFall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(420px) rotate(320deg);opacity:0}}
+  @keyframes celeIn{0%{transform:scale(.9)}100%{transform:scale(1)}}
+  @media (prefers-reduced-motion:reduce){.celeConf{display:none}}
+  .hWho{display:flex;align-items:center;gap:10px}
+  .emptyMs{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:10px 0 4px;color:var(--ink-2);font-size:14px}
+  .lsDayBtn{display:flex;align-items:baseline;gap:6px;min-height:44px;padding:0 6px;border:0;background:none;font-family:"Jua",sans-serif;
+    font-size:24px;color:var(--ink);cursor:pointer}
+  .lsDayBtn span{font-size:16px;color:var(--accent)} .lsDayBtn small{font-family:"Gothic A1",sans-serif;font-size:12px;font-weight:800;
+    color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:2px 8px}
+  #lsPick{margin-bottom:12px}
+  .lsNav{margin:22px 0 0} .lsNav .btn{flex:1}
+  .slot.wrong .chip.pos-ok{color:var(--ok);background:var(--ok-soft);border-color:transparent}
+  .slot.wrong .chip.pos-no{color:var(--bad);background:var(--bad-soft);border-color:transparent}
+  .answer u.fix{text-decoration:none;color:var(--bad);border-bottom:3px solid var(--bad)}
+  .themeRow{cursor:default;flex-wrap:wrap}
+  .seg{display:flex;background:var(--ground);border-radius:12px;padding:3px;gap:3px}
+  .seg button{font:inherit;font-size:13px;font-weight:700;min-height:40px;padding:0 12px;border:0;border-radius:10px;background:none;color:var(--ink-2);cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--raise);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  /* 버튼은 손가락으로 누르기 쉽게 최소 44px */
+  .allS .row2 .btn,.vS .row2 .btn,.lsCard .row2 .btn,.gMode .btn,.wTools .btn,.hInstall .btn,.lsNav .btn,.ntCard .row2 .btn,
+  .micBox .again,.lvPlace .btn,.setRow .btn,.subTop .btn,.lbtns .btn,.sheetChips button,.hDaily .row2 .btn{min-height:44px}
+  .anRow .go2,.plan .go2{min-height:40px}
 </style>
 
 <div class="shell">
@@ -1018,7 +1038,7 @@
   <!-- 홈 -->
   <section class="panel on" id="p3">
     <div class="hTop">
-      <div class="hWho"><div class="hHello" id="hHello">오늘도 영어 한 걸음</div><div class="hDate" id="hDate"></div></div>
+      <div class="hWho"><span id="hMs"></span><div><div class="hHello" id="hHello">오늘도 영어 한 걸음</div><div class="hDate" id="hDate"></div></div></div>
       <div class="hChips"><span class="hChip fire" id="hStreak">0일 연속</span><button class="hChip" id="hLv" type="button">Lv.?</button></div>
     </div>
     <div class="hTrip" id="hTrip" hidden></div>
@@ -1092,7 +1112,7 @@
   <!-- 듣기·말하기 -->
   <section class="panel" id="p2">
     <div class="subTop"><button class="btn" type="button" data-back>‹ 뒤로</button><h2>듣기·말하기</h2></div>
-    <div class="note" id="capNote"></div>
+    <div class="note" id="capNote" hidden></div>
     <div id="listen"></div>
   </section>
 
@@ -1156,6 +1176,9 @@
 
 </div>
 
+
+<!-- 축하 (레슨 완료·하루 목표·연속 공부일) -->
+<div id="cele" hidden></div>
 
 <!-- 단어장 필터 — 아래에서 올라오는 창 -->
 <div class="sheetBg" id="wSheetBg"></div>
@@ -7009,16 +7032,66 @@ const store = {
 };
 let best = store.get("vb.best", 0, Number.isFinite);
 
+/* ── 마스코트 '톡이' ── 직접 그린 말풍선 모양 캐릭터 (머리에 새싹). 표정: base 기본 · happy 기쁨 · cheer 응원 */
+function mascot(mood, size){
+  size = size || 64;
+  const eyes = mood === "base"
+    ? '<ellipse cx="45" cy="52" rx="10" ry="11" fill="#fff"/><ellipse cx="75" cy="52" rx="10" ry="11" fill="#fff"/><circle cx="47" cy="54" r="5" fill="#16183A"/><circle cx="77" cy="54" r="5" fill="#16183A"/><circle cx="49" cy="51" r="1.8" fill="#fff"/><circle cx="79" cy="51" r="1.8" fill="#fff"/>'
+    : '<path d="M36 55q9-12 18 0M66 55q9-12 18 0" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>';
+  const mouth = mood === "base"
+    ? '<path d="M52 70q8 7 16 0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>'
+    : '<path d="M49 67q11 16 22 0z" fill="#16183A"/><path d="M54 72q6 5 12 0" fill="#F08068"/>';
+  const arms = mood === "cheer"
+    ? '<path d="M18 58 6 36M102 58l12-22" stroke="#2E33A8" stroke-width="9" stroke-linecap="round"/><path d="M104 8l3 7 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1z" fill="#EDBE4E"/>'
+    : mood === "happy" ? '<path d="M18 64 6 74M102 64l12 10" stroke="#2E33A8" stroke-width="9" stroke-linecap="round"/>' : "";
+  return `<svg class="mascot" viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true">
+    <path d="M60 22v-10" stroke="#3E9C6E" stroke-width="4" stroke-linecap="round"/><path d="M60 14c-9-9-18-6-19 1 8 4 15 3 19-1zM60 14c8-9 17-7 19 0-8 5-15 4-19 0z" fill="#4CC38A"/>
+    ${arms}
+    <path d="M36 22h48a24 24 0 0 1 24 24v22a24 24 0 0 1-24 24H56l-20 16 4-16h-4A24 24 0 0 1 12 68V46a24 24 0 0 1 24-24z" fill="#3D42C9"/>
+    <ellipse cx="33" cy="68" rx="7" ry="4.5" fill="#EDBE4E" opacity=".85"/><ellipse cx="87" cy="68" rx="7" ry="4.5" fill="#EDBE4E" opacity=".85"/>
+    ${eyes}${mouth}</svg>`;
+}
+
+/* ── 축하 ── 레슨 완료(크게) · 하루 목표 달성 · 연속 공부일 늘어남(작게 위에서 잠깐). 소리는 ding(), 진동은 되는 기기만 */
+let celeTimer = null;
+function celebrate(title, sub, big){
+  const el = document.getElementById("cele"); if (!el) return;
+  clearTimeout(celeTimer);
+  const conf = Array.from({ length: big ? 18 : 10 }, (_, i) =>
+    `<i style="left:${(i * 53) % 100}%;background:${["#EDBE4E", "#4CC38A", "#6E74F2", "#F08068"][i % 4]};animation-delay:${(i % 6) * 0.08}s"></i>`).join("");
+  el.className = big ? "cele big" : "cele";
+  el.innerHTML = `<div class="celeBox"><div class="celeConf">${conf}</div>${mascot(big ? "cheer" : "happy", big ? 110 : 54)}
+    <div class="celeTx"><b>${title}</b>${sub ? `<span>${sub}</span>` : ""}</div>
+    ${big ? `<button class="btn go" type="button" id="celeOk">좋아요!</button>` : ""}</div>`;
+  el.hidden = false;
+  try{ ding(); }catch(e){}
+  try{ if (navigator.vibrate && /android/i.test(navigator.userAgent)) navigator.vibrate(big ? [60, 40, 90] : 40); }catch(e){}
+  if (!big) celeTimer = setTimeout(() => { el.hidden = true; }, 2600);
+}
+document.addEventListener("click", e => {
+  const el = document.getElementById("cele");
+  if (el && !el.hidden && (e.target.closest("#celeOk") || (!el.classList.contains("big") && e.target.closest("#cele")))) el.hidden = true;
+});
+
 /* ── 학습 기록(통계용) ── 날짜별로 푼 단어(w)·문장(s)·말한 문장(t) 수. 이 기기에만 저장, 최근 90일만 남김 */
 const dkey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 let actLog = store.get("vb.log", {}, x => x && typeof x === "object" && !Array.isArray(x));
 function logAct(kind){
-  const k = dkey();
+  const k = dkey(), before = dayTotal(k);
   if (!actLog[k] || typeof actLog[k] !== "object") actLog[k] = { w:0, s:0, t:0 };
   actLog[k][kind] = (+actLog[k][kind] || 0) + 1;
   const keys = Object.keys(actLog).sort();
   while (keys.length > 90) delete actLog[keys.shift()];
   store.set("vb.log", actLog);
+  celeCheck(kind, before, actLog[k][kind]);
+}
+/* 하루 목표에 딱 닿은 순간 · 오늘 첫 공부로 연속 공부일이 늘어난 순간에 작게 축하 */
+function celeCheck(kind, before, now){
+  try{
+    if (kind === "n" && now === goalW()) celebrate("오늘 새 단어 목표 달성!", `새 단어 ${now}개를 배웠어요.`);
+    else if (kind === "s" && now === goalS()) celebrate("오늘 문장 목표 달성!", `문장 ${now}개를 연습했어요.`);
+    else if (!before && kind !== "n"){ const st = streakDays(); if (st >= 2) celebrate(`${st}일 연속 공부 중!`, "오늘도 이어 갔어요. 내일도 만나요."); }
+  }catch(e){}
 }
 function dayTotal(k){ const d = actLog[k]; return d ? (+d.w || 0) + (+d.s || 0) + (+d.t || 0) : 0; }
 const todayLog = () => actLog[dkey()] || {};    // n: 오늘 처음 배운 새 단어 수
@@ -7249,6 +7322,7 @@ function renderHome(){
   $("#hLv").hidden = !myLevel;                    // 레벨은 '나' 탭에 — 홈에는 작은 칩 하나만
   $("#hLv").textContent = myLevel ? "Lv." + lvShow(myLevel) : "";
   const act = homeAction(), tw = todayWords().length;
+  $("#hMs").innerHTML = mascot(act === "ahead" ? "happy" : act === "review" ? "cheer" : "base", 50);
   $("#hStage").textContent = act === "lesson" ? `오늘 할 일 · Day ${day} 레슨` : act === "review" ? "오늘 할 일 · 복습" : "오늘 할 일 끝!";
   $("#hTitle").textContent = act === "review" ? `오늘 볼 단어 ${tw}개` : g ? g.t : `Day ${day} 레슨`;
   $("#hForm").textContent = act === "review" ? "" : g ? g.f : "";
@@ -7376,7 +7450,7 @@ function newRound(day, from, label){
   draw();
 }
 function drawMode(){
-  $("#gModeTx").textContent = deckList ? `단계 코스 · ${deckLabel}`
+  $("#gModeTx").textContent = deckList ? (deckLabel || "고른 문장")
     : deckDay > LASTDAY ? `실전 회화 · ${DAYS[deckDay] || ""}`
     : deckDay ? `레슨 문장${GRAM[deckDay] ? " · " + GRAM[deckDay].t : ""}${deckExtra ? ` + 내 레벨 ${deckExtra}개` : ""}`
     : myLevel ? `내 레벨(${lvShow(myLevel)}) 문장에서 랜덤` : "전체 문장에서 랜덤";
@@ -7470,7 +7544,7 @@ function renderSlot(){
   if (!picked.length){
     const n = bankWords.filter(b => b.d).length;
     el.innerHTML = `<span class="hint">아래 단어를 순서대로 누르세요${n ? ` · 필요 없는 함정 조각 ${n}개` : ""}</span>`; return; }
-  el.innerHTML = picked.map((p,k)=>`<button class="chip${locked && p.d ? " decoy" : ""}" data-slot="${k}">${p.w}</button>`).join("");
+  el.innerHTML = picked.map((p,k)=>`<button class="chip${locked && p.d ? " decoy" : ""}${locked && p.pos ? " pos-" + p.pos : ""}" data-slot="${k}">${p.w}</button>`).join("");
 }
 function renderBank(){
   $("#gBank").innerHTML = bankWords.map((b,k)=>{
@@ -7511,8 +7585,9 @@ $("#gCheck").addEventListener("click", () => {
     streak = 0;
     if (!missed.includes(s)) missed.push(s);
     deck.splice(Math.min(deck.length, idx + 1 + RETRY_GAP), 0, s);   // 맞힐 때까지 조금 뒤에 다시 나옴
-    const trap = picked.filter(p => p.d).map(p => p.w);
-    $("#gAns").innerHTML = `<span class="lab">정답</span><span class="en">${s.en}</span>`
+    const trap = picked.filter(p => p.d).map(p => p.w), ans = s.en.split(" ");
+    picked.forEach((p, i) => { p.pos = p.w === ans[i] ? "ok" : "no"; });
+    $("#gAns").innerHTML = `<span class="lab">정답 (밑줄이 틀린 자리)</span><span class="en">${ans.map((w, i) => picked[i] && picked[i].w === w ? esc(w) : `<u class="fix">${esc(w)}</u>`).join(" ")}</span>`
       + (trap.length ? `<span class="trapNote">함정 조각 <b>${esc(trap.join(", "))}</b>을(를) 골랐어요</span>` : "")
       + `<span class="trapNote" style="color:var(--accent)">이 문장은 조금 뒤에 다시 나와요</span>` + tipHtml(s);
     speak(s.en, 0.75);
@@ -7623,11 +7698,11 @@ function renderWords(){
   items.forEach(x => { const g = searching ? "찾은 단어" : (x.c || "기타");
     if (!byCat.has(g)) byCat.set(g, []); byCat.get(g).push(x); });
   const el = $("#list");
-  if (!items.length){ el.innerHTML = searching
+  if (!items.length){ el.innerHTML = `<div class="emptyMs">${mascot("base", 60)}</div>` + (searching
     ? '<p class="empty">찾는 단어가 없어요. 영어 철자나 뜻을 조금 짧게 넣어 보세요. (예: coff, 커피)</p>'
     : mode === "miss"
     ? '<p class="empty">헷갈린 단어가 없어요. 퀴즈에서 한 번이라도 틀린 단어가 여기에 모여요.</p>'
-    : '<p class="empty">해당하는 단어가 없습니다.</p>'; }
+    : '<p class="empty">해당하는 단어가 없어요. 필터를 바꿔 보세요.</p>'); }
   else {
     el.innerHTML = [...byCat.keys()].map(g => {
       const list = byCat.get(g);
@@ -8425,8 +8500,9 @@ try{
   if (spoke.d !== today0()) spoke = {d: today0(), n: 0};
 }catch(e){ spoke = {d: today0(), n: 0}; }
 function drawCount(){
-  $("#lCount").textContent = spoke.n ? `오늘 ${spoke.n}문장 소리 내어 말했어요.`
-                                     : "오늘 아직 안 하셨어요. 한 문장부터 시작해 보세요.";
+  const how = !hasTTS ? "이 브라우저는 소리 재생이 안 돼요."
+    : SR && !srBlocked ? "뜻을 보고 '말하기'를 누른 뒤 영어로 말해 보세요." : "뜻을 보고 먼저 소리 내어 말한 뒤 영어를 확인하세요.";
+  $("#lCount").textContent = how + (spoke.n ? ` 오늘 ${spoke.n}문장 말했어요.` : "");
 }
 
 const LISTEN_N = 5;                               // 한 번에 5문장 — 아래로 덜 내려가게, '다른 문장 5개'로 바꿔 가며
@@ -8434,7 +8510,6 @@ function renderListen(){
   const lvPool = SENTS.filter(inMyLevel);
   const pool = levelMix(lvPool.length >= LISTEN_N ? lvPool : SENTS, LISTEN_N);
   $("#listen").innerHTML = `<div class="lcount" id="lCount"></div>`
-    + (myLevel ? `<p class="lead" style="margin:0 0 2px">내 레벨(${lvShow(myLevel)})에 맞는 문장 ${LISTEN_N}개예요.</p>` : "")
     + pool.map((s,i)=>`
     <div class="lrow" id="lr${i}">
       <p class="ko">${s.ko}</p>
@@ -8763,14 +8838,7 @@ function renderLesson(day){
       <div class="row2"><button class="btn" data-say="${esc(x.en)}">들어보기</button>
       <button class="btn" data-say="${esc(x.en)}" data-slow="1">느리게</button></div></div>`;
   $("#lsBody").innerHTML = `
-    <div class="lsTop"><span class="gMeta">오늘의 레슨 · Day ${today} / ${LASTDAY}</span>${xBtn("lsX")}</div>
-
-    <div class="lsNav">
-      <button class="btn" id="lsPrev" ${day <= 1 ? "disabled" : ""}>◀ 이전</button>
-      <span class="now">Day ${day}${isToday ? " (오늘)" : ""}</span>
-      <button class="btn" id="lsNext" ${day >= today ? "disabled" : ""}>다음 ▶</button>
-      <button class="btn" id="lsAll">목록</button>
-    </div>
+    <div class="lsTop"><button class="lsDayBtn" id="lsAll" type="button">Day ${day} <span aria-hidden="true">▾</span>${isToday ? " <small>오늘</small>" : ""}</button>${xBtn("lsX")}</div>
     <div id="lsPick" hidden><div class="lsList">${
       Array.from({length: today}, (_, i) => today - i).map(n =>
         `<button class="lsDay ${n === day ? "cur" : ""}" data-day="${n}">${n}<small>${n === today ? "오늘" : (GRAM[n] ? GRAM[n].t.slice(0,4) : "")}</small></button>`
@@ -8819,7 +8887,11 @@ function renderLesson(day){
       ${isToday ? (day < LASTDAY || isUnitDay(day)
         ? `<button class="btn go done" id="lsExam">${isUnitDay(day) ? `단원 시험 보기 (Day ${day - UNIT + 1}~${day})` : "레슨 시험 보기"}</button>`
         : `<div class="lsEnd" style="margin-top:10px">여기까지가 지금 준비된 마지막 레슨이에요. 수고하셨습니다!</div>`) : ""}
-    </section>`;
+    </section>
+    <div class="lsNav">
+      <button class="btn" id="lsPrev" type="button" ${day <= 1 ? "disabled" : ""}>◀ 이전 레슨</button>
+      <button class="btn" id="lsNext" type="button" ${day >= today ? "disabled" : ""}>다음 레슨 ▶</button>
+    </div>`;
 }
 /* 클릭 처리는 한 번만 연결 — 매번 다시 붙이면 눌렀을 때 점점 느려집니다 */
 function lsTop0(){ document.getElementById("lesson").scrollTop = 0; }
@@ -8893,11 +8965,11 @@ function examWordHtml(x){
     <div class="qType" id="exType">
       <input type="text" id="exIn" placeholder="영어 스펠링" autocomplete="off"
         autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" lang="en">
-      <button class="btn" id="exHint">힌트</button>
+      <button class="btn" id="exHint" type="button">힌트</button>
+      <button class="btn go" id="exCheck" type="button">확인</button>
     </div>
     <p class="qJudge" id="exJ"></p>
-    <p class="qAns" id="exReveal" style="display:none;text-align:center;font-size:22px;font-weight:700;color:var(--ink-3);opacity:.55;letter-spacing:.04em"></p>
-    <div class="qBtns"><button class="btn go" id="exCheck">확인</button></div>`;
+    <p class="qAns" id="exReveal" style="display:none;text-align:center;font-size:22px;font-weight:700;color:var(--ink-3);opacity:.55;letter-spacing:.04em"></p>`;
 }
 function examSentHtml(x){
   return `
@@ -9050,6 +9122,8 @@ $("#exBody").addEventListener("click", e => {
   if (e.target.closest("#exNext")){
     const last = examDay >= LASTDAY;
     finishDay();
+    celebrate(last ? "모든 레슨 끝!" : `Day ${examDay} 레슨 끝!`,
+      last ? "준비된 레슨을 다 마쳤어요. 정말 대단해요!" : `내일은 Day ${examDay + 1} 레슨이 기다려요. 오늘의 복습도 잊지 마세요.`, true);
     LSDAY = dayNo();
     closeExam();
     if (last){ closeLesson(); go(3); return; }
@@ -9135,7 +9209,7 @@ function renderNote(){
                <button class="btn" data-nt="fill">저장</button></div>
              <div class="row2"><button class="btn" data-nt="del">지우기</button></div>`}
       </div>`).join("")
-    : `<div class="ntEmpty">아직 비어 있어요.<br>
+    : `<div class="ntEmpty">${mascot("base", 70).replace('class="mascot"', 'class="mascot" style="margin:0 auto 8px"')}아직 비어 있어요.<br>
         말이 막혔던 순간에 <b>한국어 그대로</b> 적어 두세요.<br>
         영어 답은 나중에 채워 넣으면 됩니다.</div>`}`;
 }
@@ -9336,7 +9410,7 @@ function renderReview(){
       <div class="row2"><button class="btn go" data-rv="resume">이어서 풀기</button></div></div>` : "") + `
     <div class="rvCard main"><h3>오늘의 단어 복습</h3>
       <div class="n">${tw.length}<small>개</small></div>
-      <p>${tw.length ? `새 단어 ${fresh} · 익히는 중 ${learn} · 잊을 때쯤 된 단어 ${due}` : "오늘 볼 단어를 다 봤어요. 내일 또 나와요."}</p>
+      ${tw.length ? `<p>새 단어 ${fresh} · 익히는 중 ${learn} · 잊을 때쯤 된 단어 ${due}</p>` : `<div class="emptyMs" style="color:var(--tint)">${mascot("happy", 64)}오늘 볼 단어를 다 봤어요. 내일 또 나와요!</div>`}
       <div class="row2"><button class="btn go" data-rv="today"${tw.length ? "" : " disabled"}>시작하기</button></div></div>
     <div class="rvCard"><h3>헷갈린 단어</h3>
       <div class="n">${miss.length}<small>개</small></div>
@@ -9378,8 +9452,28 @@ function mineHtml(){
         <input id="tripD" type="date" value="${esc(has ? trip.d : "")}">
         <button class="btn go" type="button" data-mine="tripSave">저장</button>
         ${has ? `<button class="btn" type="button" data-mine="tripDel">지우기</button>` : ""}</div></details>`
+    + themeRow()
     + (canInstall() ? row("install", "앱으로 설치", "휴대폰 홈 화면에 앱처럼 설치하기", "") : "");
 }
+/* 화면 테마 — vb.theme: "auto"(휴대폰 설정 따름) · "light" · "dark" (이 기기에만) */
+const THEMES = [["auto", "자동"], ["light", "밝게"], ["dark", "어둡게"]];
+const themeMode = () => { const v = store.get("vb.theme", "auto"); return THEMES.some(x => x[0] === v) ? v : "auto"; };
+const darkMQ = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
+function applyTheme(){
+  const m = themeMode(), dark = m === "dark" || (m === "auto" && darkMQ && darkMQ.matches);
+  document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = dark ? "#11132A" : "#2A2FA8";
+}
+if (darkMQ){ try{ darkMQ.addEventListener("change", applyTheme); }catch(e){ try{ darkMQ.addListener(applyTheme); }catch(e2){} } }
+function themeRow(){
+  return `<div class="setRow themeRow"><span class="tx"><b>화면 테마</b><span>자동은 휴대폰 설정을 따라가요</span></span>
+    <span class="seg">${THEMES.map(([k, nm]) => `<button type="button" data-theme-set="${k}" aria-pressed="${themeMode() === k}">${nm}</button>`).join("")}</span></div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-theme-set]"); if (!b) return;
+  store.set("vb.theme", b.dataset.themeSet); applyTheme();
+  document.querySelectorAll("[data-theme-set]").forEach(x => x.setAttribute("aria-pressed", x === b));
+});
 function renderMine(){
   renderStats(); renderLevel();
   $("#mineRows").innerHTML = mineHtml();
@@ -9469,6 +9563,7 @@ function obArt(i){
     '<rect x="26" y="34" width="108" height="98" rx="16" fill="var(--raise)" stroke="var(--accent)" stroke-width="5"/><path d="M26 60h108" stroke="var(--accent)" stroke-width="5"/><path d="M52 24v20M108 24v20" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/><circle cx="56" cy="84" r="7" fill="var(--honey)"/><circle cx="80" cy="84" r="7" fill="var(--line)"/><circle cx="104" cy="84" r="7" fill="var(--honey)"/><circle cx="56" cy="108" r="7" fill="var(--line)"/><circle cx="80" cy="108" r="7" fill="var(--honey)"/><circle cx="104" cy="108" r="7" fill="var(--line)"/>',
     '<path d="M26 40h80a14 14 0 0 1 14 14v34a14 14 0 0 1-14 14H62l-22 18v-18h-14a14 14 0 0 1-14-14V54a14 14 0 0 1 14-14z" fill="var(--accent)"/><path d="M44 70h52" stroke="#fff" stroke-width="6" stroke-linecap="round"/><path d="M44 70h22" stroke="var(--honey)" stroke-width="6" stroke-linecap="round"/><rect x="104" y="86" width="34" height="50" rx="17" fill="var(--honey)"/><path d="M96 116a25 25 0 0 0 50 0M121 141v8" stroke="var(--honey-dark)" stroke-width="5" fill="none" stroke-linecap="round"/>'
   ];
+  if (i === 0) return mascot("cheer", 150);
   return `<svg viewBox="0 0 160 160" width="150" height="150" aria-hidden="true">${pics[i] || pics[0]}</svg>`;
 }
 function openOnboard(){ obOn = true; obStep = 0; renderOnboard(); document.body.classList.add("setupOn"); }
@@ -9564,7 +9659,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=45"></script>
-<script src="sync.js?v=45"></script>
+<script src="firebase-config.js?v=46"></script>
+<script src="sync.js?v=46"></script>
 
 </body></html>

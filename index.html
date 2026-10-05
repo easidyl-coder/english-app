@@ -39,7 +39,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=44"></script>
+<script src="ipa.js?v=45"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -832,7 +832,6 @@
   .stgExam b{display:block;font-size:15px;margin-bottom:4px}
   .stgExam p{font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
   .stgExam .btn{width:100%;min-height:48px}
-  body.mustTest #qX{visibility:hidden}
   .allSub{font-family:"Jua",sans-serif;font-weight:400;font-size:19px;margin:26px 0 0}
   .allGo{display:flex;margin:0 0 12px} .allGo .btn{flex:1;min-height:50px}
   .allCard{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:10px}
@@ -965,6 +964,32 @@
   .sheetChips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
   .sheetChips button[aria-pressed="true"] small{color:var(--tint)}
   .sheetOk{width:100%;min-height:52px;margin-top:18px}
+  /* ═══ 개편 2단계 — 처음 켰을 때 ═══ */
+  .ob{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 4px 24px;min-height:calc(100vh - 60px)}
+  .obArt{margin:10px 0 6px;min-height:150px;display:grid;place-items:center}
+  .obKick{margin:8px 0 0;font-size:13.5px;font-weight:800;color:var(--accent)}
+  .obT{font-family:"Jua",sans-serif;font-weight:400;font-size:27px;line-height:1.3;margin:6px 0 8px}
+  .obD{font-size:14.5px;line-height:1.65;color:var(--ink-2);margin:0;max-width:330px}
+  .obDots{display:flex;gap:8px;margin:22px 0 4px}
+  .obDots i{width:8px;height:8px;border-radius:4px;background:var(--line);transition:width .2s}
+  .obDots i.on{width:22px;background:var(--accent)}
+  .obGo{width:100%;max-width:360px;min-height:56px;font-size:17px;margin-top:26px}
+  .obSkip{border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--ink-3);min-height:44px;margin-top:6px;cursor:pointer}
+  .obAmt{display:grid;gap:10px;width:100%;max-width:360px;margin:18px 0 22px}
+  .obOpt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:64px;padding:12px 16px;border-radius:18px;
+    border:2px solid var(--line);background:var(--raise);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+  .obOpt b{font-size:17px} .obOpt span{font-size:13px;color:var(--ink-2)}
+  .obOpt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+  .obOpt[aria-pressed="true"] b{color:var(--accent)}
+  .hTip{display:flex;align-items:center;gap:8px;background:#fff;color:#16183A;border-radius:14px;padding:8px 8px 8px 12px;font-size:13px;font-weight:700;
+    position:relative;animation:tipIn .4s ease-out}
+  .hTip::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#fff}
+  .hTip span{flex:1} .hTip button{border:0;background:none;font:inherit;font-size:14px;color:#62647F;width:32px;height:32px;cursor:pointer}
+  @keyframes tipIn{from{transform:translateY(6px)}to{transform:none}}
+  .loginAsk{display:flex;flex-direction:column;gap:6px;background:var(--accent-soft);border-radius:18px;padding:14px 16px;margin:14px 0}
+  .loginAsk b{font-size:15px;color:var(--accent)} .loginAsk span{font-size:13px;color:var(--ink-2);line-height:1.55}
+  .loginAsk .btn{min-height:46px;margin-top:4px}
+  #hLogin .loginAsk{margin-bottom:0}
 </style>
 
 <div class="shell">
@@ -1004,9 +1029,12 @@
       <div class="big" id="hTitle">오늘의 레슨</div>
       <div class="hForm" id="hForm"></div>
       <div class="hBarRow"><div class="hBar"><i id="hProg" style="width:0"></i></div><span id="hProgN">1/40</span></div>
+      <div class="hTip" id="hTip" hidden><span>👆 여기를 누르면 오늘 공부가 시작돼요. 하나만 하면 끝!</span>
+        <button type="button" id="hTipX" aria-label="안내 닫기">✕</button></div>
       <button class="hMain" id="hMain" type="button">이어서 하기</button>
       <div class="hHint" id="hHint"></div>
     </div>
+    <div id="hLogin" hidden></div>
     <div class="hGoal">
       <div class="hGoalHead"><h2>오늘 목표</h2><button class="re" id="hGoalEdit" type="button">목표 바꾸기</button></div>
       <div class="hRings" id="hRings"></div>
@@ -7079,13 +7107,7 @@ function boxCounts(){
   return c;
 }
 
-function renderLevel(){
-  const needLogin = loginOn() && !loggedIn();
-  renderLevelCard();
-  $("#lvGo").textContent = needLogin ? (myLevel ? "로그인하고 다시 테스트" : "로그인하고 레벨 테스트")
-                                     : (myLevel ? "레벨 다시 테스트" : "레벨 테스트 시작");
-  if (!myLevel && needLogin) $("#lvDesc").textContent = "구글 로그인하면 레벨 테스트를 볼 수 있어요";
-}
+function renderLevel(){ renderLevelCard(); }      // 레벨 테스트는 로그인 없이도 볼 수 있음
 function renderLevelCard(){
   if (myLevel){
     $("#lvNum").textContent = lvShow(myLevel);
@@ -7096,9 +7118,9 @@ function renderLevelCard(){
     $("#lvRing").style.setProperty("--p", (myLevel / 10 * 360) + "deg");
   } else {
     $("#lvNum").textContent = "?";
-    $("#lvName").textContent = "레벨을 아직 모릅니다";
-    $("#lvDesc").textContent = "단어와 문장을 함께 보는 테스트입니다";
-    $("#lvGo").textContent = "레벨 테스트 시작";
+    $("#lvName").textContent = "레벨을 아직 몰라요";
+    $("#lvDesc").textContent = "몇 문제 풀면 3분 안에 찾아요. 단어·문장이 레벨에 맞춰져요";
+    $("#lvGo").textContent = "내 레벨 찾기";
     $("#lvRing").style.setProperty("--p", "0deg");
   }
 }
@@ -7244,9 +7266,21 @@ function renderHome(){
   const td = tripDays(), tb = $("#hTrip");
   tb.hidden = td == null || td < 0;
   if (!tb.hidden) tb.innerHTML = `<span>${esc(trip.p || "여행")}까지</span><b>${td === 0 ? "D-DAY" : "D-" + td}</b>`;
+  // 처음 3일은 큰 버튼 위에 짧은 안내 말풍선 (✕로 오늘은 닫기)
+  const since = store.get("vb.since", ""), age = since ? Math.round((new Date(dkey() + "T00:00:00") - new Date(since + "T00:00:00")) / DAY_MS) : 99;
+  $("#hTip").hidden = !(age < 3 && store.get("vb.tipOff", "") !== dkey() && act === "lesson");
+  // 공부 3일째부터 로그인 권유 (나중에 → 2주 뒤 다시)
+  const studied = Object.keys(actLog).filter(k => dayTotal(k)).length, later = +store.get("vb.loginAsk", 0) || 0;
+  const ask = loginOn() && !loggedIn() && studied >= 3 && Date.now() - later > 14 * DAY_MS;
+  $("#hLogin").hidden = !ask;
+  if (ask) $("#hLogin").innerHTML = loginPitch().replace("</div>", `<button class="obSkip" type="button" data-loginlater>나중에</button></div>`);
 }
+$("#hTipX").addEventListener("click", () => { store.set("vb.tipOff", dkey()); $("#hTip").hidden = true; });
+$("#hLogin").addEventListener("click", e => {
+  if (e.target.closest("[data-loginlater]")){ store.set("vb.loginAsk", Date.now()); $("#hLogin").hidden = true; }
+});
 $("#p3").addEventListener("click", e => {
-  if (e.target.closest("#hGoalEdit")){ openSetup(false); return; }
+  if (e.target.closest("#hGoalEdit")){ openSetup(); return; }
   if (e.target.closest("[data-resume]")){ resumeQuiz(); return; }
   if (e.target.closest("#hMain")){
     const act = homeAction();
@@ -7924,7 +7958,7 @@ function qFinish(){
   $("#qEnd").addEventListener("click", () => { const d = qFrom; endQuiz(); if (d) returnTo(d); });
   renderWords();
 }
-function endQuiz(){ clearTimer(); clearInterval(tCountdown); tRun++; lvGateOpen = false; document.body.classList.remove("quizOn"); refreshTab(); }
+function endQuiz(){ clearTimer(); clearInterval(tCountdown); tRun++; document.body.classList.remove("quizOn"); refreshTab(); }
 /* ══ 레벨 테스트 ══
    한 문제씩 맞히면 레벨이 올라가고 틀리면 내려간다(계단식). 처음엔 1씩 움직이다가
    오르내림이 바뀔 때마다 폭을 줄여 소수점 한 자리까지 좁힌다. 문제는 지금 레벨(반올림)의
@@ -7990,47 +8024,22 @@ function startTimer(sec, onOut){
 
 /* 시작하기 전에 설명 → 3·2·1 카운트다운 → 첫 문제 (문제마다 제한 시간이 있어서 준비할 틈을 줍니다) */
 let tCountdown = null;
-/* ── 레벨 테스트는 로그인해야 볼 수 있음 ── 레벨이 구글 계정에 저장돼 어느 기기에서든 내 레벨로 문제가 나옵니다.
-   로그인 기능이 꺼져 있으면(firebase-config.js 비움) 막지 않습니다. 로그인 상태는 sync.js가 알려 줍니다. */
+/* ── 로그인은 강제하지 않음 ── 로그인 없이도 모든 기능을 쓰고 기록은 이 기기에 저장됩니다.
+   로그인하면 구글 계정에도 저장돼서 휴대폰을 바꿔도 남아요. 권하는 때: 레벨 테스트 결과 · 공부 3일째 · 나 탭.
+   로그인 기능이 꺼져 있으면(firebase-config.js 비움) 아무것도 권하지 않습니다. 로그인 상태는 sync.js가 알려 줍니다. */
 const loginOn = () => !!window.FIREBASE_CONFIG;
 const loggedIn = () => !!window.appUser;
-let lvGateOpen = false, lvForced = false;
-function requireTest(){                           // 레벨이 없으면 레벨 테스트부터 (하루 목표를 정한 다음)
-  if (myLevel || document.body.classList.contains("setupOn")) return;
-  lvForced = true; document.body.classList.add("mustTest");
-  startLevelTest();
+function doSignIn(){
+  if (inAppBrowser()){ alert("카카오톡·네이버 같은 앱 안에서는 구글 로그인이 안 돼요.\n메뉴에서 '다른 브라우저로 열기'(Safari·크롬)를 누른 뒤 다시 해 주세요."); return; }
+  if (window.appSignIn) window.appSignIn();
+  else alert("로그인을 준비하고 있어요. 인터넷 연결을 확인하고 잠시 뒤 다시 눌러 주세요.");
 }
-function showLvGate(){
-  lvGateOpen = true;
-  clearTimer(); clearInterval(tCountdown); tRun++;
-  document.body.classList.add("quizOn");
-  $("#qBar").style.width = "0";
-  $("#qCount").textContent = "";
-  $("#qBody").innerHTML = `
-    <div class="lvIntro">
-      <p class="kick">레벨 테스트</p>
-      <h2>${lvForced ? "먼저 로그인하고 레벨 테스트를 해 주세요" : "로그인하고 레벨 테스트를 볼 수 있어요"}</h2>
-      <ul>
-        ${lvForced ? "<li><b>처음 한 번만</b> 하면 돼요. 레벨에 맞춰 단어·어휘·문장 조립·단계 코스가 정해져요.</li>" : ""}
-        <li>내 레벨이 <b>구글 계정에 저장</b>돼서, 어느 휴대폰에서 열어도 그대로 나와요.</li>
-        <li>레벨이 정해지면 오늘의 단어·문장 조립·듣기가 <b>내 레벨에 맞는 난이도</b>로 나와요.</li>
-        ${inAppBrowser() ? "<li><b>카카오톡·네이버 같은 앱 안에서는 구글 로그인이 안 돼요.</b> 오른쪽 위(아이폰은 아래) 메뉴에서 <b>다른 브라우저로 열기</b>(Safari·크롬)를 눌러 주세요.</li>" : ""}
-      </ul>
-      <button class="btn go" id="lvLogin" type="button">구글로 로그인</button>
-      <p class="lvWait" id="lvWait">로그인이 끝나면 바로 레벨 테스트로 넘어가요.</p>
-    </div>`;
-  $("#lvLogin").addEventListener("click", () => {
-    if (window.appSignIn) window.appSignIn();
-    else alert("로그인을 준비하고 있어요. 인터넷 연결을 확인하고 잠시 뒤 다시 눌러 주세요.");
-  });
-}
-window.addEventListener("authchange", () => {
-  renderLevel(); renderHome();
-  if (lvGateOpen && loggedIn() && document.body.classList.contains("quizOn")) startLevelTest();   // 로그인 끝나면 이어서
-});
+const loginPitch = () => loginOn() && !loggedIn()
+  ? `<div class="loginAsk"><b>휴대폰을 바꿔도 기록이 남게</b><span>구글로 로그인하면 레벨·단어·진도가 계정에 저장돼요. 안 해도 이 기기에서는 그대로 쓸 수 있어요.</span>
+      <button class="btn go" type="button" data-login>구글로 로그인</button></div>` : "";
+document.addEventListener("click", e => { if (e.target.closest("[data-login]")) doSignIn(); });
+window.addEventListener("authchange", () => { renderLevel(); refreshTab(); });
 function startLevelTest(){
-  if (loginOn() && !loggedIn()){ showLvGate(); return; }
-  lvGateOpen = false;
   tStart = tTheta = myLevel ? Math.min(10, Math.max(1, myLevel)) : 3;   // 처음이면 3, 다시 보면 지난 레벨에서 시작
   tStep = 1; tDir = 0; tHist = []; tI = 0; tUsed = new Set(); tLog = []; tRun++;
   clearTimer(); clearInterval(tCountdown);
@@ -8210,7 +8219,6 @@ function finishLevelTest(){
   const lv = tail.length ? Math.round(tail.reduce((a, b) => a + b, 0) / tail.length * 10) / 10 : 1;
   const L = Math.round(lv);
   myLevel = lv; store.set("vb.level", lv);
-  lvForced = false; document.body.classList.remove("mustTest");   // 처음 필수 테스트 끝 → 닫기 버튼 다시 보임
   const oldDay = curDay, want = placeDay(lv), moved = want > curDay;      // 레슨은 앞으로만 옮김 (진도가 줄지 않게)
   if (moved){ curDay = want; store.set("vb.day", curDay); }
   const n = WORDS.filter(inMyLevel).length, ns = SENTS.filter(inMyLevel).length;
@@ -8227,6 +8235,7 @@ function finishLevelTest(){
         단어 ${n}개와 문장 ${ns}개가 나옵니다.</p>
     </div>
     <div class="lvPlace" id="lvPlace">${placeHtml(moved, oldDay)}</div>
+    ${loginPitch()}
     ${lvPathSvg()}
     ${analysisHTML(L)}
     <div class="qBtns" style="margin-top:26px"><button class="btn go" id="lvDone">시작하기</button></div>`;
@@ -8397,10 +8406,9 @@ $("#bkLoad").addEventListener("click", ()=>{
     $("#bkMsg").textContent = "복원했습니다.";
   }catch(e){ $("#bkMsg").textContent = "복원하지 못했습니다. 백업한 글자 전체를 붙여넣었는지 확인해 주세요."; }
 });
-/* 처음 켤 때는 레벨 테스트를 해야 앱을 쓸 수 있음 — 그동안은 닫기 버튼을 숨기고 Esc도 막음 */
-function tryEndQuiz(){ if (lvForced && !myLevel) return; endQuiz(); }
-$("#qX").addEventListener("click", tryEndQuiz);
-document.addEventListener("keydown", e=>{ if(e.key==="Escape") tryEndQuiz(); });
+/* 퀴즈·레벨 테스트는 언제든 ✕(또는 Esc)로 닫을 수 있음 */
+$("#qX").addEventListener("click", endQuiz);
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && document.body.classList.contains("quizOn")) endQuiz(); });
 
 /* ══ 듣기·말하기 ══ '말하기'를 누르고 영어로 말하면 음성 인식으로 단어마다 맞았는지 보여줍니다.
    음성 인식이 없거나 막힌 기기에서는 예전처럼 '말했어요'(스스로 확인) 버튼을 씁니다. */
@@ -9381,7 +9389,7 @@ function renderMine(){
 $("#p7").addEventListener("click", e => {
   const m = e.target.closest("[data-mine]"); if (!m) return;
   const k = m.dataset.mine;
-  if (k === "goal") openSetup(false);
+  if (k === "goal") openSetup();
   else if (k === "tripSave"){
     const p = $("#tripP").value.trim(), d = $("#tripD").value;
     if (!d){ $("#tripD").focus(); return; }
@@ -9395,8 +9403,8 @@ $("#p7").addEventListener("click", e => {
 
 /* ══ 하루 목표 정하기 ══ 처음 켤 때 한 번 뜨고, 홈·내 기록에서 다시 열 수 있습니다 */
 let suPick = { w: 20, s: 10, q: 10 }, suFirst = false;
-function openSetup(first){
-  suFirst = !!first; suPick = { w: goalW(), s: goalS(), q: goalQ() };
+function openSetup(){
+  suFirst = false; obOn = false; suPick = { w: goalW(), s: goalS(), q: goalQ() };
   renderSetup();
   document.body.classList.add("setupOn");
   $("#setup").scrollTop = 0;
@@ -9423,6 +9431,7 @@ function renderSetup(){
     <button class="btn go suSave" id="suSave" type="button">${suFirst ? "이대로 시작하기" : "저장하기"}</button>`;
 }
 $("#suBody").addEventListener("click", e => {
+  if (obOn){ obClick(e); return; }
   const o = e.target.closest("[data-su]");
   if (o){ suPick[o.dataset.su] = +o.dataset.v; renderSetup(); return; }
   if (e.target.closest("#suX")){ closeSetup(); return; }
@@ -9432,8 +9441,85 @@ $("#suBody").addEventListener("click", e => {
   closeSetup();
   if (!deckDay && !deckList) newRound();          // 문장 수가 바뀌었으면 새 판으로
   renderWords(); renderHome(); refreshTab();
-  requireTest();                                  // 처음이면 이어서 레벨 테스트
 });
+
+/* ══ 처음 켰을 때 ══ 소개 3장(건너뛰기 가능) → 하루 공부량 한 가지 → '처음부터(Day 1)' 또는 '내 레벨 찾기'.
+   로그인은 강제하지 않음. 기존 사용자(vb.goal·vb.level·vb.day·단어 기록 중 하나라도 있음)에게는 다시 뜨지 않음 */
+function isReturning(){
+  try{
+    if (["vb.goal", "vb.level", "vb.day"].some(k => localStorage.getItem(k) !== null)) return true;
+    const b = localStorage.getItem("vb.box"); return !!b && b.length > 2;
+  }catch(e){ return true; }                       // 저장소를 못 읽으면 처음 화면을 띄우지 않음 (기존 사용자를 귀찮게 하지 않게)
+}
+const OB_SLIDES = [
+  { t: "하루 10분 레슨", d: "오늘 할 일은 딱 하나. 짧은 레슨을 보고 시험을 통과하면 다음 날 레슨이 열려요." },
+  { t: "잊을 때쯤 다시 나와요", d: "외운 단어는 다음 날 → 3일 → 일주일 뒤… 잊을 때쯤 복습으로 다시 만나요." },
+  { t: "소리 내어 말하기", d: "듣고 따라 말하면 맞은 단어는 초록, 틀린 단어는 빨강으로 바로 알려 줘요." }
+];
+const OB_AMT = [
+  { k: "light",  nm: "가볍게", ds: "하루 5분쯤 · 새 단어 5개",   w: 5,  s: 5,  q: 5 },
+  { k: "normal", nm: "보통",   ds: "하루 10분쯤 · 새 단어 10개", w: 10, s: 10, q: 10 },
+  { k: "hard",   nm: "열심히", ds: "하루 15분쯤 · 새 단어 15개", w: 15, s: 15, q: 15 }
+];
+let obOn = false, obStep = 0, obAmt = "normal";
+/* 소개 그림 — 단순한 도형으로 직접 그림 (레슨 카드 · 달력 · 말풍선) */
+function obArt(i){
+  const pics = [
+    '<rect x="34" y="26" width="92" height="108" rx="16" fill="var(--raise)" stroke="var(--accent)" stroke-width="5"/><path d="M54 58h52M54 78h52M54 98h30" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/><circle cx="118" cy="122" r="22" fill="var(--honey)"/><path d="m108 122 7 7 13-14" stroke="#16183A" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+    '<rect x="26" y="34" width="108" height="98" rx="16" fill="var(--raise)" stroke="var(--accent)" stroke-width="5"/><path d="M26 60h108" stroke="var(--accent)" stroke-width="5"/><path d="M52 24v20M108 24v20" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/><circle cx="56" cy="84" r="7" fill="var(--honey)"/><circle cx="80" cy="84" r="7" fill="var(--line)"/><circle cx="104" cy="84" r="7" fill="var(--honey)"/><circle cx="56" cy="108" r="7" fill="var(--line)"/><circle cx="80" cy="108" r="7" fill="var(--honey)"/><circle cx="104" cy="108" r="7" fill="var(--line)"/>',
+    '<path d="M26 40h80a14 14 0 0 1 14 14v34a14 14 0 0 1-14 14H62l-22 18v-18h-14a14 14 0 0 1-14-14V54a14 14 0 0 1 14-14z" fill="var(--accent)"/><path d="M44 70h52" stroke="#fff" stroke-width="6" stroke-linecap="round"/><path d="M44 70h22" stroke="var(--honey)" stroke-width="6" stroke-linecap="round"/><rect x="104" y="86" width="34" height="50" rx="17" fill="var(--honey)"/><path d="M96 116a25 25 0 0 0 50 0M121 141v8" stroke="var(--honey-dark)" stroke-width="5" fill="none" stroke-linecap="round"/>'
+  ];
+  return `<svg viewBox="0 0 160 160" width="150" height="150" aria-hidden="true">${pics[i] || pics[0]}</svg>`;
+}
+function openOnboard(){ obOn = true; obStep = 0; renderOnboard(); document.body.classList.add("setupOn"); }
+function renderOnboard(){
+  const n = OB_SLIDES.length;
+  let body;
+  if (obStep < n){
+    const s = OB_SLIDES[obStep];
+    body = `<div class="obArt">${obArt(obStep)}</div>
+      <p class="obKick">${obStep === 0 ? "반가워요! 톡톡 잉글리시예요" : `${obStep + 1} / ${n}`}</p>
+      <h2 class="obT">${s.t}</h2><p class="obD">${s.d}</p>
+      <div class="obDots">${OB_SLIDES.map((_, i) => `<i${i === obStep ? ' class="on"' : ""}></i>`).join("")}</div>
+      <button class="btn go obGo" type="button" data-ob="next">${obStep < n - 1 ? "다음" : "시작해 볼까요?"}</button>
+      ${obStep < n - 1 ? `<button class="obSkip" type="button" data-ob="skip">건너뛰기</button>` : ""}`;
+  } else if (obStep === n){
+    body = `<p class="obKick">하루 공부량</p><h2 class="obT">하루에 얼마나 해 볼까요?</h2>
+      <p class="obD">언제든 '나' 탭에서 바꿀 수 있어요. 처음엔 '보통'을 추천해요.</p>
+      <div class="obAmt">${OB_AMT.map(a => `<button type="button" class="obOpt" data-amt="${a.k}" aria-pressed="${a.k === obAmt}">
+        <b>${a.nm}</b><span>${a.ds}</span></button>`).join("")}</div>
+      <button class="btn go obGo" type="button" data-ob="amt">다음</button>`;
+  } else {
+    body = `<p class="obKick">어디서부터 시작할까요?</p><h2 class="obT">처음부터, 아니면 내 레벨부터?</h2>
+      <div class="obAmt">
+        <button type="button" class="obOpt" data-ob="day1"><b>처음부터 시작</b><span>Day 1 '나는 ~이에요'부터 차근차근</span></button>
+        <button type="button" class="obOpt" data-ob="test"><b>내 레벨 찾기 (약 3분)</b><span>몇 문제 풀어 보고 알맞은 레슨부터 시작</span></button>
+      </div>
+      <p class="obD" style="margin-top:14px">로그인은 나중에 해도 돼요. 기록은 이 휴대폰에 저장돼요.</p>`;
+  }
+  $("#suBody").innerHTML = `<div class="ob">${body}</div>`;
+  $("#setup").scrollTop = 0;
+}
+function obFinish(){
+  obOn = false; closeSetup();
+  if (!store.get("vb.since", "")) store.set("vb.since", dkey());   // 처음 3일 동안 홈에 안내 말풍선
+  newRound(); renderWords(); go(3);
+}
+function obClick(e){
+  const a = e.target.closest("[data-amt]");
+  if (a){ obAmt = a.dataset.amt; renderOnboard(); return; }
+  const b = e.target.closest("[data-ob]"); if (!b) return;
+  const k = b.dataset.ob;
+  if (k === "next"){ obStep++; renderOnboard(); }
+  else if (k === "skip"){ obStep = OB_SLIDES.length; renderOnboard(); }
+  else if (k === "amt"){
+    const p = OB_AMT.find(x => x.k === obAmt) || OB_AMT[1];
+    goal = { w: p.w, s: p.s, q: p.q }; store.set("vb.goal", goal);
+    obStep++; renderOnboard();
+  }
+  else if (k === "day1"){ store.set("vb.day", curDay); obFinish(); }
+  else if (k === "test"){ obFinish(); startLevelTest(); }
+}
 
 /* ══ 앱 설치 ══ 안드로이드(크롬)는 버튼 한 번으로 설치 창을 띄우고, 아이폰은 애플이 막아 둬서 방법을 보여줍니다 */
 let installEvt = null, installOpen = false;
@@ -9473,12 +9559,12 @@ $("#hInstall").addEventListener("click", e => {
 
 /* 시작 — 한 곳에서 오류가 나도 나머지는 계속 실행됩니다 */
 [drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), renderHome, renderInstall,
- () => { if (!goal) openSetup(true); else requireTest(); }]
+ () => { if (!isReturning()) openOnboard(); }]
   .forEach(fn => { try{ fn(); }catch(e){ console.error(e); } });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=44"></script>
-<script src="sync.js?v=44"></script>
+<script src="firebase-config.js?v=45"></script>
+<script src="sync.js?v=45"></script>
 
 </body></html>

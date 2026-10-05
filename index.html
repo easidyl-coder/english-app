@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2A2FA8">
-<title>영어 연습장</title>
+<title>톡톡 잉글리시</title>
+<meta name="apple-mobile-web-app-title" content="톡톡 잉글리시">
+<meta name="application-name" content="톡톡 잉글리시">
 <script>
 /* 화면 테마(자동·밝게·어둡게)를 그리기 전에 먼저 정해서 하얗게 깜빡이지 않게 */
 (function(){
@@ -49,7 +51,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=48"></script>
+<script src="ipa.js?v=49"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -918,6 +920,8 @@
   .setList > .setRow:first-child,.setList > details:first-child > summary{border-top:0}
   .setRow .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
   .setRow .tx b{font-size:15px} .setRow .tx span{font-size:12.5px;color:var(--ink-2)}
+  a.setRow{color:inherit;text-decoration:none}
+  .setRow.danger .tx b{color:var(--bad)}
   .setRow .btn{min-height:40px;padding:0 14px;font-size:13px;flex:0 0 auto}
   .setRow .val{font-size:13px;font-weight:700;color:var(--accent);flex:0 0 auto}
   .setRow.acctRow{cursor:default}
@@ -1037,8 +1041,8 @@
 
 <div class="shell">
   <header>
-    <p class="eyebrow">칸쿤 · LA 여행 영어</p>
-    <h1>영어 연습장</h1>
+    <p class="eyebrow">여행 영어 연습</p>
+    <h1>톡톡 잉글리시</h1>
     <div class="stats">
       <div class="stat"><span class="n" id="sTotal">0</span><span class="l">누적 단어</span></div>
       <div class="stat"><span class="n" id="sSent">0</span><span class="l">문장</span></div>
@@ -1178,6 +1182,7 @@
     <div class="setList">
       <div class="setRow acctRow"><span class="tx"><b>계정</b><span id="acctNote">로그인하면 휴대폰을 바꿔도 기록이 남아요</span></span>
         <button class="btn" id="hAcct" type="button" hidden>로그인</button></div>
+      <button class="setRow danger" id="acctDel" type="button" data-mine="delacct" hidden><span class="tx"><b>계정 삭제</b><span>서버에 저장된 내 기록을 모두 지워요</span></span></button>
     </div>
     <details class="backup adv">
       <summary>고급</summary>
@@ -7496,7 +7501,7 @@ function leagueHtml(){
     <button class="btn go" type="button" data-login>구글로 로그인</button></div>`;
   if (!league.on || !league.nick) return `<div class="stCard lgCard">
     <p class="lgP">이번 주에 모은 XP로 같이 공부하는 사람들과 순위를 겨뤄요. 매주 월요일에 새로 시작해요.<br>
-      <b>다른 사람에게는 별명과 이번 주 XP만 보여요.</b> 실명 말고 별명을 써 주세요.</p>
+      <b>다른 사람에게는 별명과 이번 주 XP만 보여요.</b> 실명 말고 별명을 써 주세요. <a href="privacy.html">개인정보 처리방침</a></p>
     <div class="setForm lgForm"><input id="lgNick" type="text" maxlength="10" placeholder="별명 (2~10자, 예: 칸쿤가자)" value="${esc(league.nick || "")}">
       <button class="btn go" type="button" data-lg="join">참여하기</button></div>
     <p class="lgMsg" id="lgMsg"></p></div>`;
@@ -9966,6 +9971,8 @@ $("#p6").addEventListener("click", e => {
 });
 
 /* ══ 나 탭 ══ 학습 통계 · 내 레벨 · 하루 목표 · 여행 D-day · 계정 · 고급(마이크 테스트·백업) */
+/* 운영자 연락처 — 정해지면 여기에 메일 주소를 넣으세요 (privacy.html 맨 아래도 함께). 비어 있으면 '준비 중'으로 보임 */
+const CONTACT_EMAIL = "";
 function mineHtml(){
   const row = (key, nm, ds, val) => `<button class="setRow" type="button" data-mine="${key}">
     <span class="tx"><b>${nm}</b><span>${ds}</span></span>${val ? `<span class="val">${val}</span>` : ""}${CHEV}</button>`;
@@ -9979,7 +9986,24 @@ function mineHtml(){
         <button class="btn go" type="button" data-mine="tripSave">저장</button>
         ${has ? `<button class="btn" type="button" data-mine="tripDel">지우기</button>` : ""}</div></details>`
     + themeRow()
-    + (canInstall() ? row("install", "앱으로 설치", "휴대폰 홈 화면에 앱처럼 설치하기", "") : "");
+    + (canInstall() ? row("install", "앱으로 설치", "휴대폰 홈 화면에 앱처럼 설치하기", "") : "")
+    + `<a class="setRow" href="privacy.html"><span class="tx"><b>개인정보 처리방침</b><span>어떤 정보를 왜 저장하는지</span></span>${CHEV}</a>`
+    + (CONTACT_EMAIL ? `<a class="setRow" href="mailto:${esc(CONTACT_EMAIL)}?subject=${encodeURIComponent("톡톡 잉글리시 문의")}"><span class="tx"><b>문의하기</b><span>메일로 의견·오류 알려 주기</span></span>${CHEV}</a>`
+      : `<div class="setRow"><span class="tx"><b>문의하기</b><span>문의처를 준비하고 있어요</span></span></div>`);
+}
+/* 계정 삭제 — 서버의 내 기록·리그 기록을 지우고 로그아웃. 이 기기 기록까지 지울지는 따로 물어봄 */
+async function deleteAccount(){
+  if (!loggedIn() || !window.appDeleteAccount) return;
+  if (!confirm("계정을 삭제할까요?\n서버에 저장된 공부 기록과 주간 리그 기록이 모두 지워지고, 되돌릴 수 없어요.")) return;
+  const weeks = [...new Set(Object.keys(xpLog).concat(Object.keys(actLog)).map(k => weekKey(new Date(k + "T00:00:00"))).concat(weekKey()))];
+  clearTimeout(leagueTimer);
+  try{ await window.appDeleteAccount(weeks); }
+  catch(e){ alert("계정을 삭제하지 못했어요. 인터넷 연결을 확인하고 다시 해 주세요."); return; }
+  league = { on: false, nick: "", t: Date.now() }; store.set("vb.league", league);
+  if (confirm("서버 기록을 지우고 로그아웃했어요.\n이 휴대폰에 저장된 공부 기록도 지울까요?\n(취소를 누르면 이 기기에서는 지금 기록 그대로 계속 쓸 수 있어요)")){
+    Object.keys(localStorage).filter(k => k.startsWith("vb.")).forEach(k => localStorage.removeItem(k));
+    location.reload();
+  } else renderMine();
 }
 /* 화면 테마 — vb.theme: "auto"(휴대폰 설정 따름) · "light" · "dark" (이 기기에만) */
 const THEMES = [["auto", "자동"], ["light", "밝게"], ["dark", "어둡게"]];
@@ -10016,6 +10040,7 @@ function renderMine(){
   $("#lgBody").innerHTML = leagueHtml(); leagueLoad();
   $("#mineRows").innerHTML = mineHtml();
   $("#acctNote").textContent = loggedIn() ? "로그인됨 · 기록이 계정에 저장돼요" : "로그인하면 휴대폰을 바꿔도 기록이 남아요";
+  $("#acctDel").hidden = !(loggedIn() && window.appDeleteAccount);
   fillBackup();
 }
 $("#p7").addEventListener("click", e => {
@@ -10027,6 +10052,7 @@ $("#p7").addEventListener("click", e => {
     if (!d){ $("#tripD").focus(); return; }
     trip = { p, d, t: Date.now() }; store.set("vb.trip", trip); renderMine(); renderHome();
   }
+  else if (k === "delacct") deleteAccount();
   else if (k === "tripDel"){ trip = { p: "", d: "", t: Date.now() }; store.set("vb.trip", trip); renderMine(); renderHome(); }   // 빈 값으로 남겨야 다른 기기와 합칠 때 되살아나지 않음
   else if (k === "install"){                         // 안 보기로 숨겼어도 여기서는 다시 보여 줌
     store.set("vb.noinstall", false); installOpen = !installEvt; go(3); renderInstall();
@@ -10197,7 +10223,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=48"></script>
-<script src="sync.js?v=48"></script>
+<script src="firebase-config.js?v=49"></script>
+<script src="sync.js?v=49"></script>
 
 </body></html>

@@ -16,7 +16,7 @@
   const SDK = ["app", "auth", "firestore"].map(n => `https://www.gstatic.com/firebasejs/${V}/firebase-${n}-compat.js`);
   const get = (k, f) => { try { const v = localStorage.getItem(k); return v === null ? f : JSON.parse(v); } catch(e){ return f; } };
   const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
-  let auth, db, user = null, timer = null, pulling = false;
+  let auth, db, user = null, timer = null, pulling = false, deleting = false;
 
   function load(i){
     if (i >= SDK.length) return start();
@@ -111,18 +111,18 @@
       if (merged.trip) put("vb.trip", merged.trip);
       put("vb.xp", merged.xp); put("vb.badge", merged.badge);
       if (merged.league) put("vb.league", merged.league);
-      await ref.set(Object.assign({ name: user.displayName || "", updatedAt: Date.now() }, merged));
+      await ref.set(Object.assign({ updatedAt: Date.now() }, merged));
       if (changed) location.reload();          // 합친 기록으로 화면을 다시 그립니다
     } catch(e){ console.warn("동기화 실패", e); }
     pulling = false;
   }
 
   function push(){
-    if (!user || pulling) return;
+    if (!user || pulling || deleting) return;
     clearTimeout(timer);
     timer = setTimeout(() => {
       db.collection("users").doc(user.uid)
-        .set(Object.assign({ name: user.displayName || "", updatedAt: Date.now() }, local()))
+        .set(Object.assign({ updatedAt: Date.now() }, local()))
         .catch(e => console.warn("저장 실패", e));
     }, 1500);
   }
@@ -174,6 +174,27 @@
       return q.docs.map(d => ({ nick: String(d.data().nick || ""), xp: num(d.data().xp), me: !!user && d.id === user.uid }));
     },
     leave(week){ return user ? members(week).doc(user.uid).delete() : Promise.resolve(); }
+  };
+
+  /* 계정 삭제 — 서버의 내 기록(users/{uid})과 리그 기록(weeks의 내 칸)을 지우고, 구글 로그인 연결도 지운 뒤 로그아웃 */
+  window.appDeleteAccount = async weeks => {
+    if (!user) throw new Error("no user");
+    clearTimeout(timer); deleting = true;
+    try{
+      const uid = user.uid, batch = db.batch();
+      (weeks || []).slice(0, 400).forEach(w => batch.delete(members(w).doc(uid)));
+      batch.delete(db.collection("users").doc(uid));
+      await batch.commit();
+    } catch(e){ deleting = false; throw e; }
+    try { await user.delete(); }
+    catch(e){
+      try {
+        if (e && e.code === "auth/requires-recent-login"){            // 로그인한 지 오래되면 한 번 더 확인한 뒤 지움
+          await user.reauthenticateWithPopup(new firebase.auth.GoogleAuthProvider()); await user.delete();
+        } else await auth.signOut();
+      } catch(e2){ try { await auth.signOut(); } catch(e3){} }
+    }
+    deleting = false;
   };
 
   if (btn) btn.addEventListener("click", () => {

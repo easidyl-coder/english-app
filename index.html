@@ -51,7 +51,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=50"></script>
+<script src="ipa.js?v=51"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -853,6 +853,24 @@
   .stWeek .now span{color:var(--accent);font-weight:800}
   .stNote{font-size:12px;color:var(--ink-3);margin:10px 0 0}
   .stBig small{display:block;margin-top:6px;font-size:11.5px;opacity:.85}
+  #hMs{position:relative;display:inline-block;cursor:pointer}
+  .msLv{position:absolute;right:-6px;bottom:-2px;min-width:22px;padding:1px 5px;border-radius:10px;border:2px solid var(--ground);
+        background:var(--honey);color:var(--on-honey);font-size:11px;font-weight:800;line-height:1.3;text-align:center}
+  .tokTop{display:flex;align-items:center;gap:12px}
+  .tokTop .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .tokLv{align-self:flex-start;font-size:12px;font-weight:800;color:var(--on-honey);background:var(--honey);border-radius:10px;padding:1px 8px}
+  .tokTop b{font-family:"Jua",sans-serif;font-weight:400;font-size:21px;line-height:1.2}
+  .tokTop .tx span:last-child{font-size:12.5px;color:var(--ink-2)}
+  .tokBar{height:10px;border-radius:5px;background:var(--line-2);overflow:hidden;margin-top:12px}
+  .tokBar i{display:block;height:100%;border-radius:5px;background:var(--honey)}
+  .shopRow{display:flex;align-items:center;gap:10px}
+  .shopIc{font-size:30px;line-height:1}
+  .shopRow .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .shopRow .tx b{font-size:15px}
+  .shopRow .tx span{font-size:12px;color:var(--ink-2);line-height:1.45}
+  .shopRow .tx .own{color:var(--accent);font-weight:800}
+  .shopRow .btn{flex:0 0 auto;min-height:42px;padding:0 12px;font-size:13px}
+  .shopRow .btn:disabled{opacity:.5}
   .bdN{font-family:inherit;font-size:13px;color:var(--ink-3);font-weight:700;margin-left:4px}
   .bdGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
   .bd{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:8px 2px;border-radius:14px;background:var(--raise-2);border:1px solid var(--line)}
@@ -7411,6 +7429,13 @@ function celebrate(title, sub, big){
   try{ if (navigator.vibrate && /android/i.test(navigator.userAgent) && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(big ? [60, 40, 90] : 40); }catch(e){}
   if (!big) celeTimer = setTimeout(() => { el.hidden = true; }, 2600);
 }
+const celeQ = [];
+function celeLater(title, sub){ celeQ.push([title, sub]); celeNext(); }
+function celeNext(){
+  const el = document.getElementById("cele"); if (!el || !celeQ.length) return;
+  if (!el.hidden){ setTimeout(celeNext, 800); return; }   // 다른 축하가 떠 있으면 끝난 뒤에
+  const [title, sub] = celeQ.shift(); celebrate(title, sub);
+}
 document.addEventListener("click", e => {
   const el = document.getElementById("cele");
   if (el && !el.hidden && (e.target.closest("#celeOk") || (!el.classList.contains("big") && e.target.closest("#cele")))) el.hidden = true;
@@ -7429,18 +7454,57 @@ function logAct(kind){
   celeCheck(kind, before, actLog[k][kind]);
   addXP(XP_OF[kind] || 0);
 }
-/* ── XP ── 공부한 만큼 쌓이는 점수. vb.xp = {"2026-10-05": 35, …} 날짜별 (계정에 저장, 400일만 남김)
+/* ── XP ── 공부한 만큼 쌓이는 점수. vb.xp = {"2026-10-05": 35, …} 날짜별 (계정에 저장. 모은 XP가 줄면 톡이 레벨이 내려가니 거의 지우지 않음)
    단어 문제 하나 2 · 문장 하나 3 · 말한 문장 하나 3 · 레슨 끝내기 20 */
 const XP_OF = { w: 2, s: 3, t: 3 }, XP_LESSON = 20;
 let xpLog = store.get("vb.xp", {}, x => x && typeof x === "object" && !Array.isArray(x));
 function addXP(n){
   if (!n) return;
+  const was = tokLevel();
   const k = dkey(); xpLog[k] = (+xpLog[k] || 0) + n;
-  const keys = Object.keys(xpLog).sort(); while (keys.length > 400) delete xpLog[keys.shift()];
+  const keys = Object.keys(xpLog).sort(); while (keys.length > 4000) delete xpLog[keys.shift()];
   store.set("vb.xp", xpLog);
   const hx = document.getElementById("hXp"); if (hx) hx.textContent = xpToday() + " XP";
+  const L = tokLevel(), ml = document.querySelector("#hMs .msLv"); if (ml) ml.textContent = "★" + L;
+  if (L > was) celeLater(`톡이 ★${L} 달성!`, `톡이가 자랐어요. 새 칭호: ${tokTitle(L)}`);
   badgeCheck(); leagueSoon();
 }
+/* ── 톡이 레벨(★) ── 모은 XP로 자람 (상점에서 XP를 써도 내려가지 않음). ★N이 되려면 50×N×(N−1) XP: ★2 100 · ★3 300 · ★4 600 · ★5 1000 … */
+const TITLES = ["새싹 톡이", "첫걸음 여행자", "단어 탐험가", "문장 조립공", "여행 새내기", "길 찾기 선수", "주문 척척",
+                "수다쟁이", "현지인 흉내", "여행 고수", "회화 달인", "영어 마스터", "전설의 톡이"];
+const xpNeed = L => 50 * L * (L - 1);
+function tokLevel(x){ x = x == null ? xpAll() : x; let L = 1; while (xpNeed(L + 1) <= x) L++; return L; }
+const tokTitle = L => TITLES[Math.min(L, TITLES.length) - 1];
+
+/* ── XP 상점: 쉬는 날 이용권 ── 사 두면 공부를 못 한 날 자동으로 써서 연속을 지켜 줌 (매주 무료 쉬는 날 하루가 먼저 쓰임)
+   vb.shop = {buy: {id: {d: 산 날, p: 값}}, used: {"쉰 날": id}} — 계정에 저장, 두 기기에서 산 것도 합쳐짐
+   산 날 이후의 빈 날에만 쓰임 (이미 끊긴 지난 연속을 거슬러 메우지 않음). 한 번에 FREEZE_MAX개까지 가지고 있을 수 있음 */
+const FREEZE_PRICE = 150, FREEZE_MAX = 2;
+let shop = store.get("vb.shop", {}, x => x && typeof x === "object" && !Array.isArray(x));
+const shopBuy = () => shop.buy && typeof shop.buy === "object" ? shop.buy : {};
+const shopUsed = () => shop.used && typeof shop.used === "object" ? shop.used : {};
+const xpSpent = () => Object.values(shopBuy()).reduce((a, b) => a + (+(b || {}).p || 0), 0);
+const xpLeft = () => Math.max(0, xpAll() - xpSpent());
+function freezesOwned(){
+  const used = new Set(Object.values(shopUsed())), b = shopBuy();
+  return Object.keys(b).filter(id => !used.has(id)).sort((x, y) => String(b[x].d).localeCompare(String(b[y].d)));
+}
+function buyFreeze(){
+  if (freezesOwned().length >= FREEZE_MAX || xpLeft() < FREEZE_PRICE) return false;
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  shop = { buy: Object.assign({}, shopBuy(), { [id]: { d: dkey(), p: FREEZE_PRICE } }), used: shopUsed() };
+  store.set("vb.shop", shop);
+  return true;
+}
+/* 앱을 열 때·다시 볼 때: 지나간 빈 날에 이용권이 필요하면 써 둠 */
+function useFreezes(){
+  if (!freezesOwned().length) return;
+  const r = streakInfo(true), ks = Object.keys(r.take);
+  if (!ks.length) return;
+  shop = { buy: shopBuy(), used: Object.assign({}, shopUsed(), r.take) }; store.set("vb.shop", shop);
+  celeLater("🧊 쉬는 날 이용권을 썼어요", `못 한 ${ks.length}일을 이용권이 지켜 줬어요. 연속 ${r.n}일 그대로!`);
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden){ try{ useFreezes(); }catch(e){} } });
 const xpToday = () => +xpLog[dkey()] || 0;
 const xpAll = () => Object.values(xpLog).reduce((a, b) => a + (+b || 0), 0);
 function weekStart(d){ const x = new Date(d || Date.now()); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }   // 그 주 월요일
@@ -7472,8 +7536,7 @@ function badgeCheck(quiet){
   if (!got.length) return;
   store.set("vb.badge", badges);
   if (quiet) return;
-  const el = document.getElementById("cele"), wait = el && !el.hidden ? 2700 : 0;   // 다른 축하가 떠 있으면 끝난 뒤에
-  setTimeout(() => celebrate(`${got[0][0]} 배지: ${got[0][1]}`, got[0][2] + " 성공!" + (got.length > 1 ? ` (외 ${got.length - 1}개)` : "")), wait);
+  celeLater((`${got[0][0]} 배지: ${got[0][1]}`, got[0][2] + " 성공!" + (got.length > 1 ? ` (외 ${got.length - 1}개)` : "")));
 }
 
 /* ── 주간 리그 ── 로그인한 사람만, 직접 '참여'를 눌러야 시작 (기본은 꺼짐). 별명과 이번 주 XP만 다른 참가자에게 보임.
@@ -7550,17 +7613,29 @@ const GOAL_W = [5, 10, 20, 30], GOAL_S = [5, 10, 15, 20], GOAL_Q = [5, 10, 15, 2
 let goal = store.get("vb.goal", null, x => x && typeof x === "object" && Number.isFinite(x.w) && Number.isFinite(x.s));
 const goalW = () => goal ? goal.w : 20, goalS = () => goal ? goal.s : 10;
 const goalQ = () => goal && GOAL_Q.includes(goal.q) ? goal.q : 10;   // q: 단어 퀴즈 한 판 문제 수 (없던 옛 기록은 10)
-/* 연속 공부일 — 쉬는 날 보호: 한 주(월~일)에 하루는 건너뛰어도 이어져요. 쉰 날은 숫자에 더하지 않음 */
-function streakInfo(){
-  const d = new Date(), rest = []; let n = 0;
+/* 연속 공부일 — 쉬는 날 보호: 한 주(월~일)에 하루는 건너뛰어도 이어지고, 그 밖의 빈 날은 쉬는 날 이용권(XP 상점)이 지켜 줌.
+   쉰 날은 숫자에 더하지 않음. 빈 날은 '대기'로 두었다가 그보다 앞에 공부한 날이 나와야 확정 (연속을 시작하기 전 빈 날은 안 셈)
+   consume이면 이용권이 필요한 빈 날에 가진 이용권을 배정해서 take로 돌려줌 (useFreezes가 저장) */
+function streakInfo(consume){
+  const d = new Date(), used = shopUsed(), buy = shopBuy(), own = consume ? freezesOwned() : [];
+  const rest = [], fz = [], take = {}, freeWeek = new Set(); let n = 0, pend = [];
   if (!dayTotal(dkey(d))) d.setDate(d.getDate() - 1);          // 오늘 아직 안 했으면 어제부터 셉니다
   for (let i = 0; i < 400; i++){
-    if (dayTotal(dkey(d))){ n++; d.setDate(d.getDate() - 1); continue; }
-    const p = new Date(d); p.setDate(p.getDate() - 1);
-    if (!rest.some(r => weekKey(new Date(r + "T00:00:00")) === weekKey(d)) && dayTotal(dkey(p))){ rest.push(dkey(d)); d.setDate(d.getDate() - 1); continue; }
-    break;
+    const k = dkey(d), wk = weekKey(d);
+    if (dayTotal(k)){
+      n++;
+      pend.forEach(p => { (p.t === "rest" ? rest : fz).push(p.k); if (p.id) take[p.k] = p.id; });
+      pend = [];
+    } else if (used[k]) pend.push({ k, t: "fz" });
+    else if (!freeWeek.has(wk)){ freeWeek.add(wk); pend.push({ k, t: "rest" }); }
+    else {
+      const id = own.find(x => String(buy[x].d) <= k && !Object.values(take).includes(x) && !pend.some(p => p.id === x));
+      if (!id) break;
+      pend.push({ k, t: "fz", id });
+    }
+    d.setDate(d.getDate() - 1);
   }
-  return { n, rest: n ? rest : [] };
+  return n ? { n, rest, fz, take } : { n: 0, rest: [], fz: [], take: {} };
 }
 const streakDays = () => streakInfo().n;
 const restUsedThisWeek = () => streakInfo().rest.some(r => weekKey(new Date(r + "T00:00:00")) === weekKey());
@@ -7834,7 +7909,7 @@ function renderHome(){
   $("#hLv").hidden = !myLevel;                    // 레벨은 '나' 탭에 — 홈에는 작은 칩 하나만
   $("#hLv").textContent = myLevel ? "Lv." + lvShow(myLevel) : "";
   const act = homeAction(), tw = todayWords().length;
-  $("#hMs").innerHTML = mascot(act === "ahead" ? "happy" : act === "review" ? "cheer" : "base", 50);
+  $("#hMs").innerHTML = mascot(act === "ahead" ? "happy" : act === "review" ? "cheer" : "base", 50) + `<span class="msLv">★${tokLevel()}</span>`;
   $("#hStage").textContent = act === "lesson" ? `오늘 할 일 · Day ${day} 레슨` : act === "review" ? "오늘 할 일 · 복습" : "오늘 할 일 끝!";
   $("#hTitle").textContent = act === "review" ? `오늘 볼 단어 ${tw}개` : g ? g.t : `Day ${day} 레슨`;
   $("#hForm").textContent = act === "review" ? "" : g ? g.f : "";
@@ -7867,6 +7942,7 @@ $("#hLogin").addEventListener("click", e => {
 });
 $("#p3").addEventListener("click", e => {
   if (e.target.closest("#hGoalEdit")){ openSetup(); return; }
+  if (e.target.closest("#hMs")){ go(7); const x = document.getElementById("xpBody"); if (x) (x.previousElementSibling || x).scrollIntoView({ block: "start" }); return; }
   if (e.target.closest("[data-resume]")){ resumeQuiz(); return; }
   if (e.target.closest("#hMain")){
     const act = homeAction();
@@ -9916,7 +9992,7 @@ function renderStats(){
   const cell = (b, s) => `<div><b>${b}</b><span>${s}</span></div>`;
   $("#stBody").innerHTML = `
     <div class="stTop">
-      <div class="stBig"><b>${streakDays()}</b><span>일 연속 공부 중</span><small>${restUsedThisWeek() ? "이번 주 쉬는 날을 썼어요" : "이번 주 하루는 쉬어도 이어져요"}</small></div>
+      <div class="stBig"><b>${streakDays()}</b><span>일 연속 공부 중</span><small>${restUsedThisWeek() ? "이번 주 무료 쉬는 날을 썼어요" : "이번 주 하루는 쉬어도 이어져요"}${freezesOwned().length ? ` · 🧊 이용권 ${freezesOwned().length}개` : ""}</small></div>
       <div class="stSide">${cell(`Day ${curDay}`, `레슨 진도 (전체 ${LASTDAY})`)}${cell(`${c[2] + c[3]}개`, "외운 단어")}</div>
     </div>
     <div class="stCard"><h3>오늘 한 공부</h3>
@@ -9991,6 +10067,13 @@ function mineHtml(){
     + (CONTACT_EMAIL ? `<a class="setRow" href="mailto:${esc(CONTACT_EMAIL)}?subject=${encodeURIComponent("톡톡 잉글리시 문의")}"><span class="tx"><b>문의하기</b><span>메일로 의견·오류 알려 주기</span></span>${CHEV}</a>`
       : `<div class="setRow"><span class="tx"><b>문의하기</b><span>문의처를 준비하고 있어요</span></span></div>`);
 }
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-shop]"); if (!b || b.disabled) return;
+  if (b.dataset.shop === "freeze"){
+    if (!confirm(`${FREEZE_PRICE} XP로 쉬는 날 이용권을 살까요?`)) return;
+    if (buyFreeze()){ celebrate("🧊 쉬는 날 이용권을 샀어요", "못 한 날이 생기면 알아서 연속을 지켜 줄게요."); renderMine(); }
+  }
+});
 /* 계정 삭제 — 서버의 내 기록·리그 기록을 지우고 로그아웃. 이 기기 기록까지 지울지는 따로 물어봄 */
 async function deleteAccount(){
   if (!loggedIn() || !window.appDeleteAccount) return;
@@ -10026,7 +10109,19 @@ document.addEventListener("click", e => {
 });
 function xpHtml(){
   const n = BADGES.filter(b => badges[b[0]]).length, next = BADGES.find(b => !badges[b[0]]);
-  return `<div class="stCard"><div class="stRow"><div><b>${xpToday()}</b><span>오늘 XP</span></div><div><b>${xpWeek()}</b><span>이번 주 XP</span></div><div><b>${xpAll()}</b><span>모은 XP</span></div></div>
+  const x = xpAll(), L = tokLevel(x), lo = xpNeed(L), hi = xpNeed(L + 1), own = freezesOwned().length, left = xpLeft();
+  const full = own >= FREEZE_MAX, poor = left < FREEZE_PRICE;
+  return `<div class="stCard tokCard"><div class="tokTop">${mascot(L >= 5 ? "cheer" : "happy", 58)}
+      <div class="tx"><span class="tokLv">톡이 ★${L}</span><b>${esc(tokTitle(L))}</b>
+        <span>다음 ★${L + 1} '${esc(tokTitle(L + 1))}'까지 ${hi - x} XP</span></div></div>
+      <div class="tokBar"><i style="width:${Math.round((x - lo) / (hi - lo) * 100)}%"></i></div></div>
+    <div class="stCard"><h3>XP 상점</h3>
+      <div class="shopRow"><span class="shopIc">🧊</span>
+        <div class="tx"><b>쉬는 날 이용권</b><span>공부를 못 한 날 자동으로 써서 연속을 지켜 줘요. 매주 무료 쉬는 날 하루가 먼저 쓰여요.</span>
+          <span class="own">가진 이용권 ${own}/${FREEZE_MAX}개</span></div>
+        <button class="btn go" type="button" data-shop="freeze"${full || poor ? " disabled" : ""}>${full ? "다 가졌어요" : FREEZE_PRICE + " XP"}</button></div>
+      <p class="stNote">쓸 수 있는 XP <b>${left}</b>${!full && poor ? ` · ${FREEZE_PRICE - left} XP 더 모으면 살 수 있어요` : ""} · XP를 써도 톡이 레벨은 내려가지 않아요</p></div>
+    <div class="stCard"><div class="stRow"><div><b>${xpToday()}</b><span>오늘 XP</span></div><div><b>${xpWeek()}</b><span>이번 주 XP</span></div><div><b>${xpAll()}</b><span>모은 XP</span></div></div>
     <p class="stNote">단어 문제 2 · 문장 3 · 말하기 3 · 레슨 끝내기 20 XP</p></div>
     <div class="stCard"><h3>배지 <small class="bdN">${n}/${BADGES.length}</small></h3><div class="bdGrid">${BADGES.map(([id, ic, nm, ds]) =>
       `<div class="bd${badges[id] ? "" : " off"}" title="${esc(ds)}"><i>${ic}</i><b>${esc(nm)}</b></div>`).join("")}</div>
@@ -10217,13 +10312,13 @@ $("#hInstall").addEventListener("click", e => {
 });
 
 /* 시작 — 한 곳에서 오류가 나도 나머지는 계속 실행됩니다 */
-[drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), () => badgeCheck(true), renderHome, renderInstall,
+[drawNoteTile, headStats, renderLevel, renderWords, fillBackup, () => newRound(), () => badgeCheck(true), useFreezes, renderHome, renderInstall,
  () => { if (!isReturning()) openOnboard(); }]
   .forEach(fn => { try{ fn(); }catch(e){ console.error(e); } });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=50"></script>
-<script src="sync.js?v=50"></script>
+<script src="firebase-config.js?v=51"></script>
+<script src="sync.js?v=51"></script>
 
 </body></html>

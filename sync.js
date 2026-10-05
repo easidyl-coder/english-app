@@ -2,7 +2,7 @@
    firebase-config.js 가 채워져 있으면 구글 로그인을 켜고, 사람별로 서버에 저장합니다:
    단어장 단계(vb.box)·레벨(vb.level)·최고 연속(vb.best)·레슨 진도(vb.day)·막혔던 말 메모(vb.notes)·
    하루 목표(vb.goal)·날짜별 공부량(vb.log)·단계 코스 진도(vb.stage)·여행 D-day(vb.trip)·
-   날짜별 XP(vb.xp)·배지(vb.badge)·주간 리그 설정(vb.league).
+   날짜별 XP(vb.xp)·배지(vb.badge)·주간 리그 설정(vb.league)·XP 상점(vb.shop).
    주간 리그에 참여하면 league/{그 주 월요일}/members/{uid}에 별명과 이번 주 XP만 따로 올립니다.
    앱을 업데이트해도 로그인과 이 기록은 그대로입니다. 앱을 지웠다 다시 깔거나 휴대폰을 바꿔도
    같은 구글 계정으로 로그인하면 서버 기록을 합쳐서 되살립니다.
@@ -44,7 +44,8 @@
              goal: goal && Number.isFinite(goal.w) && Number.isFinite(goal.s) ? pickGoal(goal) : null,
              goalAt: num(get("vb.at.goal", 0)),
              log: obj(get("vb.log", {})), stage: obj(get("vb.stage", {})), trip: tripOf(get("vb.trip", null)),
-             xp: obj(get("vb.xp", {})), badge: obj(get("vb.badge", {})), league: leagueOf(get("vb.league", null)) };
+             xp: obj(get("vb.xp", {})), badge: obj(get("vb.badge", {})), league: leagueOf(get("vb.league", null)),
+             shop: obj(get("vb.shop", {})) };
   }
   /* 여행 D-day {p: 여행지, d: 날짜, t: 바꾼 시각} — 더 최근에 바꾼 쪽 */
   function tripOf(v){ return v && typeof v === "object" && typeof v.d === "string" ? { p: String(v.p || ""), d: v.d, t: num(v.t) } : null; }
@@ -82,6 +83,9 @@
     Object.keys(obj(b.xp)).forEach(k => { xp[k] = Math.max(num(xp[k]), num(b.xp[k])); });
     const badge = Object.assign({}, obj(a.badge));      // 배지: 둘 다 합치고, 받은 날은 이른 쪽
     Object.keys(obj(b.badge)).forEach(k => { const y = String(b.badge[k]); if (!badge[k] || y < badge[k]) badge[k] = y; });
+    // XP 상점: 산 것(buy)·쓴 것(used) 모두 합침 (두 기기에서 산 것도 남게)
+    const sa = obj(a.shop), sb = obj(b.shop);
+    const shop = { buy: Object.assign({}, obj(sb.buy), obj(sa.buy)), used: Object.assign({}, obj(sb.used), obj(sa.used)) };
     return { box,
              level: useLv ? num(b.level) : a.level, levelAt: Math.max(num(a.levelAt), num(b.levelAt)),
              best: Math.max(num(a.best), num(b.best)),
@@ -90,7 +94,7 @@
              goal: useGoal ? pickGoal(bGoal) : a.goal, goalAt: Math.max(num(a.goalAt), num(b.goalAt)),
              log, stage: mergeStage(a.stage, b.stage),
              trip: (() => { const x = tripOf(a.trip), y = tripOf(b.trip); return !x ? y : !y ? x : (y.t > x.t ? y : x); })(),
-             xp, badge,
+             xp, badge, shop,
              league: (() => { const x = leagueOf(a.league), y = leagueOf(b.league); return !x ? y : !y ? x : (y.t > x.t ? y : x); })() };
   }
 
@@ -102,14 +106,14 @@
       const mine = local();
       const merged = merge(mine, snap.exists ? snap.data() : {});
       const same = k => JSON.stringify(merged[k]) === JSON.stringify(mine[k]);
-      const changed = !["box", "level", "best", "day", "notes", "goal", "log", "stage", "trip", "xp", "badge", "league"].every(same);
+      const changed = !["box", "level", "best", "day", "notes", "goal", "log", "stage", "trip", "xp", "badge", "league", "shop"].every(same);
       put("vb.box", merged.box); put("vb.level", merged.level); put("vb.at.level", merged.levelAt);
       put("vb.best", merged.best); put("vb.day", merged.day);
       put("vb.notes", merged.notes); put("vb.at.notes", merged.notesAt);
       if (merged.goal){ put("vb.goal", merged.goal); put("vb.at.goal", merged.goalAt); }
       put("vb.log", merged.log); put("vb.stage", merged.stage);
       if (merged.trip) put("vb.trip", merged.trip);
-      put("vb.xp", merged.xp); put("vb.badge", merged.badge);
+      put("vb.xp", merged.xp); put("vb.badge", merged.badge); put("vb.shop", merged.shop);
       if (merged.league) put("vb.league", merged.league);
       await ref.set(Object.assign({ updatedAt: Date.now() }, merged));
       if (changed) location.reload();          // 합친 기록으로 화면을 다시 그립니다
@@ -126,7 +130,7 @@
         .catch(e => console.warn("저장 실패", e));
     }, 1500);
   }
-  const SYNCED = ["vb.box", "vb.level", "vb.best", "vb.day", "vb.notes", "vb.goal", "vb.log", "vb.stage", "vb.trip", "vb.xp", "vb.badge", "vb.league"];
+  const SYNCED = ["vb.box", "vb.level", "vb.best", "vb.day", "vb.notes", "vb.goal", "vb.log", "vb.stage", "vb.trip", "vb.xp", "vb.badge", "vb.league", "vb.shop"];
   window.onStoreSet = k => {
     if (k === "vb.level") put("vb.at.level", Date.now());    // 언제 바꿨는지 남겨야 두 기기 중 최신을 고릅니다
     if (k === "vb.notes") put("vb.at.notes", Date.now());

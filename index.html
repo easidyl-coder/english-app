@@ -51,7 +51,7 @@
   });
 })();
 </script>
-<script src="ipa.js?v=56"></script>
+<script src="ipa.js?v=57"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -783,7 +783,7 @@
   .suOpt[aria-pressed="true"] span{color:var(--accent)}
   .qPick{padding:8px 2px 4px}
   .qPickT{font-family:"Jua",sans-serif;font-size:24px;margin:6px 0 4px}
-  .qPickD{font-size:13px;color:var(--ink-2);margin:0 0 14px;line-height:1.5}
+  .qPickD{font-size:13px;color:var(--ink-2);margin:0 0 14px;line-height:1.5;word-break:keep-all}
   .qPick .suGrid{margin-bottom:16px}
   .qGo{width:100%;margin-bottom:12px}
   .suSave{width:100%;min-height:56px;font-size:17px;margin-top:26px}
@@ -1125,6 +1125,7 @@
     <div class="subTop"><button class="btn" type="button" data-back>‹ 뒤로</button><h2>문장 조립</h2></div>
     <div class="gMode"><span id="gModeTx">전체 문장에서 랜덤</span>
       <button class="btn" id="gModeBtn" type="button">레슨 문장으로</button></div>
+    <div id="gPick" hidden></div>
     <div id="gameWrap">
       <div class="gTop">
         <span class="gMeta" id="gCount">1 / 10</span>
@@ -8032,23 +8033,59 @@ function newRound(day, from, label){
   deckDay = (typeof day === "number" && day > 0) ? day : 0;
   gFrom = (typeof from === "number" || typeof from === "string") ? from : deckDay;
   deckExtra = 0;
+  // deckAll = 고를 수 있는 문장 전체 (앞쪽일수록 먼저 들어감). 몇 문장 할지 고른 뒤 startDeck(n)
   if (deckList){
-    deck = shuffle([...deckList]);
+    deckAll = shuffle([...deckList]);
   } else if (deckDay){
     const own  = shuffle([...sentsOfDay(deckDay)]);
-    const prev = deckDay > 1 && deckDay <= LASTDAY ? shuffle([...sentsOfDay(deckDay - 1)]).slice(0, 2) : [];   // 상황별(101~)은 어제 복습 없음
-    const base = own.concat(prev).slice(0, 10);    // 오늘 문장 + 어제 문장 2개 복습
+    const prev = deckDay > 1 && deckDay <= LASTDAY ? shuffle([...sentsOfDay(deckDay - 1)]).slice(0, 2) : [];   // 상황별(101~)은 지난 레슨 복습 없음
+    const base = own.concat(prev).slice(0, 10);    // 이 레슨 문장 + 지난 레슨 문장 2개 복습
     const extra = deckDay <= LASTDAY && myLevel    // 레슨 문장(레벨 1~3)에 내 레벨 문장을 섞음 — 높은 레벨일수록 더
       ? shuffle(SENTS.filter(x => inMyLevel(x) && !base.includes(x))).slice(0, Math.round(myLevel) >= 4 ? 3 : 2) : [];
     deckExtra = extra.length;
-    deck = shuffle(base.concat(extra));
+    deckAll = base.concat(extra);                  // 적게 고르면 레슨 문장부터
   } else {
     const lvPool = SENTS.filter(inMyLevel);
     const pool = lvPool.length >= 4 ? lvPool : SENTS;
-    deck = levelMix(pool, Math.min(goalS(), pool.length));                        // 한 판 = 하루 문장 목표
+    deckAll = levelMix(pool, Math.min(SENT_N[SENT_N.length - 1], pool.length));
   }
   drawMode();
+  $("#gameDone").hidden = true;
+  if (deckAll.length <= SENT_N[0]){ startDeck(deckAll.length); return; }   // 5개 이하면 고를 것 없이 바로
+  const saved = +store.get("vb.spick", 0) || 0;
+  gPickN = deckDay || deckList ? deckAll.length                             // 레슨은 기본 '전부'
+    : Math.min(SENT_N.includes(saved) ? saved : goalS(), deckAll.length);
+  drawGPick();
+}
+/* ── 몇 문장 할까요? ── 단어 퀴즈의 '몇 문제 풀까요?'와 같은 모양. 고른 수는 vb.spick (이 기기에만) */
+const SENT_N = [5, 10, 15, 20];
+let deckAll = [], gPickN = 10;
+function drawGPick(){
+  const avail = deckAll.length, opts = SENT_N.filter(v => v < avail);
+  if (avail <= SENT_N[SENT_N.length - 1] || !opts.length) opts.push(avail);   // '전부'는 20개 이하일 때만
+  const all = v => v === avail && !SENT_N.includes(v);
+  $("#gameWrap").hidden = true;
+  $("#gPick").hidden = false;
+  $("#gPick").innerHTML = `<div class="qPick">
+    <p class="qPickT">몇 문장 할까요?</p>
+    <p class="qPickD">${deckDay || deckList ? `이 레슨 문장 ${avail}개` : `${myLevel ? "내 레벨" : "전체"} 문장`}에서 골라요 · 틀린 문장은 맞힐 때까지 다시 나와요</p>
+    <div class="suGrid">${opts.map(v => `<button type="button" class="suOpt" data-gn="${v}" aria-pressed="${v === gPickN}">
+      <b>${all(v) ? "전부" : v}</b><span>${all(v) ? v + "문장" : "문장"}</span></button>`).join("")}</div>
+    <button type="button" class="btn go qGo" id="gGo">${gPickN}문장 시작</button>
+    ${deckDay || deckList ? "" : `<p class="qPickD">고른 수는 다음에도 기억해요</p>`}</div>`;
+}
+$("#gPick").addEventListener("click", e => {
+  const b = e.target.closest("[data-gn]");
+  if (b){ gPickN = +b.dataset.gn; drawGPick(); return; }
+  if (e.target.closest("#gGo")){
+    if (!deckDay && !deckList && SENT_N.includes(gPickN)) store.set("vb.spick", gPickN);   // 전체 문장에서 고른 수만 기억
+    startDeck(gPickN);
+  }
+});
+function startDeck(n){
+  deck = shuffle(deckAll.slice(0, n));
   idx=0; correct=0; missed=[]; streak=0; deckN = deck.length;
+  $("#gPick").hidden = true;
   $("#gameDone").hidden = true;
   $("#gameWrap").hidden = false;
   draw();
@@ -10416,7 +10453,7 @@ $("#hInstall").addEventListener("click", e => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
-<script src="firebase-config.js?v=56"></script>
-<script src="sync.js?v=56"></script>
+<script src="firebase-config.js?v=57"></script>
+<script src="sync.js?v=57"></script>
 
 </body></html>

@@ -1096,6 +1096,50 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   .attD .stamp{width:72%;height:72%;margin-top:6px;transform:rotate(-10deg)}
   .attLeg{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
   .attLeg .stamp{flex:0 0 auto}
+  .study{padding:6px 0 4px}
+  .stCourse{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 2px 14px;border-bottom:1px dashed var(--line-3)}
+  .stCourse > div{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .stCourse .tag{align-self:flex-start;font-size:12px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--raise-2);color:var(--ink-2)}
+  .stCourse b{font-family:"Jua",sans-serif;font-weight:400;font-size:24px}
+  .stCourse small{font-size:12px;color:var(--ink-3)}
+  .stCourse .btn{flex:0 0 auto;min-height:42px;border-radius:22px}
+  .stCourses{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .stCourses .suOpt b{font-size:15px}
+  .stCourses .suOpt span{font-size:11px;word-break:keep-all}
+  .stRing{position:relative;width:min(300px,86vw);aspect-ratio:1/1;margin:14px auto 0}
+  .stRing > svg{position:absolute;inset:0;width:100%;height:100%}
+  .stIn{position:absolute;inset:18% 12% 22%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+  .stRowN{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:15px;color:var(--ink-2)}
+  .stStep{display:flex;align-items:center;gap:4px}
+  .stStep b{font-size:21px;color:var(--ink);min-width:28px;text-align:right}
+  .stStep small{font-size:12px;color:var(--ink-3)}
+  .stStep button{font:inherit;font-size:16px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--raise);color:var(--ink);cursor:pointer;touch-action:manipulation}
+  .stEdit{min-height:36px;padding:0 14px;border-radius:18px;margin-top:4px;font-size:13px}
+  .stMs{position:absolute;left:-2%;bottom:2%}
+  .stDone{position:absolute;right:16%;bottom:6%;margin:0;font-size:16px;color:var(--ink-3)}
+  .stDone b{font-family:"Jua",sans-serif;font-weight:400;font-size:40px;color:var(--honey-dark)}
+  .qTags{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+  .qLvTag{font-size:12.5px;font-weight:700;color:var(--ink-2);background:var(--raise-2);border:1px solid var(--line);padding:4px 10px;border-radius:10px 10px 0 0}
+  .qKind{font-size:13px;font-weight:800;padding:5px 12px;border-radius:14px;color:#fff}
+  .qKind.k-m{background:#E0605A}.qKind.k-r{background:var(--accent)}.qKind.k-n{background:var(--ok)}
+  .qCard{background:var(--raise);border:1px solid var(--line);border-radius:0 20px 20px 20px;box-shadow:var(--shadow);padding:18px 16px 20px;cursor:text}
+  .qCard .qPrompt{margin:0 0 6px;text-align:left;font-size:12.5px}
+  .qKoBig{font-size:21px;font-weight:700;line-height:1.5;margin:4px 0 6px;word-break:keep-all}
+  .qCard .qMean{font-size:13px;font-weight:600;color:var(--ink-3);text-align:left;margin:0 0 14px}
+  .qClozeWrap{position:relative;border-top:1px solid var(--line-2);padding-top:16px}
+  .qCard .qCloze{text-align:left;font-size:22px;line-height:2;margin:0}
+  .qClozeWrap input{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;border:0;padding:0;background:transparent;color:transparent;caret-color:transparent}
+  .qBoxes{display:inline}
+  .qBox{display:inline-flex;align-items:center;justify-content:flex-start;vertical-align:middle;height:1.7em;padding:0 .35em;margin:0 .1em;border-radius:10px;
+        background:var(--accent-soft);border:2px solid var(--tint);color:var(--accent);font-weight:800;line-height:1}
+  .qBox.ok{background:var(--ok-soft);border-color:var(--ok-line);color:var(--ok)}
+  .qDots{color:var(--ink-3);letter-spacing:.12em;font-weight:400}
+  .qCaret{display:inline-block;width:2px;height:1.1em;background:var(--accent);margin-left:1px;animation:qBlink 1s steps(2) infinite}
+  @keyframes qBlink{50%{opacity:0}}
+  .qTools{display:flex;gap:8px;margin-top:14px}
+  .qTools .btn{min-height:48px}
+  .qTools #qShow{flex:1}
+  .qTools #qLen[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
   .gWhy{margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--accent-soft);display:flex;flex-direction:column;gap:6px}
   .gWhy > b{font-size:14px;color:var(--accent)}
   .gWhy p{margin:0;font-size:14px;line-height:1.6;color:var(--ink);word-break:keep-all}
@@ -1364,7 +1408,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   </div>
 </div>
 
-<script src="ipa.js?v=63"></script>
+<script src="ipa.js?v=64"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -7903,13 +7947,32 @@ const repOf = k => (boxes[k] && +boxes[k].r) || 0;
 const waitDays = k => boxOf(k) === 2 ? 3 : WAIT3[Math.min(repOf(k), WAIT3.length - 1)];
 const isDue = k => { const b = boxOf(k); return b >= 2 && Date.now() - stampOf(k) >= waitDays(k) * DAY_MS; };
 
+/* ── 어휘 학습 코스 ── vb.course (이 기기에만): all 통합 · lesson 지금까지 레슨 단어 · travel 여행 단어 · expr 표현·숙어 */
+const COURSES = [["all", "통합 코스", "고른 난이도의 모든 단어"], ["lesson", "레슨 코스", "지금까지 배운 레슨(Day)의 단어"],
+                 ["travel", "여행 코스", "여행·음식·숙소·쇼핑 단어"], ["expr", "표현·숙어 코스", "여러 단어로 된 덩어리 표현"]];
+let course = (v => COURSES.some(c => c[0] === v) ? v : "all")(store.get("vb.course", "all"));
+const TRAVEL_C = new Set(["여행·교통", "음식·식당", "숙소·생활", "쇼핑·돈"]);
+let lessonWordSet = null;
+function inCourse(x){
+  if (course === "travel") return TRAVEL_C.has(x.c);
+  if (course === "expr") return isExpr(x);
+  if (course === "lesson"){
+    if (!lessonWordSet || lessonWordSet.day !== curDay){
+      const s = new Set(); for (let d = 1; d <= curDay; d++) wordsOfDay(d).forEach(w => s.add(keyOf(w)));
+      lessonWordSet = { day: curDay, s };
+    }
+    return lessonWordSet.s.has(keyOf(x));
+  }
+  return true;
+}
+let freshAllCache = [];
 /* 오늘의 단어 = 복습(reviewWords: 공부한 적 있는 단어만) + 새 단어(newWords: 하루 목표만큼)
    '복습'에 한 번도 안 본 단어가 섞이지 않게 둘을 나눠서 씀 */
 const reviewWords = () => todayParts().review;
 const newWords = () => todayParts().fresh;
 function todayWords(){ const p = todayParts(); return p.review.concat(p.fresh); }
 function todayParts(){
-  const pool = WORDS.filter(inMyLevel);                 // 고른 난이도 단어만
+  const pool = WORDS.filter(x => inMyLevel(x) && inCourse(x));   // 고른 난이도 · 고른 코스 단어만
   const due  = pool.filter(x => isDue(keyOf(x)));
   const t0 = new Date(); t0.setHours(0, 0, 0, 0);
   const learn = pool.filter(x => boxOf(keyOf(x)) === 1 && stampOf(keyOf(x)) < t0.getTime())   // 오늘 이미 푼 건 내일 다시
@@ -7918,12 +7981,14 @@ function todayParts(){
   const fresh = pool.filter(x => boxOf(keyOf(x)) === 0)
                     .sort((a, b) => L ? (Math.abs(a.lv - L) - Math.abs(b.lv - L)) || (a.lv - b.lv)   // 내 레벨 단어부터, 그다음 한 단계 아래·위
                                       : (a.lv || 0) - (b.lv || 0))
-                    .slice(0, Math.max(0, goalW() - (+todayLog().n || 0)));                  // 새 단어는 하루 목표만큼
+;
+  freshAllCache = fresh;
+  const freshToday = fresh.slice(0, Math.max(0, goalW() - (+todayLog().n || 0)));        // 새 단어는 하루 목표만큼
   const seen = new Set(), review = [];
   [...due, ...learn].forEach(x => {
     const k = keyOf(x); if (!seen.has(k)){ seen.add(k); review.push(x); }
   });
-  return { review, fresh: fresh.filter(x => !seen.has(keyOf(x))) };
+  return { review, fresh: freshToday.filter(x => !seen.has(keyOf(x))) };
 }
 function boxCounts(){
   const c = {0:0,1:0,2:0,3:0};
@@ -8142,13 +8207,12 @@ $("#p3").addEventListener("click", e => {
   if (e.target.closest("[data-resume]")){ resumeQuiz(); return; }
   if (e.target.closest("#hMain")){
     const act = homeAction();
-    if (act === "review") startQuiz(reviewWords(), "home", reviewWords);
-    else if (act === "new") startQuiz(newWords(), "home", newWords);
+    if (act === "review" || act === "new") openStudy("home");
     else openLesson();
     return;
   }
   const r = e.target.closest("[data-hgo]"); if (!r) return;
-  if (r.dataset.hgo === "w"){ const nw = newWords(); if (nw.length) startQuiz(nw, "home", newWords); else go(6); }   // '새 단어' 동그라미 → 새 단어
+  if (r.dataset.hgo === "w"){ openStudy("home"); }   // '새 단어' 동그라미 → 새 단어
   else { newRound(0, "home"); go(0); }
 });
 document.addEventListener("click", e => {                      // 화면 안의 이동 버튼(data-go)과 뒤로(data-back)
@@ -8673,7 +8737,9 @@ function resumeQuiz(){
    헷갈린 단어도 그 수 안에 섞고(최대 1/3), 못 푼 단어는 '다음 판'으로 남깁니다.
    list: 이 단어들로 (없으면 단어장에 보이는 단어) · again: 다음 판 목록을 새로 만드는 함수 (오늘의 단어처럼 푼 뒤 바뀌는 것) */
 let qPool = [], qAgainPool = [], qPick = 10, qAgainFn = null;
+let studyRun = false;
 function startQuiz(list, fromDay, again){
+  studyRun = false;
   const p = pausedQuiz();                         // 풀던 게 있으면 이어서 할지 물어봄 (확인 = 이어서, 취소 = 새로)
   if (p && p.i > 0 && confirm(`풀던 단어 퀴즈가 있어요 (${p.i}/${p.k.length}).\n\n확인 = 이어서 하기\n취소 = 새로 시작`) && resumeQuiz()) return;
   const given = Array.isArray(list) && list.length;
@@ -8710,7 +8776,7 @@ $("#qBody").addEventListener("click", e => {
   if (e.target.closest("#qGo")) beginQuiz(qPick);
 });
 function beginQuiz(n){
-  if (GOAL_Q.includes(n) && n !== goalQ()){                       // 고른 수를 기억 (계정에도 저장됨)
+  if (!studyRun && GOAL_Q.includes(n) && n !== goalQ()){   // 어휘 학습 창에서 시작한 판은 '퀴즈 한 판 문제 수' 설정을 바꾸지 않음                       // 고른 수를 기억 (계정에도 저장됨)
     goal = { w: goalW(), s: goalS(), q: n }; store.set("vb.goal", goal);
   }
   const nAgain = Math.min(qAgainPool.length, Math.max(n - qPool.length, Math.floor(n / 3)));
@@ -8774,13 +8840,17 @@ let qSt = { hinted: 0, wrong: 0, passed: false, cloze: null };
 function ensureQShell(){
   if ($("#qBody [data-qshell]")) return;
   $("#qBody").innerHTML = `<div data-qshell>
-    <p class="qPrompt" id="qPr"></p>
-    <p class="qMean" id="qMe"></p>
-    <p class="qCloze" id="qCl"></p>
-    <p class="qClozeKo" id="qCk"></p>
-    <div class="qType" id="qT">
-      <input type="text" id="qIn" placeholder="영어로 적어보세요" autocomplete="off"
-        autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" lang="en">
+    <div class="qTags"><span class="qLvTag" id="qLvT"></span><span class="qKind" id="qKind"></span></div>
+    <div class="qCard" id="qT">
+      <p class="qPrompt" id="qPr"></p>
+      <p class="qKoBig" id="qCk"></p>
+      <p class="qMean" id="qMe"></p>
+      <div class="qClozeWrap"><p class="qCloze" id="qCl"></p>
+        <input type="text" id="qIn" aria-label="빈칸에 들어갈 영어" autocomplete="off"
+          autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" lang="en"></div>
+    </div>
+    <div class="qTools">
+      <button class="btn" id="qLen" type="button" aria-pressed="false">↔ 길이 보기</button>
       <button class="btn" id="qHint" type="button">힌트</button>
       <button class="btn go" id="qShow" type="button">확인</button>
     </div>
@@ -8790,10 +8860,16 @@ function ensureQShell(){
   </div>`;
   $("#qHint").addEventListener("click", () => {
     const x = qDeck[qi]; if (!x || qSt.passed) return;
-    qSt.hinted = Math.min(x.w.length - 1, qSt.hinted + 1);
-    $("#qJ").innerHTML = `<span class="typed">${esc(x.w.slice(0, qSt.hinted))}…</span>`;
+    const tok = qSt.cloze ? qSt.cloze.token : x.w;
+    qSt.hinted = Math.min(tok.length - 1, qSt.hinted + 1);
+    $("#qJ").innerHTML = `<span class="typed">${esc(tok.slice(0, qSt.hinted))}…</span>`;
   });
   $("#qShow").addEventListener("click", qSubmit);
+  $("#qLen").addEventListener("click", () => { qLenOn = !qLenOn; store.set("vb.qlen", qLenOn); drawBoxes(); });
+  $("#qIn").addEventListener("input", drawBoxes);
+  $("#qIn").addEventListener("focus", drawBoxes);
+  $("#qIn").addEventListener("blur", drawBoxes);
+  $("#qT").addEventListener("click", () => { const i = $("#qIn"); if (document.activeElement !== i) i.focus({ preventScroll: true }); });
   $("#qIn").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); qSubmit(); } });
 }
 function drawQ(){
@@ -8803,10 +8879,14 @@ function drawQ(){
   $("#qCount").textContent = (qi+1)+" / "+qDeck.length;
   const x = qDeck[qi], cloze = clozeOf(x);
   qSt = { hinted: 0, wrong: 0, passed: false, cloze };
-  $("#qPr").textContent = isMissed(keyOf(x)) ? "헷갈렸던 단어 · 한 번에 맞히면 다시 안 나와요" : "이 뜻에 맞는 영어를 빈칸에 적어보세요";
-  $("#qMe").textContent = x.k;
-  $("#qCl").innerHTML = cloze ? esc(cloze.pre) + "<u>&nbsp;</u>" + esc(cloze.post) : "<u>&nbsp;</u>";
-  $("#qCk").innerHTML = cloze ? esc(x.exk) : "&nbsp;";
+  const miss = isMissed(keyOf(x)), b0 = boxOf(keyOf(x));
+  $("#qLvT").textContent = x.lv ? "난이도 " + x.lv : "단어";
+  $("#qKind").textContent = miss ? "재도전" : b0 > 0 ? "복습" : "새 단어";
+  $("#qKind").className = "qKind " + (miss ? "k-m" : b0 > 0 ? "k-r" : "k-n");
+  $("#qPr").textContent = miss ? "헷갈렸던 단어 · 한 번에 맞히면 다시 안 나와요" : "";
+  $("#qCk").textContent = cloze ? x.exk : x.k;
+  $("#qMe").textContent = cloze ? "뜻 · " + x.k : "";
+  $("#qCl").innerHTML = cloze ? esc(cloze.pre) + '<span class="qBoxes" id="qBx"></span>' + esc(cloze.post) : '<span class="qBoxes" id="qBx"></span>';
   $("#qHint").hidden = false;
   $("#qShow").textContent = "확인";
   $("#qJ").innerHTML = "";
@@ -8817,7 +8897,21 @@ function drawQ(){
   $("#qWhy").hidden = true; $("#qWhy").innerHTML = "";
   const inp = $("#qIn");
   inp.value = "";
+  drawBoxes();
   if (document.activeElement !== inp) inp.focus({ preventScroll: true });   // 이미 입력 중이면 그대로 → 키보드가 안 내려감
+}
+/* 빈칸 상자: 정답 낱말 수만큼 상자, 친 글자를 상자에 비춰 보여 줌. '길이 보기'를 켜면 글자 수만큼 칸(•) */
+let qLenOn = !!store.get("vb.qlen", false);
+function drawBoxes(){
+  const bx = document.getElementById("qBx"), x = qDeck[qi]; if (!bx || !x) return;
+  const tok = (qSt.cloze ? qSt.cloze.token : x.w).replace(/[.,!?]+$/, ""), parts = tok.split(" ");
+  const typed = ($("#qIn").value || "").split(" "), focus = document.activeElement === $("#qIn");
+  const lb = $("#qLen"); if (lb) lb.setAttribute("aria-pressed", qLenOn);
+  bx.innerHTML = parts.map((w, i) => {
+    const v = typed[i] || "", cur = focus && !qSt.passed && i === Math.min(typed.length - 1, parts.length - 1);
+    const len = qLenOn ? `<span class="qDots">${"•".repeat(Math.max(0, w.length - v.length))}</span>` : "";
+    return `<span class="qBox${qSt.passed ? " ok" : ""}" style="min-width:${qLenOn ? Math.max(2, w.length) * 0.62 + 0.6 : 4.2}em">${esc(v)}${cur ? '<i class="qCaret"></i>' : ""}${len}</span>`;
+  }).join(" ");
 }
 function qSubmit(){
   const x = qDeck[qi]; if (!x) return;
@@ -8827,6 +8921,8 @@ function qSubmit(){
   if (judgeEn(typed, x.w, qSt.cloze && qSt.cloze.token)){
     qSt.passed = true;
     ding();
+    if (qSt.cloze) $("#qIn").value = qSt.cloze.token.replace(/[.,!?]+$/, "");
+    drawBoxes();
     $("#qHint").hidden = true;
     $("#qShow").textContent = "다음";
     $("#qA").className = "qAns";
@@ -8840,6 +8936,74 @@ function qSubmit(){
   }
   if (document.activeElement !== inp) inp.focus({ preventScroll: true });
 }
+/* ── 어휘 학습 시작 창 ── 코스 · 새로운 단어 / 복습할 단어 / 재도전 단어 개수 · 오늘 진행 → '오늘의 학습'
+   개수는 vb.studyN = {n, r, m} (이 기기에만, 없으면 새 단어 = 하루 목표 남은 만큼, 복습 = 전부(최대 30), 재도전 = 최대 10) */
+let studyOpen = "", studyN = store.get("vb.studyN", null, x => x && typeof x === "object");
+function studyParts(){
+  todayParts();                                            // freshAllCache 채움
+  const miss = shuffle(WORDS.filter(x => isMissed(keyOf(x)) && inCourse(x)));
+  const rev = reviewWords().filter(x => !isMissed(keyOf(x)));
+  const freshLeft = Math.max(0, goalW() - (+todayLog().n || 0));
+  const want = studyN || { n: freshLeft, r: Math.min(30, rev.length), m: Math.min(10, miss.length) };
+  const n = Math.min(want.n, freshAllCache.length), r = Math.min(want.r, rev.length), m = Math.min(want.m, miss.length);
+  return { fresh: freshAllCache.slice(0, n), rev: rev.slice(0, r), miss: miss.slice(0, m), max: { n: freshAllCache.length, r: rev.length, m: miss.length }, n, r, m };
+}
+function openStudy(from){
+  studyFrom = from || "home"; studyOpen = "";
+  document.body.classList.add("quizOn");
+  $("#qBar").style.width = "0%"; $("#qCount").textContent = "어휘 학습";
+  drawStudy();
+}
+let studyFrom = "home";
+function drawStudy(){
+  const p = studyParts(), total = p.n + p.r + p.m, done = +todayLog().w || 0, goalAll = Math.max(total + done, 1);
+  const pct = Math.min(1, done / goalAll), c = COURSES.find(x => x[0] === course);
+  const R0 = 84, L = 2 * Math.PI * R0 * 0.75;                 // 3/4 원 진행 고리
+  const stepRow = (k, nm, v, max) => `<div class="stRowN"><span>${nm}</span><span class="stStep">
+      ${studyOpen === "n" ? `<button type="button" data-sn="${k}" data-d="-5" aria-label="5개 빼기">−</button>` : ""}
+      <b>${v}</b><small>개</small>
+      ${studyOpen === "n" ? `<button type="button" data-sn="${k}" data-d="5" aria-label="5개 더하기">＋</button>` : ""}</span></div>`;
+  $("#qBody").innerHTML = `<div class="study">
+    <div class="stCourse"><div><span class="tag">학습 코스</span><b>${c[1]}</b><small>${esc(c[2])} · 난이도 ${diffName()}</small></div>
+      <button class="btn" type="button" data-study="course">↻ 변경</button></div>
+    ${studyOpen === "course" ? `<div class="stCourses">${COURSES.map(([k, nm, ds]) => `<button type="button" class="suOpt" data-course="${k}" aria-pressed="${k === course}"><b>${nm}</b><span>${esc(ds)}</span></button>`).join("")}</div>` : ""}
+    <div class="stRing">
+      <svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="${R0}" fill="none" stroke="var(--line-2)" stroke-width="12" stroke-linecap="round"
+          stroke-dasharray="${L} 999" transform="rotate(135 100 100)"/>
+        ${pct > 0 ? "" : "<!--"}<circle cx="100" cy="100" r="${R0}" fill="none" stroke="var(--honey)" stroke-width="12" stroke-linecap="round"
+          stroke-dasharray="${L * pct} 999" transform="rotate(135 100 100)"/>${pct > 0 ? "" : "-->"}</svg>
+      <div class="stIn">
+        ${stepRow("n", "새로운 단어", p.n)}${stepRow("r", "복습할 단어", p.r)}${stepRow("m", "재도전 단어", p.m)}
+        <button class="btn stEdit" type="button" data-study="count">${studyOpen === "n" ? "다 했어요" : "↻ 변경"}</button>
+      </div>
+      <span class="stMs">${mascot(done ? "happy" : "base", 76)}</span>
+      <p class="stDone"><b>${done}</b>/${goalAll}</p>
+    </div>
+    <p class="qPickD" style="text-align:center">재도전 = 전에 틀린 단어 · 복습 = 잊을 때쯤 된 단어 · 새로운 단어 = 처음 보는 단어</p>
+    <button class="btn go qGo" type="button" data-study="go"${total ? "" : " disabled"}>📖 오늘의 학습${total ? ` (${total}개)` : " — 볼 단어가 없어요"}</button>
+  </div>`;
+}
+$("#qBody").addEventListener("click", e => {
+  const s = e.target.closest("[data-study]"), cb = e.target.closest("[data-course]"), sn = e.target.closest("[data-sn]");
+  if (!s && !cb && !sn) return;
+  if (cb){ course = cb.dataset.course; store.set("vb.course", course); lessonWordSet = null; studyOpen = ""; drawStudy(); try{ renderHome(); }catch(err){} return; }
+  if (sn){
+    const p = studyParts(), cur = { n: p.n, r: p.r, m: p.m }, k = sn.dataset.sn;
+    cur[k] = Math.max(0, Math.min(p.max[k], cur[k] + (+sn.dataset.d)));
+    studyN = cur; store.set("vb.studyN", studyN); drawStudy(); return;
+  }
+  const a = s.dataset.study;
+  if (a === "course"){ studyOpen = studyOpen === "course" ? "" : "course"; drawStudy(); }
+  else if (a === "count"){ studyOpen = studyOpen === "n" ? "" : "n"; drawStudy(); }
+  else if (a === "go"){
+    const p = studyParts(), deck = p.miss.concat(p.rev, p.fresh);
+    if (!deck.length) return;
+    qList = deck; qFrom = studyFrom; qAgainFn = () => { const q = studyParts(); return q.miss.concat(q.rev, q.fresh); };
+    qPool = [...deck]; qAgainPool = []; studyRun = true;
+    $("#qBody").innerHTML = "";                        // 문제 화면 뼈대를 새로 만들게
+    beginQuiz(deck.length);
+  }
+});
 /* 버튼을 눌러도 입력칸에서 포커스가 빠지지 않게 → 아이폰 키보드가 내려가지 않음 */
 $("#qBody").addEventListener("mousedown", e => { if (e.target.closest("#qShow, #qHint")) e.preventDefault(); });
 
@@ -10204,7 +10368,7 @@ function allTalkHtml(){
 /* ══ 학습 탭 ══ 자유 연습 모음 — 휴대폰 한 화면 안에 다 보이게 타일 8개 */
 const LTILES = [
   { k: "sent",   nm: "문장 조립",   bg: "var(--honey)", ic: '<rect x="3" y="4" width="8" height="7" rx="1.5"></rect><rect x="13" y="4" width="8" height="7" rx="1.5"></rect><rect x="3" y="14" width="18" height="6" rx="1.5"></rect>' },
-  { k: "wquiz",  nm: "단어 퀴즈",   bg: "var(--mint)",  ic: '<path d="M4 5h16v14H4z"></path><path d="M8 10h8M8 14h5"></path>' },
+  { k: "wquiz",  nm: "어휘 학습",   bg: "var(--mint)",  ic: '<path d="M4 5h16v14H4z"></path><path d="M8 10h8M8 14h5"></path>' },
   { k: "listen", nm: "듣기·말하기", bg: "var(--pink)",  ic: '<path d="M4 17v-4a8 8 0 0 1 16 0v4"></path><rect x="3" y="14" width="4" height="7" rx="1.5"></rect><rect x="17" y="14" width="4" height="7" rx="1.5"></rect>' },
   { k: "talk",   nm: "실전 회화",   bg: "var(--tint)",  ic: '<path d="M4 5h12v9H8l-4 3z"></path><path d="M16 9h4v9l-3-2h-6v-2"></path>' },
   { k: "vocab",  nm: "어휘",        bg: "var(--mint)",  ic: '<path d="M4 6h10M4 11h16M4 16h8"></path><path d="M16 16l2 2 3-4"></path>' },
@@ -10215,7 +10379,7 @@ const LTILES = [
 function learnDesc(k){
   const lv = diffLv.size ? `난이도 ${diffName()}` : "";
   if (k === "sent") return `한 판 ${goalS()}문장`;
-  if (k === "wquiz") return lv ? `${lv} 빈칸 퀴즈` : "예문 빈칸 채우기";
+  if (k === "wquiz") return "오늘의 어휘 학습";
   if (k === "listen") return "듣고 따라 말하기";
   if (k === "talk") return `여행 상황 ${TALK.length}가지`;
   if (k === "vocab") return `표현·숙어 ${vocabPool().length}개`;
@@ -10232,7 +10396,7 @@ $("#lGrid").addEventListener("click", e => {
   const b = e.target.closest("[data-lt]"); if (!b) return;
   const k = b.dataset.lt;
   if (k === "sent"){ newRound(0, "learn"); go(0); }
-  else if (k === "wquiz"){ go(1); renderWords(); startQuiz(levelMix(WORDS.filter(inMyLevel), 40), "learn"); }
+  else if (k === "wquiz"){ openStudy("learn"); }
   else if (k === "listen"){ LPOOL = renderListen(); go(2); }
   else if (k === "words") showWords("all", "all");
   else if (k === "search"){ showWords("all", "all"); $("#q").focus(); }   // 누른 순간이라 키보드도 뜸
@@ -10337,8 +10501,7 @@ $("#p6").addEventListener("click", e => {
   const b = e.target.closest("[data-rv]"); if (!b || b.disabled) return;
   const a = b.dataset.rv, prev = curDay - 1;
   if (a === "resume") resumeQuiz();
-  else if (a === "today") startQuiz(reviewWords(), "review", reviewWords);
-  else if (a === "new") startQuiz(newWords(), "review", newWords);
+  else if (a === "today" || a === "new") openStudy("review");
   else if (a === "miss") startQuiz(shuffle(WORDS.filter(x => isMissed(keyOf(x)))), "review");
   else if (a === "misslist") showWords("miss", "all");
   else if (a === "prevsent"){ newRound(prev, "review"); go(0); }
@@ -10707,7 +10870,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=63"></script>
-<script src="sync.js?v=63"></script>
+<script src="firebase-config.js?v=64"></script>
+<script src="sync.js?v=64"></script>
 
 </body></html>

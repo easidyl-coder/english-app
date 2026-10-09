@@ -1,6 +1,6 @@
 /* 오프라인에서도 열리게 해 주는 파일입니다.
    화면 파일은 인터넷이 되면 새 버전을 먼저 받고, 안 되거나 3초 넘게 걸리면 저장해 둔 것을 씁니다. */
-const CACHE = "eng-app-v58";
+const CACHE = "eng-app-v59";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./sync.js", "./firebase-config.js", "./ipa.js",
   "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./privacy.html"];
 self.addEventListener("install", e => {

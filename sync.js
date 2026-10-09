@@ -1,7 +1,7 @@
 /* ── 로그인과 진도 동기화 ──
    firebase-config.js 가 채워져 있으면 구글 로그인을 켜고, 사람별로 서버에 저장합니다:
    단어장 단계(vb.box)·레벨(vb.level)·최고 연속(vb.best)·레슨 진도(vb.day)·막혔던 말 메모(vb.notes)·
-   하루 목표(vb.goal)·날짜별 공부량(vb.log)·단계 코스 진도(vb.stage)·여행 D-day(vb.trip)·
+   하루 목표(vb.goal)·날짜별 공부량(vb.log)·단계 코스 진도(vb.stage)·여행 D-day(vb.trip, 지금은 화면에서 뺐지만 옛 기록 보존용)·
    날짜별 XP(vb.xp)·배지(vb.badge)·주간 리그 설정(vb.league)·XP 상점(vb.shop).
    주간 리그에 참여하면 league/{그 주 월요일}/members/{uid}에 별명과 이번 주 XP만 따로 올립니다.
    앱을 업데이트해도 로그인과 이 기록은 그대로입니다. 앱을 지웠다 다시 깔거나 휴대폰을 바꿔도

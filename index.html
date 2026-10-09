@@ -830,7 +830,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   #p7[data-view="home"] .mineHome{display:block}
   #p7:not([data-view="home"]) .mineHome{display:none}
   #p7[data-view="rec"] .mineSec[data-sec="rec"], #p7[data-view="badge"] .mineSec[data-sec="badge"],
-  #p7[data-view="set"] .mineSec[data-sec="set"], #p7[data-view="acct"] .mineSec[data-sec="acct"]{display:block}
+  #p7[data-view="set"] .mineSec[data-sec="set"], #p7[data-view="acct"] .mineSec[data-sec="acct"], #p7[data-view="att"] .mineSec[data-sec="att"]{display:block}
   .mySum{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--accent);color:#fff;border-radius:22px;padding:16px 8px;box-shadow:var(--shadow)}
   .mySum button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-width:0}
   .mySum b{font-family:"Jua",sans-serif;font-weight:400;font-size:23px;line-height:1.15;white-space:nowrap}
@@ -1068,6 +1068,34 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   .kBar{flex:1;height:8px;border-radius:4px;background:var(--line-2);overflow:hidden}
   .kBar i{display:block;height:100%;border-radius:4px;background:var(--ok)}
   .kNone{font-size:11px;color:var(--ink-3);line-height:1.3}
+  .hWeek{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:8px;width:100%;margin-top:14px;padding:12px 14px;
+         background:var(--raise);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);touch-action:manipulation}
+  .hwT{display:flex;justify-content:space-between;align-items:center}
+  .hwT b{font-size:14px}
+  .hwT span{font-size:12px;color:var(--accent);font-weight:700}
+  .hwRow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+  .hwD{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:46px}
+  .hwD small{font-size:11px;color:var(--ink-3)}
+  .hwD.hwNow small{color:var(--accent);font-weight:800}
+  .hwD i{display:block;width:26px;height:26px;border-radius:50%;border:2px dashed var(--line-3)}
+  .hwD.hwNow i{border-color:var(--accent)}
+  .hwD .stamp{width:28px;height:28px}
+  .attHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .attHead b{font-family:"Jua",sans-serif;font-weight:400;font-size:20px}
+  .attHead .btn{min-height:40px;min-width:44px;padding:0 10px;font-size:18px}
+  .attHead .btn:disabled{opacity:.35}
+  .attSum{font-size:13px;color:var(--ink-2);margin:0 0 10px}
+  .attSum b{color:var(--accent)}
+  .attGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+  .attW{text-align:center;font-size:11.5px;color:var(--ink-3);font-weight:700;padding-bottom:2px}
+  .attD{position:relative;aspect-ratio:1/1;border-radius:10px;background:var(--raise-2);display:flex;align-items:center;justify-content:center}
+  .attD.empty{background:none}
+  .attD.future{opacity:.45}
+  .attD.attNow{outline:2px solid var(--accent);outline-offset:-2px}
+  .attD .n{position:absolute;left:5px;top:3px;font-size:10.5px;color:var(--ink-3);font-weight:700}
+  .attD .stamp{width:72%;height:72%;margin-top:6px;transform:rotate(-10deg)}
+  .attLeg{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+  .attLeg .stamp{flex:0 0 auto}
   .gWhy{margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--accent-soft);display:flex;flex-direction:column;gap:6px}
   .gWhy > b{font-size:14px;color:var(--accent)}
   .gWhy p{margin:0;font-size:14px;line-height:1.6;color:var(--ink);word-break:keep-all}
@@ -1146,6 +1174,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
       <div class="hWho"><span id="hMs"></span><div><div class="hHello" id="hHello">오늘도 영어 한 걸음</div><div class="hDate" id="hDate"></div></div></div>
       <div class="hChips"><span class="hChip fire" id="hStreak">0일 연속</span><span class="hChip xp" id="hXp">0 XP</span><button class="hChip" id="hLv" type="button">Lv.?</button></div>
     </div>
+    <button class="hWeek" id="hWeek" type="button"></button>
     <div class="hInstall" id="hInstall" hidden></div>
     <div class="hResume" id="hResume" hidden></div>
     <div class="hHero">
@@ -1251,6 +1280,10 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
     <div id="stBody"></div>
     <div id="knowBody"></div>
     </div>
+    <div class="mineSec" data-sec="att">
+    <div class="subTop"><button class="btn" type="button" data-mv="home">‹ 나</button><h2>출석 도장</h2></div>
+    <div id="attBody"></div>
+    </div>
     <div class="mineSec" data-sec="badge">
     <div class="subTop"><button class="btn" type="button" data-mv="home">‹ 나</button><h2>배지 · XP 상점</h2></div>
     <div id="xpBody"></div>
@@ -1331,7 +1364,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   </div>
 </div>
 
-<script src="ipa.js?v=62"></script>
+<script src="ipa.js?v=63"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -7576,7 +7609,8 @@ const BADGES = [
   ["w100", "<path d=\"M9 18h6M10 21h4\"></path><path d=\"M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z\"></path>", "var(--honey)", "단어 100개", "단어 100개 외우기", () => learnedAll() >= 100],
   ["w500", "<path d=\"m2 9 10-5 10 5-10 5z\"></path><path d=\"M6 11v5c3 2.5 9 2.5 12 0v-5\"></path><path d=\"M22 9v6\"></path>", "var(--tint)", "단어 500개", "단어 500개 외우기", () => learnedAll() >= 500],
   ["talk50", "<path d=\"M4 5h16v11H9l-5 4z\"></path><path d=\"M8 9.5h8M8 12.5h5\"></path>", "var(--mint)", "50문장 말하기", "소리 내어 50문장 말하기", () => sumLog("t") >= 50],
-  ["xp1000", "<path d=\"M13 2 4 14h7l-1 8 9-12h-7z\"></path>", "var(--honey)", "1000 XP", "XP 1000 모으기", () => xpAll() >= 1000]
+  ["xp1000", "<path d=\"M13 2 4 14h7l-1 8 9-12h-7z\"></path>", "var(--honey)", "1000 XP", "XP 1000 모으기", () => xpAll() >= 1000],
+  ["att10", "<circle cx=\"12\" cy=\"12\" r=\"8.5\"></circle><path d=\"M8.5 10.5q1.2-1.6 2.4 0M13.1 10.5q1.2-1.6 2.4 0M9 14q3 2.6 6 0\"></path>", "var(--pink)", "출석 10번", "출석 도장 10개 모으기", () => attendSet().size >= 10]
 ];
 function badgeCheck(quiet){
   const got = [];
@@ -7646,11 +7680,68 @@ document.addEventListener("click", async e => {
   }
 });
 /* 하루 목표에 딱 닿은 순간 · 오늘 첫 공부로 연속 공부일이 늘어난 순간에 작게 축하 */
+/* ── 출석 도장 ── 공부한 날(XP나 공부 기록이 있는 날) = 출석. 달력에 도장, 7일 연속마다 금도장, 쉬는 날 보호로 이어진 날은 '쉼'
+   따로 저장하지 않고 vb.xp(계정에 저장)·vb.log에서 계산 */
+function attendSet(){
+  const s = new Set(Object.keys(xpLog).filter(k => +xpLog[k] > 0));
+  Object.keys(actLog).forEach(k => { if (dayTotal(k)) s.add(k); });
+  return s;
+}
+function stampSvg(kind, size){
+  size = size || 30;
+  const c = kind === "gold" ? "#D9A32B" : kind === "rest" ? "var(--ink-3)" : "#D9534F";
+  if (kind === "rest") return `<svg class="stamp rest" viewBox="0 0 40 40" width="${size}" height="${size}" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="none" stroke="${c}" stroke-width="2.5" stroke-dasharray="4 3"/><text x="20" y="25" text-anchor="middle" font-size="13" font-weight="800" fill="${c}">쉼</text></svg>`;
+  const face = '<path d="M13.5 18q2-2.6 4 0M22.5 18q2-2.6 4 0" stroke="' + c + '" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M14.5 23.5q5.5 5 11 0" stroke="' + c + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
+  const star = kind === "gold" ? `<path d="M31 3l1.6 3.4 3.7.5-2.7 2.6.7 3.7L31 11.4l-3.3 1.8.7-3.7-2.7-2.6 3.7-.5z" fill="${c}"/>` : "";
+  return `<svg class="stamp ${kind}" viewBox="0 0 40 40" width="${size}" height="${size}" aria-hidden="true"><circle cx="20" cy="21" r="15.5" fill="none" stroke="${c}" stroke-width="3"/><circle cx="20" cy="21" r="12" fill="none" stroke="${c}" stroke-width="1" opacity=".6"/>${face}${star}</svg>`;
+}
+/* 그날까지 며칠 연속 출석했는지 (금도장: 7·14·21…일째) */
+function runUpTo(set, k){ let n = 0; const d = new Date(k + "T00:00:00"); while (set.has(dkey(d))){ n++; d.setDate(d.getDate() - 1); } return n; }
+function stampFor(set, rest, k){
+  if (set.has(k)){ const r = runUpTo(set, k); return stampSvg(r % 7 === 0 ? "gold" : "ok"); }
+  return rest.has(k) ? stampSvg("rest") : "";
+}
+let attMonth = null;                                  // 달력에 보이는 달 (그달 1일)
+function attHtml(){
+  const set = attendSet(), si = streakInfo(), rest = new Set(si.rest.concat(si.fz || [])), today = dkey(), now = new Date();
+  const m = attMonth || (attMonth = new Date(now.getFullYear(), now.getMonth(), 1));
+  const y = m.getFullYear(), mo = m.getMonth(), first = new Date(y, mo, 1).getDay(), days = new Date(y, mo + 1, 0).getDate();
+  const pre = `${y}-${String(mo + 1).padStart(2, "0")}-`, cnt = [...set].filter(k => k.startsWith(pre)).length;
+  const isNow = y === now.getFullYear() && mo === now.getMonth();
+  let cells = "";
+  for (let i = 0; i < first; i++) cells += `<span class="attD empty"></span>`;
+  for (let d = 1; d <= days; d++){
+    const k = pre + String(d).padStart(2, "0"), future = k > today;
+    cells += `<span class="attD${k === today ? " attNow" : ""}${future ? " future" : ""}"><span class="n">${d}</span>${future ? "" : stampFor(set, rest, k)}</span>`;
+  }
+  return `<div class="stCard attCard">
+    <div class="attHead"><button type="button" class="btn" data-att="-1" aria-label="지난달">‹</button><b>${y}년 ${mo + 1}월</b>
+      <button type="button" class="btn" data-att="1" aria-label="다음 달"${isNow ? " disabled" : ""}>›</button></div>
+    <p class="attSum">${isNow ? "이번 달" : `${mo + 1}월`} <b>${cnt}일</b> 출석 · 지금까지 ${set.size}일 · 지금 ${streakDays()}일 연속</p>
+    <div class="attGrid">${"일월화수목금토".split("").map(w => `<span class="attW">${w}</span>`).join("")}${cells}</div>
+    <p class="stNote attLeg">${stampSvg("ok", 18)} 공부한 날 · ${stampSvg("gold", 18)} 7일 연속마다 · ${stampSvg("rest", 18)} 쉬는 날 보호</p></div>`;
+}
+/* 홈: 이번 주(월~일) 도장 줄 */
+function weekStripHtml(){
+  const set = attendSet(), si = streakInfo(), rest = new Set(si.rest.concat(si.fz || [])), s = weekStart(), today = dkey();
+  let n = 0, cells = "";
+  for (let i = 0; i < 7; i++){
+    const d = new Date(s); d.setDate(s.getDate() + i); const k = dkey(d);
+    if (set.has(k)) n++;
+    cells += `<span class="hwD${k === today ? " hwNow" : ""}"><small>${"월화수목금토일"[i]}</small>${k > today ? "<i></i>" : stampFor(set, rest, k) || "<i></i>"}</span>`;
+  }
+  return `<span class="hwT"><b>이번 주 출석 ${n}/7</b><span>달력 보기 ›</span></span><span class="hwRow">${cells}</span>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-att]"); if (!b || b.disabled) return;
+  const m = attMonth || new Date(); attMonth = new Date(m.getFullYear(), m.getMonth() + (+b.dataset.att), 1);
+  $("#attBody").innerHTML = attHtml();
+});
 function celeCheck(kind, before, now){
   try{
     if (kind === "n" && now === goalW()) celebrate("오늘 새 단어 목표 달성!", `새 단어 ${now}개를 배웠어요.`);
     else if (kind === "s" && now === goalS()) celebrate("오늘 문장 목표 달성!", `문장 ${now}개를 연습했어요.`);
-    else if (!before && kind !== "n"){ const st = streakDays(); if (st >= 2) celebrate(`${st}일 연속 공부 중!`, "오늘도 이어 갔어요. 내일도 만나요."); }
+    else if (!before && kind !== "n"){ const st = streakDays(); celebrate("출석 도장 쾅!", st >= 2 ? `${st}일 연속 출석이에요${st % 7 === 0 ? " · 금도장!" : ""}` : "오늘 첫 공부 · 출석 완료"); }
   }catch(e){}
 }
 function dayTotal(k){ const d = actLog[k]; return d ? (+d.w || 0) + (+d.s || 0) + (+d.t || 0) : 0; }
@@ -7664,13 +7755,15 @@ const goalQ = () => goal && GOAL_Q.includes(goal.q) ? goal.q : 10;   // q: 단�
 /* 연속 공부일 — 쉬는 날 보호: 한 주(월~일)에 하루는 건너뛰어도 이어지고, 그 밖의 빈 날은 쉬는 날 이용권(XP 상점)이 지켜 줌.
    쉰 날은 숫자에 더하지 않음. 빈 날은 '대기'로 두었다가 그보다 앞에 공부한 날이 나와야 확정 (연속을 시작하기 전 빈 날은 안 셈)
    consume이면 이용권이 필요한 빈 날에 가진 이용권을 배정해서 take로 돌려줌 (useFreezes가 저장) */
+/* 출석한 날 = 공부 기록(vb.log, 90일만 남음)이나 XP 기록(vb.xp, 오래 남음)이 있는 날 */
+const attended = k => dayTotal(k) > 0 || +xpLog[k] > 0;
 function streakInfo(consume){
   const d = new Date(), used = shopUsed(), buy = shopBuy(), own = consume ? freezesOwned() : [];
   const rest = [], fz = [], take = {}, freeWeek = new Set(); let n = 0, pend = [];
-  if (!dayTotal(dkey(d))) d.setDate(d.getDate() - 1);          // 오늘 아직 안 했으면 어제부터 셉니다
+  if (!attended(dkey(d))) d.setDate(d.getDate() - 1);          // 오늘 아직 안 했으면 어제부터 셉니다
   for (let i = 0; i < 400; i++){
     const k = dkey(d), wk = weekKey(d);
-    if (dayTotal(k)){
+    if (attended(k)){
       n++;
       pend.forEach(p => { (p.t === "rest" ? rest : fz).push(p.k); if (p.id) take[p.k] = p.id; });
       pend = [];
@@ -8012,6 +8105,7 @@ function renderHome(){
   const st = streakDays();
   $("#hStreak").textContent = st ? `${st}일 연속` : "오늘 첫 공부";
   $("#hXp").textContent = xpToday() + " XP";
+  $("#hWeek").innerHTML = weekStripHtml();
   $("#hLv").textContent = "난이도 " + diffName();   // 홈 칩은 연속·XP·난이도 3개
   const act = homeAction(), tw = act === "new" ? newWords().length : reviewWords().length;
   $("#hMs").innerHTML = mascot(act === "ahead" ? "happy" : act === "review" ? "cheer" : "base", 50);
@@ -8062,6 +8156,8 @@ document.addEventListener("click", e => {                      // 화면 안의 
   if (e.target.closest(".panel [data-back]")) go(backTab);
 });
 $("#hLv").addEventListener("click", () => { go(7); mineView("set"); });
+$("#hWeek").addEventListener("click", () => { go(7); attMonth = null; mineView("att"); });
+$("#hStreak").addEventListener("click", () => { go(7); attMonth = null; mineView("att"); });
 
 /* ── 소리 ── */
 const hasTTS = "speechSynthesis" in window;
@@ -10370,6 +10466,7 @@ function xpHtml(){
 /* 나 탭 화면: home(요약 + 메뉴) · rec 공부 기록 · badge 배지·XP 상점 · set 설정 · acct 계정 */
 function mineView(v){ $("#p7").dataset.view = v; window.scrollTo(0, 0); }
 const MINE_MENU = [
+  ["att", "출석 도장", "", "var(--pink)", '<circle cx="12" cy="12" r="8.5"></circle><path d="M8.5 10.5q1.2-1.6 2.4 0M13.1 10.5q1.2-1.6 2.4 0M9 14q3 2.6 6 0"></path>'],
   ["rec", "공부 기록", "오늘·최근 7일·이만큼 알아요", "var(--tint)", '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path>'],
   ["badge", "배지 · XP 상점", "", "var(--honey)", '<circle cx="12" cy="9" r="6"></circle><path d="M8.5 14 7 22l5-3 5 3-1.5-8"></path>'],
   ["set", "설정", "난이도·하루 목표·매일 알림·화면", "var(--mint)", '<circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"></path>'],
@@ -10378,14 +10475,15 @@ const MINE_MENU = [
 function mySumHtml(){
   const st = streakDays();
   return `<div class="mySum">
-    <button type="button" data-mv="rec"><b>${st}일</b><span>연속 공부</span></button>
+    <button type="button" data-mv="att"><b>${st}일</b><span>연속 출석</span></button>
     <button type="button" data-mv="badge"><b>${xpAll().toLocaleString()}</b><span>모은 XP</span></button>
     <button type="button" data-mv="rec"><b>${knownWords() ? knownWords().toLocaleString() : "—"}</b><span>아는 단어</span></button>
     <button type="button" data-mv="rec"><b>Day ${curDay}</b><span>레슨 진도</span></button></div>`;
 }
 function mineMenuHtml(){
   const nb = BADGES.filter(b => badges[b[0]]).length, own = freezesOwned().length;
-  const ds = { badge: `배지 ${nb}/${BADGES.length}${own ? ` · 쉬는 날 이용권 ${own}개` : ""}${loginOn() ? " · 주간 리그" : ""}`,
+  const am = new Date(), apre = `${am.getFullYear()}-${String(am.getMonth() + 1).padStart(2, "0")}-`;
+  const ds = { att: `이번 달 ${[...attendSet()].filter(k => k.startsWith(apre)).length}일 출석 · 달력 도장`, badge: `배지 ${nb}/${BADGES.length}${own ? ` · 쉬는 날 이용권 ${own}개` : ""}${loginOn() ? " · 주간 리그" : ""}`,
                acct: (loggedIn() ? "로그인됨" : "로그인") + " · 개인정보 · 문의 · 백업" };
   return MINE_MENU.map(([k, nm, d, bg, ic]) => `<button class="setRow" type="button" data-mv="${k}">
     <span class="ic" style="background:${bg}">${ico(ic)}</span><span class="tx"><b>${nm}</b><span>${esc(ds[k] || d)}</span></span>${CHEV}</button>`).join("");
@@ -10396,6 +10494,7 @@ document.addEventListener("click", e => {
 });
 function renderMine(){
   $("#mySum").innerHTML = mySumHtml();
+  $("#attBody").innerHTML = attHtml();
   $("#mineMenu").innerHTML = mineMenuHtml();
   $("#acctRows").innerHTML = acctRowsHtml();
   renderStats(); renderLevel();
@@ -10608,7 +10707,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=62"></script>
-<script src="sync.js?v=62"></script>
+<script src="firebase-config.js?v=63"></script>
+<script src="sync.js?v=63"></script>
 
 </body></html>

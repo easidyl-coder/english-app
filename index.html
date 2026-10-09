@@ -1317,7 +1317,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   </div>
 </div>
 
-<script src="ipa.js?v=60"></script>
+<script src="ipa.js?v=61"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -7736,8 +7736,13 @@ const repOf = k => (boxes[k] && +boxes[k].r) || 0;
 const waitDays = k => boxOf(k) === 2 ? 3 : WAIT3[Math.min(repOf(k), WAIT3.length - 1)];
 const isDue = k => { const b = boxOf(k); return b >= 2 && Date.now() - stampOf(k) >= waitDays(k) * DAY_MS; };
 
-function todayWords(){
-  const pool = WORDS.filter(inMyLevel);                 // 내 레벨 ±1 단어만
+/* 오늘의 단어 = 복습(reviewWords: 공부한 적 있는 단어만) + 새 단어(newWords: 하루 목표만큼)
+   '복습'에 한 번도 안 본 단어가 섞이지 않게 둘을 나눠서 씀 */
+const reviewWords = () => todayParts().review;
+const newWords = () => todayParts().fresh;
+function todayWords(){ const p = todayParts(); return p.review.concat(p.fresh); }
+function todayParts(){
+  const pool = WORDS.filter(inMyLevel);                 // 고른 난이도 단어만
   const due  = pool.filter(x => isDue(keyOf(x)));
   const t0 = new Date(); t0.setHours(0, 0, 0, 0);
   const learn = pool.filter(x => boxOf(keyOf(x)) === 1 && stampOf(keyOf(x)) < t0.getTime())   // 오늘 이미 푼 건 내일 다시
@@ -7747,11 +7752,11 @@ function todayWords(){
                     .sort((a, b) => L ? (Math.abs(a.lv - L) - Math.abs(b.lv - L)) || (a.lv - b.lv)   // 내 레벨 단어부터, 그다음 한 단계 아래·위
                                       : (a.lv || 0) - (b.lv || 0))
                     .slice(0, Math.max(0, goalW() - (+todayLog().n || 0)));                  // 새 단어는 하루 목표만큼
-  const seen = new Set(), out = [];
-  [...due, ...learn, ...fresh].forEach(x => {
-    const k = keyOf(x); if (!seen.has(k)){ seen.add(k); out.push(x); }
+  const seen = new Set(), review = [];
+  [...due, ...learn].forEach(x => {
+    const k = keyOf(x); if (!seen.has(k)){ seen.add(k); review.push(x); }
   });
-  return out;
+  return { review, fresh: fresh.filter(x => !seen.has(keyOf(x))) };
 }
 function boxCounts(){
   const c = {0:0,1:0,2:0,3:0};
@@ -7924,7 +7929,7 @@ function dailySent(){
 /* 홈 — '오늘 할 일' 한 장. 큰 버튼 하나: 레슨 이어서 하기 → (오늘 레슨 끝) 오늘의 복습 → (복습도 끝) 다음 레슨 미리 보기 */
 function homeAction(){
   if (!lessonDoneToday()) return "lesson";
-  return todayWords().length ? "review" : "ahead";
+  return reviewWords().length ? "review" : newWords().length ? "new" : "ahead";
 }
 function renderHome(){
   const day = curDay, g = GRAM[day], now = new Date(), hr = now.getHours(), t = todayLog();
@@ -7934,16 +7939,17 @@ function renderHome(){
   $("#hStreak").textContent = st ? `${st}일 연속` : "오늘 첫 공부";
   $("#hXp").textContent = xpToday() + " XP";
   $("#hLv").textContent = myLevel ? "레벨 " + lvShow(myLevel) : "레벨 ?";   // '레벨'은 영어 레벨에만 씀. 홈 칩은 연속·XP·레벨 3개
-  const act = homeAction(), tw = todayWords().length;
+  const act = homeAction(), tw = act === "new" ? newWords().length : reviewWords().length;
   $("#hMs").innerHTML = mascot(act === "ahead" ? "happy" : act === "review" ? "cheer" : "base", 50);
-  $("#hStage").textContent = act === "lesson" ? `오늘 할 일 · Day ${day} 레슨` : act === "review" ? "오늘 할 일 · 복습" : "오늘 할 일 끝!";
-  $("#hTitle").textContent = act === "review" ? `오늘 볼 단어 ${tw}개` : g ? g.t : `Day ${day} 레슨`;
-  $("#hForm").textContent = act === "review" ? "" : g ? g.f : "";
+  $("#hStage").textContent = act === "lesson" ? `오늘 할 일 · Day ${day} 레슨` : act === "review" ? "오늘 할 일 · 복습" : act === "new" ? "오늘 할 일 · 새 단어" : "오늘 할 일 끝!";
+  $("#hTitle").textContent = act === "review" ? `복습할 단어 ${tw}개` : act === "new" ? `오늘의 새 단어 ${tw}개` : g ? g.t : `Day ${day} 레슨`;
+  $("#hForm").textContent = act === "review" || act === "new" ? "" : g ? g.f : "";
   $("#hProg").style.width = (day / LASTDAY * 100) + "%";
   $("#hProgN").textContent = day + "/" + LASTDAY;
-  $("#hMain").textContent = act === "lesson" ? "이어서 하기" : act === "review" ? "오늘의 복습 하기" : "다음 레슨 미리 보기";
+  $("#hMain").textContent = act === "lesson" ? "이어서 하기" : act === "review" ? "오늘의 복습 하기" : act === "new" ? "새 단어 배우기" : "다음 레슨 미리 보기";
   $("#hHint").textContent = act === "lesson" ? "레슨을 보고 시험을 통과하면 다음 Day로 넘어가요"
-    : act === "review" ? `Day ${day - 1} 레슨 끝! 이제 잊을 때쯤 된 단어를 다시 봐요` : "오늘 할 일을 다 했어요. 내일 또 만나요!";
+    : act === "review" ? "레슨 끝! 전에 공부한 단어 중 잊을 때쯤 된 것을 다시 봐요"
+    : act === "new" ? "복습할 단어는 다 봤어요. 하루 목표만큼 새 단어를 배워요" : "오늘 할 일을 다 했어요. 내일 또 만나요!";
   const rs = pausedQuiz(), resBox = $("#hResume");
   resBox.hidden = !(rs && rs.i > 0);
   if (!resBox.hidden) resBox.innerHTML = `<div class="tx"><b>풀던 단어 퀴즈 이어서 하기</b><span>${rs.i}/${rs.k.length} 풀었어요 · 남은 ${rs.k.length - rs.i}개</span></div>
@@ -7968,12 +7974,13 @@ $("#p3").addEventListener("click", e => {
   if (e.target.closest("[data-resume]")){ resumeQuiz(); return; }
   if (e.target.closest("#hMain")){
     const act = homeAction();
-    if (act === "review") startQuiz(todayWords(), "home", todayWords);
+    if (act === "review") startQuiz(reviewWords(), "home", reviewWords);
+    else if (act === "new") startQuiz(newWords(), "home", newWords);
     else openLesson();
     return;
   }
   const r = e.target.closest("[data-hgo]"); if (!r) return;
-  if (r.dataset.hgo === "w"){ const tw = todayWords(); if (tw.length) startQuiz(tw, "home", todayWords); else go(6); }
+  if (r.dataset.hgo === "w"){ const nw = newWords(); if (nw.length) startQuiz(nw, "home", newWords); else go(6); }   // '새 단어' 동그라미 → 새 단어
   else { newRound(0, "home"); go(0); }
 });
 document.addEventListener("click", e => {                      // 화면 안의 이동 버튼(data-go)과 뒤로(data-back)
@@ -8471,7 +8478,7 @@ const QS_KEY = "vb.qs", QS_DAYS = 3;
 function saveQuizSession(){
   if (!qDeck.length || qi >= qDeck.length){ clearQuizSession(); return; }
   store.set(QS_KEY, { k: qDeck.map(keyOf), i: qi, up: qUp, m: qMiss.map(keyOf), f: qFrom,
-                      l: qList ? qList.map(keyOf) : null, a: qAgainFn === todayWords ? 1 : 0, t: Date.now() });
+                      l: qList ? qList.map(keyOf) : null, a: qAgainFn === todayWords ? 1 : qAgainFn === reviewWords ? 2 : qAgainFn === newWords ? 3 : 0, t: Date.now() });
 }
 function clearQuizSession(){ try{ localStorage.removeItem(QS_KEY); }catch(e){} }
 function pausedQuiz(){
@@ -8487,7 +8494,7 @@ function resumeQuiz(){
   qDeck = deck; qi = s.i; qUp = +s.up || 0;
   qMiss = (s.m || []).map(k => byKey.get(k)).filter(Boolean);
   qFrom = s.f || 0;
-  qList = s.l ? s.l.map(k => byKey.get(k)).filter(Boolean) : null;  qAgainFn = s.a ? todayWords : null;
+  qList = s.l ? s.l.map(k => byKey.get(k)).filter(Boolean) : null;  qAgainFn = [null, todayWords, reviewWords, newWords][+s.a || 0] || null;
   document.body.classList.add("quizOn");
   drawQ();
   return true;
@@ -9538,9 +9545,10 @@ function levelChallenge(day, own){
 function renderLesson(day){
   const today = dayNo(), isToday = day === today, g = GRAM[day];
   const todayS = sentsOfDay(day);
-  const yestS  = day > 1 ? sentsOfDay(day - 1).slice(0, 3) : [];
+  const yw0    = day > 1 ? wordsOfDay(day - 1).filter(x => boxOf(keyOf(x)) > 0) : [];   // 공부한 단어만
+  const yestS  = yw0.length ? sentsOfDay(day - 1).slice(0, 3) : [];
   const tw     = wordsOfDay(day);
-  const yw     = day > 1 ? wordsOfDay(day - 1).slice(0, 5) : [];
+  const yw     = yw0.slice(0, 5);
   const challenge = levelChallenge(day, todayS);
   let no = 0; const N = () => ++no;              // 섹션 번호는 있는 것만 세어서 붙입니다
   const wCard = x => `<div class="lsCard"><div class="lsW"><b>${esc(x.w)}</b>
@@ -10123,18 +10131,22 @@ function renderStats(){
 
 /* ══ 복습 ══ 오늘의 단어(간격 반복) · 헷갈린 단어 · 지난 레슨 · 채울 메모 */
 function renderReview(){
-  const tw = todayWords(), miss = WORDS.filter(x => isMissed(keyOf(x)));
-  const fresh = tw.filter(x => boxOf(keyOf(x)) === 0).length, learn = tw.filter(x => boxOf(keyOf(x)) === 1).length;
-  const due = tw.length - fresh - learn, prev = curDay - 1, nc = noteCount(), open = nc.open;
+  const tw = reviewWords(), nw = newWords(), miss = WORDS.filter(x => isMissed(keyOf(x)));
+  const learn = tw.filter(x => boxOf(keyOf(x)) === 1).length, due = tw.length - learn;
+  const prev = curDay - 1, nc = noteCount(), open = nc.open;
   const rs = pausedQuiz();
   $("#rvBody").innerHTML = (rs && rs.i > 0 ? `
     <div class="rvCard resume"><h3>풀던 퀴즈 이어서 하기</h3>
       <p>${rs.i}/${rs.k.length} 풀었어요 · 남은 ${rs.k.length - rs.i}개. 닫은 자리부터 이어서 풀어요.</p>
       <div class="row2"><button class="btn go" data-rv="resume">이어서 풀기</button></div></div>` : "") + `
-    <div class="rvCard main"><h3>오늘의 단어 복습</h3>
+    <div class="rvCard main"><h3>오늘의 복습</h3>
       <div class="n">${tw.length}<small>개</small></div>
-      ${tw.length ? `<p>새 단어 ${fresh} · 익히는 중 ${learn} · 잊을 때쯤 된 단어 ${due}</p>` : `<div class="emptyMs" style="color:var(--tint)">${mascot("happy", 64)}오늘 볼 단어를 다 봤어요. 내일 또 나와요!</div>`}
-      <div class="row2"><button class="btn go" data-rv="today"${tw.length ? "" : " disabled"}>시작하기</button></div></div>
+      ${tw.length ? `<p>전에 공부한 단어만 나와요 · 익히는 중 ${learn} · 잊을 때쯤 된 단어 ${due}</p>` : `<div class="emptyMs" style="color:var(--tint)">${mascot("happy", 64)}오늘 복습할 단어를 다 봤어요. 내일 또 나와요!</div>`}
+      <div class="row2"><button class="btn go" data-rv="today"${tw.length ? "" : " disabled"}>복습 시작</button></div></div>
+    <div class="rvCard"><h3>오늘의 새 단어</h3>
+      <div class="n">${nw.length}<small>개</small></div>
+      <p>${nw.length ? `하루 목표(${goalW()}개) 중 아직 안 배운 새 단어예요.` : "오늘 새 단어 목표를 다 채웠어요."}</p>
+      <div class="row2"><button class="btn go" data-rv="new"${nw.length ? "" : " disabled"}>새 단어 배우기</button></div></div>
     <div class="rvCard"><h3>헷갈린 단어</h3>
       <div class="n">${miss.length}<small>개</small></div>
       <p>${miss.length ? "한 번에 맞히면 목록에서 빠져요." : "아직 없어요. 퀴즈에서 틀린 단어가 여기 모여요."}</p>
@@ -10155,7 +10167,8 @@ $("#p6").addEventListener("click", e => {
   const b = e.target.closest("[data-rv]"); if (!b || b.disabled) return;
   const a = b.dataset.rv, prev = curDay - 1;
   if (a === "resume") resumeQuiz();
-  else if (a === "today") startQuiz(todayWords(), "review", todayWords);
+  else if (a === "today") startQuiz(reviewWords(), "review", reviewWords);
+  else if (a === "new") startQuiz(newWords(), "review", newWords);
   else if (a === "miss") startQuiz(shuffle(WORDS.filter(x => isMissed(keyOf(x)))), "review");
   else if (a === "misslist") showWords("miss", "all");
   else if (a === "prevsent"){ newRound(prev, "review"); go(0); }
@@ -10519,7 +10532,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=60"></script>
-<script src="sync.js?v=60"></script>
+<script src="firebase-config.js?v=61"></script>
+<script src="sync.js?v=61"></script>
 
 </body></html>

@@ -1046,6 +1046,28 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   .spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line-2);border-top-color:var(--accent);animation:spin .8s linear infinite;flex:0 0 auto}
   @keyframes spin{to{transform:rotate(360deg)}}
   @media (prefers-reduced-motion: reduce){ #boot .bootBar i,.spin{animation-duration:2.4s} }
+  .diffChips{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .diffChips.inSet{padding:0 14px 14px}
+  .diffChips.inOb{margin:6px 0 16px;width:100%;align-self:stretch}
+  .diffChips button{font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 2px;border-radius:14px;
+       border:2px solid var(--line);background:var(--raise);color:var(--ink);touch-action:manipulation}
+  .diffChips button b{font-size:13.5px;word-break:keep-all}
+  .diffChips button span{font-size:11px;color:var(--ink-3)}
+  .diffChips button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .diffSet{border-bottom:0}
+  .kHead{display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
+  .kHead b{font-family:"Jua",sans-serif;font-weight:400;font-size:30px;color:var(--accent);line-height:1.1}
+  .kHead span{font-size:12.5px;color:var(--ink-2)}
+  .kTable{display:flex;flex-direction:column;gap:8px}
+  .kRow{display:grid;grid-template-columns:62px 1fr 1fr;gap:8px;align-items:center;font-size:13px}
+  .kRow > span:first-child{display:flex;flex-direction:column;font-weight:700}
+  .kRow small{font-size:10.5px;color:var(--ink-3);font-weight:400}
+  .kTh{font-size:11.5px;color:var(--ink-3);font-weight:700}
+  .kCell{display:flex;align-items:center;gap:6px;min-width:0}
+  .kCell b{font-size:12.5px;min-width:34px;text-align:right}
+  .kBar{flex:1;height:8px;border-radius:4px;background:var(--line-2);overflow:hidden}
+  .kBar i{display:block;height:100%;border-radius:4px;background:var(--ok)}
+  .kNone{font-size:11px;color:var(--ink-3);line-height:1.3}
   .gWhy{margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--accent-soft);display:flex;flex-direction:column;gap:6px}
   .gWhy > b{font-size:14px;color:var(--accent)}
   .gWhy p{margin:0;font-size:14px;line-height:1.6;color:var(--ink);word-break:keep-all}
@@ -1227,15 +1249,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
     <div class="mineSec" data-sec="rec">
     <div class="subTop"><button class="btn" type="button" data-mv="home">‹ 나</button><h2>공부 기록</h2></div>
     <div id="stBody"></div>
-    <h3 class="allSub">내 영어 레벨</h3>
-    <div class="lvHero" id="lvCard">
-      <div class="lvTop">
-        <div class="lvRing" id="lvRing"><b id="lvNum">?</b></div>
-        <div class="t"><b id="lvName">레벨을 아직 몰라요</b>
-          <span id="lvDesc">단어와 문장으로 3분이면 찾아요</span></div>
-      </div>
-      <button class="btn go" id="lvGo" type="button">레벨 테스트</button>
-    </div>
+    <div id="knowBody"></div>
     </div>
     <div class="mineSec" data-sec="badge">
     <div class="subTop"><button class="btn" type="button" data-mv="home">‹ 나</button><h2>배지 · XP 상점</h2></div>
@@ -1317,7 +1331,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   </div>
 </div>
 
-<script src="ipa.js?v=61"></script>
+<script src="ipa.js?v=62"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -7552,7 +7566,7 @@ const learnedAll = () => Object.values(boxes || {}).filter(v => v && v.b >= 2).l
 const goalDays = () => Object.values(actLog).filter(d => d && ((+d.n || 0) >= goalW() || (+d.s || 0) >= goalS())).length;
 const BADGES = [
   ["first", "<path d=\"M12 21v-9\"></path><path d=\"M12 12C12 8 9 6 5 6c0 4 3 6 7 6z\"></path><path d=\"M12 10c0-3.5 2.5-5.5 6.5-5.5 0 3.5-2.5 5.5-6.5 5.5z\"></path>", "var(--mint)", "첫걸음", "처음 공부하기", () => xpAll() > 0 || Object.keys(actLog).some(dayTotal)],
-  ["lv", "<circle cx=\"11\" cy=\"11\" r=\"6.5\"></circle><path d=\"m20 20-4.2-4.2\"></path>", "var(--tint)", "내 레벨 찾기", "레벨 테스트 끝내기", () => myLevel > 0],
+  ["know", "<circle cx=\"11\" cy=\"11\" r=\"6.5\"></circle><path d=\"m20 20-4.2-4.2\"></path>", "var(--tint)", "실력 확인", "단어·문장 50개 풀기", () => statOf("w", [1,2,3,4,5,6,7,8,9,10])[0] + statOf("s", [1,2,3,4,5,6,7,8,9,10])[0] >= 50],
   ["st3", "<path d=\"M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.3 3 2.3 3C11 8 11 5.5 12 3z\"></path>", "var(--pink)", "3일 연속", "3일 연속 공부하기", () => streakDays() >= 3],
   ["st7", "<path d=\"m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z\"></path>", "var(--honey)", "일주일 연속", "7일 연속 공부하기", () => streakDays() >= 7],
   ["st30", "<path d=\"M8 4h8v5a4 4 0 0 1-8 0z\"></path><path d=\"M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4\"></path><path d=\"M12 13v5M8.5 21h7\"></path>", "var(--honey)", "한 달 연속", "30일 연속 공부하기", () => streakDays() >= 30],
@@ -7681,22 +7695,82 @@ const restUsedThisWeek = () => streakInfo().rest.some(r => weekKey(new Date(r + 
 const LEARN_CAP = 20;
 const LVNAME = {1:"왕기초",2:"기초",3:"초급",4:"초중급",5:"중급 진입",
                 6:"중급",7:"중상급",8:"상급 진입",9:"상급",10:"최상급"};
-let myLevel = store.get("vb.level", 0, Number.isFinite);
-/* 내 레벨 ±1에서 고를 때, 문장 수가 많은 쉬운 레벨에 쏠리지 않게 — 절반은 내 레벨, 나머지는 한 단계 아래·위에서 */
+/* ── 난이도 ── 레벨 테스트 대신 직접 고름 (여러 개 가능, 안 고르면 전체)
+   vb.diff = {s: ["b","c"], t: 바꾼 시각} (계정에 저장). 예전 레벨 테스트 결과(vb.level)가 있으면 처음 한 번 그 근처로 골라 둠 */
+const DIFF = [["a", "입문", 1, 2], ["b", "기초", 3, 4], ["c", "중급", 5, 6], ["d", "상급", 7, 8], ["e", "최상급", 9, 10]];
+let diffSel = (() => {
+  const v = store.get("vb.diff", null, x => x && Array.isArray(x.s));
+  if (v) return v.s.filter(k => DIFF.some(d => d[0] === k));
+  const old = store.get("vb.level", 0, Number.isFinite);
+  if (!old) return [];
+  const L = Math.round(old);
+  return DIFF.filter(d => d[3] >= L - 1 && d[2] <= L + 1).map(d => d[0]);
+})();
+let diffLv = new Set(), myLevel = 0;                // myLevel = 고른 난이도의 가운데 값 (함정 수·도전 문장 등에 씀, 안 고르면 0)
+function diffApply(){
+  diffLv = new Set(DIFF.filter(d => diffSel.includes(d[0])).flatMap(d => [d[2], d[3]]));
+  myLevel = diffLv.size ? [...diffLv].reduce((a, b) => a + b, 0) / diffLv.size : 0;
+}
+diffApply();
+function setDiff(sel){ diffSel = DIFF.map(d => d[0]).filter(k => sel.includes(k)); store.set("vb.diff", { s: diffSel, t: Date.now() }); diffApply(); }
+const diffName = () => diffSel.length ? DIFF.filter(d => diffSel.includes(d[0])).map(d => d[1]).join("·") : "전체";
+/* 고른 난이도에서 고를 때, 문장 수가 많은 쉬운 난이도에 쏠리지 않게 — 난이도(1~10)마다 돌아가며 하나씩 */
 function levelMix(pool, n){
-  const L = Math.round(myLevel || 0);
-  if (!L) return shuffle([...pool]).slice(0, n);
-  const at = d => shuffle(pool.filter(x => x.lv === L + d));
-  const own = at(0), lo = at(-1), hi = at(1);
-  const out = own.slice(0, Math.ceil(n / 2));
-  let k = 0;
-  while (out.length < n && (k < lo.length || k < hi.length)){ if (k < hi.length) out.push(hi[k]); if (out.length < n && k < lo.length) out.push(lo[k]); k++; }
-  own.slice(Math.ceil(n / 2)).forEach(x => { if (out.length < n) out.push(x); });   // 위아래가 모자라면 내 레벨로 채움
-  shuffle(pool.filter(x => !out.includes(x))).forEach(x => { if (out.length < n) out.push(x); });
+  const by = {}; shuffle([...pool]).forEach(x => { (by[x.lv] = by[x.lv] || []).push(x); });
+  const lvs = Object.keys(by), out = [];
+  while (out.length < n && lvs.some(l => by[l].length)) lvs.forEach(l => { if (out.length < n && by[l].length) out.push(by[l].pop()); });
   return shuffle(out);
 }
-const inMyLevel = x => { if (!myLevel || x.lv == null) return true;            // 레벨은 4.6처럼 소수 — 반올림한 레벨 ±1
-  const L = Math.round(myLevel); return x.lv >= L - 1 && x.lv <= L + 1; };
+const inMyLevel = x => !diffLv.size || x.lv == null || diffLv.has(x.lv);
+
+/* ── 이만큼 알아요 ── 단어 퀴즈·문장 조립에서 '처음 볼 때 한 번에 맞혔는지'를 난이도(1~10)마다 셈
+   vb.stat = {w: {"3": [푼 수, 한 번에 맞힌 수]}, s: {…}} (계정에 저장) */
+let stat = store.get("vb.stat", {}, x => x && typeof x === "object" && !Array.isArray(x));
+function statAdd(kind, lv, ok){
+  if (!lv) return;
+  const m = stat[kind] = stat[kind] || {}, c = m[lv] = Array.isArray(m[lv]) ? m[lv] : [0, 0];
+  c[0]++; if (ok) c[1]++;
+  store.set("vb.stat", stat);
+}
+const statOf = (kind, lvs) => lvs.reduce((a, lv) => { const c = ((stat[kind] || {})[lv]) || [0, 0]; return [a[0] + c[0], a[1] + c[1]]; }, [0, 0]);
+const STAT_MIN = 5;                                  // 이만큼은 풀어야 비율을 보여 줌
+/* 아는 단어 수 짐작: 난이도마다 (한 번에 맞힌 비율 × 그 난이도 단어 수), 아직 안 푼 난이도는 셈하지 않음 */
+function knownWords(){
+  let n = 0;
+  for (let lv = 1; lv <= 10; lv++){
+    const [a, b] = statOf("w", [lv]); if (a < STAT_MIN) continue;
+    n += b / a * WORDS.filter(x => x.lv === lv).length;
+  }
+  return Math.round(n / 10) * 10;
+}
+function knowHtml(){
+  const kw = knownWords(), rows = DIFF.map(([k, nm, lo, hi]) => {
+    const w = statOf("w", [lo, hi]), s = statOf("s", [lo, hi]);
+    const pc = c => c[0] >= STAT_MIN ? Math.round(c[1] / c[0] * 100) : null;
+    return { k, nm, lo, hi, w: pc(w), s: pc(s), wn: w[0], sn: s[0] };
+  });
+  const bar = (p, n) => p == null ? `<span class="kNone">${n ? `${n}개 풀었어요 · ${STAT_MIN}개부터 보여요` : "아직 안 풀었어요"}</span>`
+    : `<span class="kBar"><i style="width:${p}%"></i></span><b>${p}%</b>`;
+  // 추천: 단어를 80% 넘게 맞힌 가장 높은 난이도의 다음 단계
+  const good = rows.filter(r => r.w != null && r.w >= 80).pop(), next = good && DIFF[DIFF.findIndex(d => d[0] === good.k) + 1];
+  const tip = next && !diffSel.includes(next[0]) ? `<p class="stNote">${good.nm} 단어를 ${good.w}% 맞히고 있어요. <b>${next[1]}</b> 난이도도 골라 보세요 (나 → 설정 → 난이도).</p>` : "";
+  return `<div class="stCard"><h3>이만큼 알아요</h3>
+    <div class="kHead"><b>${kw ? "약 " + kw.toLocaleString() + "개" : "—"}</b><span>${kw ? "아는 단어 (한 번에 맞힌 비율로 계산)" : "단어 퀴즈를 풀면 아는 단어 수를 알려 드려요"}</span></div>
+    <div class="kTable"><div class="kRow kTh"><span>난이도</span><span>단어</span><span>문장</span></div>
+      ${rows.map(r => `<div class="kRow"><span>${r.nm}<small>${r.lo}~${r.hi}</small></span><span class="kCell">${bar(r.w, r.wn)}</span><span class="kCell">${bar(r.s, r.sn)}</span></div>`).join("")}</div>
+    <p class="stNote">단어 퀴즈·문장 조립에서 처음 볼 때 한 번에 맞힌 비율이에요. 틀렸다 다시 맞힌 건 안 쳐요.</p>${tip}</div>`;
+}
+function diffRowHtml(cls){
+  return `<div class="diffChips${cls ? " " + cls : ""}">${DIFF.map(([k, nm, lo, hi]) => `<button type="button" data-diff="${k}" aria-pressed="${diffSel.includes(k)}"><b>${nm}</b><span>${lo}~${hi}</span></button>`).join("")}</div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-diff]"); if (!b) return;
+  const k = b.dataset.diff, sel = diffSel.includes(k) ? diffSel.filter(x => x !== k) : diffSel.concat(k);
+  setDiff(sel);
+  document.querySelectorAll(`[data-diff]`).forEach(x => x.setAttribute("aria-pressed", diffSel.includes(x.dataset.diff)));
+  document.querySelectorAll(".diffNow").forEach(x => { x.textContent = diffName(); });
+  try{ renderWords(); renderHome(); }catch(err){}
+});
 const DAY_MS = 86400000, WAIT3 = [7, 14, 30, 60];
 let boxes = store.get("vb.box", null, x => x && typeof x === "object" && !Array.isArray(x));
 if (!boxes || typeof boxes !== "object" || Array.isArray(boxes)){
@@ -7764,7 +7838,7 @@ function boxCounts(){
   return c;
 }
 
-function renderLevel(){ renderLevelCard(); }      // 레벨 테스트는 로그인 없이도 볼 수 있음
+function renderLevel(){ const k = document.getElementById("knowBody"); if (k) k.innerHTML = knowHtml(); }   // 옛 레벨 카드 자리 → '이만큼 알아요'
 function renderLevelCard(){
   if (myLevel){
     $("#lvNum").textContent = lvShow(myLevel);
@@ -7921,7 +7995,7 @@ function ringHtml(val, max, color, label, act){
 }
 /* 오늘의 한 문장 — 배운 레슨과 상황별 문장 중에서 날짜마다 하나씩 */
 function dailySent(){
-  const pool = myLevel ? SENTS.filter(inMyLevel)                 // 레벨이 있으면 내 레벨 문장에서
+  const pool = myLevel ? SENTS.filter(inMyLevel)                 // 난이도를 골랐으면 그 문장에서
                        : SENTS.filter(x => x.d && (x.d <= curDay || x.d > LASTDAY));
   const d = new Date();
   return pickBy(pool.length ? pool : SENTS, 1, d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate())[0];
@@ -7938,7 +8012,7 @@ function renderHome(){
   const st = streakDays();
   $("#hStreak").textContent = st ? `${st}일 연속` : "오늘 첫 공부";
   $("#hXp").textContent = xpToday() + " XP";
-  $("#hLv").textContent = myLevel ? "레벨 " + lvShow(myLevel) : "레벨 ?";   // '레벨'은 영어 레벨에만 씀. 홈 칩은 연속·XP·레벨 3개
+  $("#hLv").textContent = "난이도 " + diffName();   // 홈 칩은 연속·XP·난이도 3개
   const act = homeAction(), tw = act === "new" ? newWords().length : reviewWords().length;
   $("#hMs").innerHTML = mascot(act === "ahead" ? "happy" : act === "review" ? "cheer" : "base", 50);
   $("#hStage").textContent = act === "lesson" ? `오늘 할 일 · Day ${day} 레슨` : act === "review" ? "오늘 할 일 · 복습" : act === "new" ? "오늘 할 일 · 새 단어" : "오늘 할 일 끝!";
@@ -7987,7 +8061,7 @@ document.addEventListener("click", e => {                      // 화면 안의 
   const t = e.target.closest(".panel [data-go]"); if (t){ go(+t.dataset.go); return; }
   if (e.target.closest(".panel [data-back]")) go(backTab);
 });
-$("#hLv").addEventListener("click", () => { if (myLevel) go(7); else startLevelTest(); });
+$("#hLv").addEventListener("click", () => { go(7); mineView("set"); });
 
 /* ── 소리 ── */
 const hasTTS = "speechSynthesis" in window;
@@ -8080,7 +8154,7 @@ function drawGPick(){
   $("#gPick").hidden = false;
   $("#gPick").innerHTML = `<div class="qPick">
     <p class="qPickT">몇 문장 할까요?</p>
-    <p class="qPickD">${deckDay || deckList ? `이 레슨 문장 ${avail}개` : `${myLevel ? "내 레벨" : "전체"} 문장`}에서 골라요 · 틀린 문장은 맞힐 때까지 다시 나와요</p>
+    <p class="qPickD">${deckDay || deckList ? `이 레슨 문장 ${avail}개` : `난이도 ${diffName()} 문장`}에서 골라요 · 틀린 문장은 맞힐 때까지 다시 나와요</p>
     <div class="suGrid">${opts.map(v => `<button type="button" class="suOpt" data-gn="${v}" aria-pressed="${v === gPickN}">
       <b>${all(v) ? "전부" : v}</b><span>${all(v) ? v + "문장" : "문장"}</span></button>`).join("")}</div>
     <button type="button" class="btn go qGo" id="gGo">${gPickN}문장 시작</button>
@@ -8105,8 +8179,8 @@ function startDeck(n){
 function drawMode(){
   $("#gModeTx").textContent = deckList ? (deckLabel || "고른 문장")
     : deckDay > LASTDAY ? `실전 회화 · ${DAYS[deckDay] || ""}`
-    : deckDay ? `레슨 문장${GRAM[deckDay] ? " · " + GRAM[deckDay].t : ""}${deckExtra ? ` + 내 레벨 ${deckExtra}개` : ""}`
-    : myLevel ? `내 레벨(${lvShow(myLevel)}) 문장에서 랜덤` : "전체 문장에서 랜덤";
+    : deckDay ? `레슨 문장${GRAM[deckDay] ? " · " + GRAM[deckDay].t : ""}${deckExtra ? ` + 고른 난이도 ${deckExtra}개` : ""}`
+    : `난이도 ${diffName()} 문장에서 랜덤`;
   $("#gModeBtn").textContent = deckDay || deckList ? "전체 문장으로" : "레슨 문장으로";
 }
 $("#gModeBtn").addEventListener("click", () => newRound(deckDay || deckList ? 0 : dayNo()));
@@ -8117,7 +8191,7 @@ function draw(){
   $("#gBar").style.width = (idx/deck.length*100)+"%";
   $("#gStreak").textContent = "연속 "+streak;
   $("#gDay").textContent = (missed.includes(s) ? "다시 나온 문장 · " : "")
-    + (s.c || "문장") + (s.lv ? " · 레벨 " + s.lv : "");   // Day 대신 분야·레벨
+    + (s.c || "문장") + (s.lv ? " · 난이도 " + s.lv : "");   // Day 대신 분야·난이도
   $("#gKo").textContent = s.ko;
   $("#gAns").innerHTML = "";
   $("#gSlot").className = "slot";
@@ -8274,6 +8348,7 @@ $("#gCheck").addEventListener("click", () => {
   const ok = made === s.en;
   locked = true;
   logAct("s");
+  if (!missed.includes(s)) statAdd("s", s.lv, ok);   // 처음 볼 때만 '이만큼 알아요'에 셈
   $("#gSlot").className = "slot " + (ok?"right":"wrong");
   if (ok){
     if (!missed.includes(s)) correct++;           // 한 번에 맞힌 것만 점수
@@ -8341,11 +8416,10 @@ function levelPool(){
   return WORDS.filter(x => x.lv === lvMode);
 }
 function renderLvChips(){
-  if (!myLevel && lvMode === "my") lvMode = "all";
-  const L = myLevel ? Math.round(myLevel) : 0;
+  if (!diffLv.size && lvMode === "my") lvMode = "all";
   const chip = (v, lab) => `<button type="button" data-lv="${v}" aria-pressed="${String(lvMode) === String(v)}">${lab}</button>`;
-  $("#wLv").innerHTML = (myLevel ? chip("my", `내 레벨 ${Math.max(1, L - 1)}~${Math.min(10, L + 1)}`) : "")
-    + chip("all", "모든 레벨") + [1,2,3,4,5,6,7,8,9,10].map(n => chip(n, `레벨 ${n}`)).join("");
+  $("#wLv").innerHTML = (diffLv.size ? chip("my", `고른 난이도 (${diffName()})`) : "")
+    + chip("all", "모든 난이도") + [1,2,3,4,5,6,7,8,9,10].map(n => chip(n, `난이도 ${n}`)).join("");
 }
 function renderCats(){
   const base = levelPool(), st = {};
@@ -8433,8 +8507,8 @@ function renderWords(){
     }).join("") + (rest > 0 ? `<button class="btn more" type="button" data-more>${Math.min(30, rest)}개 더 보기 · 남은 단어 ${rest}개</button>` : "");
   }
   headStats(); renderCats();
-  $("#wLvNote").textContent = searching ? `"${filterText.trim()}" 찾은 단어 ${all.length}개 · 모든 레벨에서`
-    : `${lvMode === "my" && myLevel && (mode === "all" || mode === "0") ? `내 레벨(${lvShow(myLevel)})` : typeof lvMode === "number" ? `레벨 ${lvMode}` : "모든 레벨"} 단어 ${all.length}개`;
+  $("#wLvNote").textContent = searching ? `"${filterText.trim()}" 찾은 단어 ${all.length}개 · 모든 난이도에서`
+    : `${lvMode === "my" && diffLv.size && (mode === "all" || mode === "0") ? `난이도 ${diffName()}` : typeof lvMode === "number" ? `난이도 ${lvMode}` : "모든 난이도"} 단어 ${all.length}개`;
   $("#qClear").hidden = !searching;
   ["#wLv", "#wFilter", "#goQuiz"].forEach(s => { $(s).hidden = searching; });   // 찾는 중엔 결과가 바로 밑에 보이게
   if ($("#p3").classList.contains("on")) renderHome();
@@ -8727,6 +8801,7 @@ function whyHtml(x, cloze){
 
 function qNext(ok){
   const x = qDeck[qi], k = keyOf(x), b = boxOf(k);
+  statAdd("w", x.lv, ok);
   logAct("w");
   if (b === 0) logAct("n");                       // 처음 배운 새 단어 → 오늘 새 단어 목표에 셈
   if (ok){ if (b < 3){ qUp++; setBox(k, b + 1, false); } else setBox(k, 3, false, repOf(k) + 1); }   // 3단계면 다음 복습을 더 멀리
@@ -9179,7 +9254,6 @@ function bindPlan(){
     }
   });
 }
-$("#lvGo").addEventListener("click", startLevelTest);
 
 $("#goQuiz").addEventListener("click", ()=>startQuiz());
 
@@ -9592,8 +9666,8 @@ function renderLesson(day){
       <p class="hint">예문과 함께 소리 내어 읽으면 더 오래 남아요.</p>
       ${tw.map(wCard).join("")}</section>
 
-    ${challenge.length ? `<section class="lsSec"><h2>${N()}. 내 레벨 도전 문장</h2>
-      <p class="hint">레벨 ${lvShow(myLevel)}에 맞춘 문장이에요. 오늘 배운 문법을 떠올리며 소리 내어 읽어 보세요.</p>
+    ${challenge.length ? `<section class="lsSec"><h2>${N()}. 난이도 도전 문장</h2>
+      <p class="hint">고른 난이도(${diffName()})에 맞춘 문장이에요. 오늘 배운 문법을 떠올리며 소리 내어 읽어 보세요.</p>
       ${challenge.map(sCard).join("")}</section>` : ""}
 
     ${isToday ? `<section class="lsSec"><h2>${N()}. 오늘의 연습</h2>
@@ -9996,7 +10070,7 @@ function vocabPool(){
 }
 function allVocabHtml(){
   const pool = vocabPool(), show = pickBy(pool, 8, 101 + vocabSeed * 37);
-  return `<p class="allHint">여러 단어가 한 덩어리로 쓰이는 표현·숙어예요. ${myLevel ? `내 레벨(${lvShow(myLevel)})에 맞는 표현 ${pool.length}개 중 8개를 보여 드려요.` : `모두 ${pool.length}개예요.`}</p>
+  return `<p class="allHint">여러 단어가 한 덩어리로 쓰이는 표현·숙어예요. ${diffLv.size ? `고른 난이도(${diffName()})에 맞는 표현 ${pool.length}개 중 8개를 보여 드려요.` : `모두 ${pool.length}개예요.`}</p>
     <div class="allGo"><button class="btn go" type="button" data-vquiz>표현 퀴즈</button><button class="btn" type="button" data-vlist>전체 목록</button></div>
     ${show.map(x => `<div class="vS"><div class="en">${esc(x.w)}</div><div class="ko">${esc(x.k)}</div>
       <div class="vEx"><i>${esc(x.ex)}</i><br>${esc(x.exk)}</div>
@@ -10011,12 +10085,12 @@ function allGramHtml(){
       <div class="allIn"><div class="gram"><p style="margin-top:0">${esc(g.d)}</p>
         <div class="miss"><b>자주 하는 실수</b>${esc(g.x)}</div></div>
         ${done ? `<div class="row2"><button class="btn" data-alllesson="${d}">Day ${d} 레슨 보기</button></div>` : ""}</div></details>`; };
-  return `<p class="allHint">${myLevel ? `내 레벨(${lvShow(myLevel)})에 맞는 단계를 펼쳐 뒀어요.` : "지금 레슨 단계를 펼쳐 뒀어요."} 다른 단계는 눌러서 보세요.</p>`
+  return `<p class="allHint">${myLevel ? `고른 난이도(${diffName()})에 맞는 단계를 펼쳐 뒀어요.` : "지금 레슨 단계를 펼쳐 뒀어요."} 다른 단계는 눌러서 보세요.</p>`
     + GSTAGE.map(([a, b, name], i) => {
       const days = []; for (let d = a; d <= b; d++) if (GRAM[d]) days.push(d);
       const here = mine >= a && mine <= b;
       return `<details class="gStage"${here ? " open" : ""}><summary><span class="tx"><b>${i + 1}단계 · ${esc(name)}</b>
-        <small>Day ${a}~${b} · 문법 ${days.length}개</small></span>${here ? `<span class="tag">${myLevel ? "내 레벨" : "지금"}</span>` : ""}</summary>
+        <small>Day ${a}~${b} · 문법 ${days.length}개</small></span>${here ? `<span class="tag">${myLevel ? "내 난이도" : "지금"}</span>` : ""}</summary>
         <div class="gIn">${days.map(card).join("")}</div></details>`;
     }).join("");
 }
@@ -10043,7 +10117,7 @@ const LTILES = [
   { k: "search", nm: "단어 찾기",   bg: "var(--pink)",  ic: '<circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.6-3.6"></path>' }
 ];
 function learnDesc(k){
-  const lv = myLevel ? `내 레벨 ${lvShow(myLevel)}` : "";
+  const lv = diffLv.size ? `난이도 ${diffName()}` : "";
   if (k === "sent") return `한 판 ${goalS()}문장`;
   if (k === "wquiz") return lv ? `${lv} 빈칸 퀴즈` : "예문 빈칸 채우기";
   if (k === "listen") return "듣고 따라 말하기";
@@ -10125,7 +10199,7 @@ function renderStats(){
       <div class="stWeek">${days.map((d, i) => `<div class="${i === 6 ? "now" : ""}"><em>${vals[i] || ""}</em>
         <i style="height:${vals[i] ? 8 + vals[i] / mx * 72 : 4}px"></i><span>${i === 6 ? "오늘" : WK[d.getDay()]}</span></div>`).join("")}</div>
       <p class="stNote">단어 퀴즈·시험, 문장 조립, 말하기를 한 만큼 올라가요.</p></div>
-    <div class="stCard"><h3>내 단어 (내 레벨)</h3>
+    <div class="stCard"><h3>내 단어 (고른 난이도)</h3>
       <div class="stRow">${cell(c[1], BOXNAME[1])}${cell(c[2], BOXNAME[2])}${cell(c[3], BOXNAME[3])}${cell(studied, "공부한 날")}</div></div>`;
 }
 
@@ -10183,7 +10257,8 @@ function mineHtml(){
   const row = (key, nm, ds, val) => `<button class="setRow" type="button" data-mine="${key}">
     <span class="tx"><b>${nm}</b><span>${ds}</span></span>${val ? `<span class="val">${val}</span>` : ""}${CHEV}</button>`;
   const rt = remindTime();
-  return row("goal", "하루 목표", `새 단어 ${goalW()}개 · 문장 ${goalS()}개 · 퀴즈 한 판 ${goalQ()}문제`, "바꾸기")
+  return `<div class="setRow diffSet"><span class="tx"><b>난이도</b><span>단어·문장을 이 난이도에서 골라요 · 여러 개 고를 수 있어요 · 안 고르면 전체 · 지금: <b class="diffNow">${diffName()}</b></span></span></div>${diffRowHtml("inSet")}`
+    + row("goal", "하루 목표", `새 단어 ${goalW()}개 · 문장 ${goalS()}개 · 퀴즈 한 판 ${goalQ()}문제`, "바꾸기")
     + `<details class="tripSet"><summary class="setRow"><span class="tx"><b>매일 알림</b>
         <span>${rt ? `매일 ${rt} · 휴대폰 캘린더가 알려 줘요` : "시간을 고르면 휴대폰 캘린더가 매일 알려 줘요"}</span></span>${CHEV}</summary>
       <div class="setForm"><input id="rmT" type="time" value="${rt || "20:00"}" aria-label="알림 시간">
@@ -10295,9 +10370,9 @@ function xpHtml(){
 /* 나 탭 화면: home(요약 + 메뉴) · rec 공부 기록 · badge 배지·XP 상점 · set 설정 · acct 계정 */
 function mineView(v){ $("#p7").dataset.view = v; window.scrollTo(0, 0); }
 const MINE_MENU = [
-  ["rec", "공부 기록", "오늘·최근 7일·내 단어·영어 레벨", "var(--tint)", '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path>'],
+  ["rec", "공부 기록", "오늘·최근 7일·이만큼 알아요", "var(--tint)", '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path>'],
   ["badge", "배지 · XP 상점", "", "var(--honey)", '<circle cx="12" cy="9" r="6"></circle><path d="M8.5 14 7 22l5-3 5 3-1.5-8"></path>'],
-  ["set", "설정", "하루 목표·매일 알림·여행 D-day·화면", "var(--mint)", '<circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"></path>'],
+  ["set", "설정", "난이도·하루 목표·매일 알림·화면", "var(--mint)", '<circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"></path>'],
   ["acct", "계정", "", "var(--pink)", '<circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path>']
 ];
 function mySumHtml(){
@@ -10305,7 +10380,7 @@ function mySumHtml(){
   return `<div class="mySum">
     <button type="button" data-mv="rec"><b>${st}일</b><span>연속 공부</span></button>
     <button type="button" data-mv="badge"><b>${xpAll().toLocaleString()}</b><span>모은 XP</span></button>
-    <button type="button" data-mv="${myLevel ? "rec" : "lvtest"}"><b>${myLevel ? lvShow(myLevel) : "?"}</b><span>영어 레벨</span></button>
+    <button type="button" data-mv="rec"><b>${knownWords() ? knownWords().toLocaleString() : "—"}</b><span>아는 단어</span></button>
     <button type="button" data-mv="rec"><b>Day ${curDay}</b><span>레슨 진도</span></button></div>`;
 }
 function mineMenuHtml(){
@@ -10317,7 +10392,6 @@ function mineMenuHtml(){
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-mv]"); if (!b) return;
-  if (b.dataset.mv === "lvtest"){ startLevelTest(); return; }
   mineView(b.dataset.mv);
 });
 function renderMine(){
@@ -10433,11 +10507,10 @@ function renderOnboard(){
         <b>${a.nm}</b><span>${a.ds}</span></button>`).join("")}</div>
       <button class="btn go obGo" type="button" data-ob="amt">다음</button>`;
   } else {
-    body = `<p class="obKick">어디서부터 시작할까요?</p><h2 class="obT">처음부터, 아니면 내 레벨부터?</h2>
-      <div class="obAmt">
-        <button type="button" class="obOpt" data-ob="day1"><b>처음부터 시작</b><span>Day 1 '나는 ~이에요'부터 차근차근</span></button>
-        <button type="button" class="obOpt" data-ob="test"><b>내 레벨 찾기 (약 3분)</b><span>몇 문제 풀어 보고 알맞은 레슨부터 시작</span></button>
-      </div>
+    body = `<p class="obKick">난이도</p><h2 class="obT">어떤 난이도로 할까요?</h2>
+      <p class="obD">여러 개 골라도 돼요. 안 고르면 전체에서 나와요. 나중에 '나 → 설정'에서 바꿀 수 있어요.</p>
+      ${diffRowHtml("inOb")}
+      <button class="btn go obGo" type="button" data-ob="diff">시작하기</button>
       <p class="obD" style="margin-top:14px">로그인은 나중에 해도 돼요. 기록은 이 휴대폰에 저장돼요.</p>`;
   }
   $("#suBody").innerHTML = `<div class="ob">${body}</div>`;
@@ -10460,8 +10533,11 @@ function obClick(e){
     goal = { w: p.w, s: p.s, q: p.q }; store.set("vb.goal", goal);
     obStep++; renderOnboard();
   }
-  else if (k === "day1"){ store.set("vb.day", curDay); obFinish(); }
-  else if (k === "test"){ obFinish(); startLevelTest(); }
+  else if (k === "diff"){                         // 고른 난이도의 가장 쉬운 쪽에 맞춰 레슨 시작 Day를 정함 (앞으로만)
+    const lo = Math.min(...[...diffLv]);
+    if (diffLv.size && Number.isFinite(lo)){ const want = placeDay(lo); if (want > curDay){ curDay = want; } }
+    store.set("vb.day", curDay); obFinish();
+  }
 }
 
 /* ══ 앱 설치 ══ 안드로이드(크롬)는 버튼 한 번으로 설치 창을 띄우고, 아이폰은 애플이 막아 둬서 방법을 보여줍니다 */
@@ -10532,7 +10608,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=61"></script>
-<script src="sync.js?v=61"></script>
+<script src="firebase-config.js?v=62"></script>
+<script src="sync.js?v=62"></script>
 
 </body></html>

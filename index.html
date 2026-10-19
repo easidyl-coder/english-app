@@ -1427,7 +1427,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   </div>
 </div>
 
-<script src="ipa.js?v=67"></script>
+<script src="ipa.js?v=68"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -8865,7 +8865,7 @@ function ensureQShell(){
       <p class="qKoBig" id="qCk"></p>
       <p class="qMean" id="qMe"></p>
       <div class="qClozeWrap"><p class="qCloze" id="qCl"></p>
-        <input type="text" id="qIn" aria-label="빈칸에 들어갈 영어" autocomplete="off"
+        <input type="password" id="qIn" aria-label="빈칸에 들어갈 영어" autocomplete="off" data-lpignore="true" data-1p-ignore
           autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" lang="en"></div>
     </div>
     <div class="qTools">
@@ -8919,7 +8919,8 @@ function drawQ(){
   drawBoxes();
   if (document.activeElement !== inp) inp.focus({ preventScroll: true });   // 이미 입력 중이면 그대로 → 키보드가 안 내려감
 }
-/* 빈칸 상자: 정답 낱말 수만큼 상자, 친 글자를 상자에 비춰 보여 줌. '길이 보기'를 켜면 상자 너비가 글자 수에 맞춰짐 */
+/* 입력칸(#qIn·#exIn)은 type=password — 아이폰은 비밀번호 칸에 늘 영어 키보드를 띄움. 칸은 투명하고 글자는 상자에 비춰 보여 주니 ●로 안 가려짐
+   빈칸 상자: 정답 낱말 수만큼 상자, 친 글자를 상자에 비춰 보여 줌. '길이 보기'를 켜면 상자 너비가 글자 수에 맞춰짐 */
 let qLenOn = !!store.get("vb.qlen", false);
 function drawBoxes(){
   const bx = document.getElementById("qBx"), x = qDeck[qi]; if (!bx || !x) return;
@@ -10073,7 +10074,7 @@ function examWordHtml(x){
       <p class="qPrompt">단어 시험 · 빈칸에 들어갈 말</p>
       <p class="qKoBig" id="exKo">${esc(x.k)}</p>
       <div class="qClozeWrap"><p class="qCloze" id="exCl">${examClozeHtml(x)}</p>
-        <input type="text" id="exIn" aria-label="빈칸에 들어갈 영어" autocomplete="off"
+        <input type="password" id="exIn" aria-label="빈칸에 들어갈 영어" autocomplete="off" data-lpignore="true" data-1p-ignore
           autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" lang="en"></div>
       <p class="qClozeKo exCk" id="exCk">${esc(x.exk)}</p>
     </div>
@@ -10947,7 +10948,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=67"></script>
-<script src="sync.js?v=67"></script>
+<script src="firebase-config.js?v=68"></script>
+<script src="sync.js?v=68"></script>
 
 </body></html>

@@ -1138,8 +1138,12 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   @keyframes qBlink{50%{opacity:0}}
   .qTools{display:flex;gap:8px;margin-top:14px}
   .qTools .btn{min-height:48px}
-  .qTools #qShow{flex:1}
+  .qTools #qShow, .qTools #exCheck{flex:1}
   .qTools #qLen[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .exCard{margin-top:4px}
+  .exCard .exCk{text-align:left;margin:10px 0 0;font-size:13.5px}
+  #exBody .qBtns #exCheck{min-width:62%;min-height:54px}
+  #exBank .chip, #exSlot .chip{min-height:48px;padding:0 16px;touch-action:manipulation}
   .gWhy{margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--accent-soft);display:flex;flex-direction:column;gap:6px}
   .gWhy > b{font-size:14px;color:var(--accent)}
   .gWhy p{margin:0;font-size:14px;line-height:1.6;color:var(--ink);word-break:keep-all}
@@ -1408,7 +1412,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   </div>
 </div>
 
-<script src="ipa.js?v=64"></script>
+<script src="ipa.js?v=65"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -10018,16 +10022,31 @@ function renderExamSafe(){
 /* 단어 문제는 예문 빈칸으로 — 뜻만 보여 주면 '네 → yes? yeah?'처럼 답이 여러 개라서 */
 function examClozeHtml(x){
   const cz = clozeOf(x);
-  return cz ? esc(cz.pre) + "<u>&nbsp;</u>" + esc(cz.post) : "<u>&nbsp;</u>";
+  return cz ? esc(cz.pre) + '<span class="qBoxes" id="exBx"></span>' + esc(cz.post) : '<span class="qBoxes" id="exBx"></span>';
+}
+/* 빈칸 상자에 친 글자를 비춰 보여 줌 (어휘 학습 drawBoxes와 같은 방식) */
+function exBoxes(){
+  const bx = document.getElementById("exBx"), item = examDeck[examIdx], inp = document.getElementById("exIn");
+  if (!bx || !item || item.type !== "word" || !inp) return;
+  const cz = clozeOf(item.x), tok = ((cz && cz.token) || item.x.w).replace(/[.,!?]+$/, ""), parts = tok.split(" ");
+  const typed = (inp.value || "").split(" "), focus = document.activeElement === inp;
+  bx.innerHTML = parts.map((w, i) => {
+    const v = typed[i] || "", cur = focus && !examLocked && i === Math.min(typed.length - 1, parts.length - 1);
+    return `<span class="qBox${examLocked ? " ok" : ""}" style="min-width:4.2em">${esc(v)}${cur ? '<i class="qCaret"></i>' : ""}</span>`;
+  }).join(" ");
 }
 function examWordHtml(x){
   return `
-    <div class="prompt"><p class="day">단어 시험 · 빈칸에 들어갈 말</p><p class="ko">${esc(x.k)}</p>
-      <p class="qCloze" id="exCl">${examClozeHtml(x)}</p><p class="qClozeKo" id="exCk">${esc(x.exk)}</p></div>
-    <div style="text-align:center;margin:0 0 14px"><button class="btn" id="exSay">들어보기</button></div>
-    <div class="qType" id="exType">
-      <input type="text" id="exIn" placeholder="영어 스펠링" autocomplete="off"
-        autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" lang="en">
+    <div class="qCard exCard" id="exType">
+      <p class="qPrompt">단어 시험 · 빈칸에 들어갈 말</p>
+      <p class="qKoBig" id="exKo">${esc(x.k)}</p>
+      <div class="qClozeWrap"><p class="qCloze" id="exCl">${examClozeHtml(x)}</p>
+        <input type="text" id="exIn" aria-label="빈칸에 들어갈 영어" autocomplete="off"
+          autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email" lang="en"></div>
+      <p class="qClozeKo exCk" id="exCk">${esc(x.exk)}</p>
+    </div>
+    <div class="qTools">
+      <button class="btn" id="exSay" type="button">들어보기</button>
       <button class="btn" id="exHint" type="button">힌트</button>
       <button class="btn go" id="exCheck" type="button">확인</button>
     </div>
@@ -10067,17 +10086,22 @@ function renderExam(){
     if (inp){                                     // 앞 문제도 단어였으면 입력칸은 그대로 두고 글자만 바꾼다 (키보드가 안 내려감)
       $("#exBody .lsTop .gMeta").textContent = `${examTitle()} · ${examIdx+1} / ${examDeck.length}`;
       $("#exBody .gProg i").style.width = (examIdx/examDeck.length*100) + "%";
-      $("#exBody .prompt .ko").textContent = item.x.k;
+      $("#exKo").textContent = item.x.k;
       $("#exCl").innerHTML = examClozeHtml(item.x); $("#exCk").textContent = item.x.exk;
       inp.value = ""; $("#exJ").innerHTML = "";
       const rv = $("#exReveal"); rv.style.display = "none"; rv.textContent = "";
       const btn = $("#exCheck"); btn.textContent = "확인"; delete btn.dataset.next;
       if (document.activeElement !== inp) inp.focus({ preventScroll: true });
+      exBoxes();
       return;
     }
     $("#exBody").innerHTML = top + examWordHtml(item.x);
     const inp2 = $("#exIn"); if (inp2) inp2.focus({ preventScroll: true });
+    exBoxes();
   } else {
+    const ae = document.activeElement;
+    if (ae && ae.tagName === "INPUT") ae.blur();   // 키보드를 내림
+    settleView();
     const words = item.x.en.split(" ");
     examBank = shuffle(words.map((w,i)=>({w,i})));
     if (examBank.length>1 && examBank.every((b,k)=>b.i===k)) examBank = shuffle(examBank);
@@ -10122,6 +10146,8 @@ function examCheckWord(x){
     if (examWrong === 0) examScore++;
     const k = keyOf(x);
     if (examWrong === 0 && isMissed(k)) setBox(k, boxOf(k), false, repOf(k));   // 한 번에 맞히면 헷갈린 단어에서 빠짐
+    if (cz) $("#exIn").value = cz.token.replace(/[.,!?]+$/, "");
+    exBoxes();
     $("#exJ").innerHTML = '<span class="good">정답입니다! · 엔터를 누르면 다음 문제</span>';
     speak(x.w, 1);
     const btn = $("#exCheck");
@@ -10211,6 +10237,9 @@ $("#exBody").addEventListener("click", e => {
   }
   if (e.target.closest("#exCheck")){ examSubmit(); return; }
 });
+$("#exBody").addEventListener("input", e => { if (e.target.id === "exIn") exBoxes(); });
+$("#exBody").addEventListener("focusin", e => { if (e.target.id === "exIn") exBoxes(); });
+$("#exBody").addEventListener("focusout", e => { if (e.target.id === "exIn") exBoxes(); });
 $("#exBody").addEventListener("keydown", e => {
   if (e.key === "Enter" && e.target.id === "exIn"){ e.preventDefault(); examSubmit(); }
 });
@@ -10226,6 +10255,19 @@ new MutationObserver(() => {
   ovOpen = open;
 }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
 function unshift(){ if (ovOpen && Math.abs(window.scrollY - ovY) > 1) window.scrollTo(0, ovY); }
+/* 키보드가 내려간 뒤 아이폰이 화면을 어긋난 채로 두면, 손가락이 닿는 자리와 버튼 그림이 달라짐 → 조금 움직였다 되돌려 다시 맞춤 */
+function settleView(){
+  const fix = () => {
+    if (document.activeElement && document.activeElement.tagName === "INPUT") return;   // 입력 중이면 그대로
+    const y = ovOpen ? ovY : window.scrollY;
+    window.scrollTo(0, y + 1); window.scrollTo(0, y);
+  };
+  [60, 250, 500].forEach(ms => setTimeout(fix, ms));
+}
+document.addEventListener("focusout", e => { if (e.target && e.target.tagName === "INPUT") settleView(); });
+if (window.visualViewport) window.visualViewport.addEventListener("resize", () => {
+  if (!document.activeElement || document.activeElement.tagName !== "INPUT") settleView();
+});
 window.addEventListener("scroll", unshift, { passive: true });
 if (window.visualViewport) window.visualViewport.addEventListener("resize", () => setTimeout(unshift, 60));
 document.addEventListener("focusin", () => { setTimeout(unshift, 60); setTimeout(unshift, 300); });
@@ -10870,7 +10912,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=64"></script>
-<script src="sync.js?v=64"></script>
+<script src="firebase-config.js?v=65"></script>
+<script src="sync.js?v=65"></script>
 
 </body></html>

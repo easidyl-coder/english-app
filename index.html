@@ -916,8 +916,10 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   /* ═══ 개편 1단계 — 4탭 구조 ═══ */
   .xBtn{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--raise);
     color:var(--ink-2);font:inherit;font-size:18px;font-weight:700;line-height:1;cursor:pointer;display:grid;place-items:center;
-    margin-left:auto;box-shadow:var(--shadow)}
-  .lsTop{justify-content:space-between}
+    box-shadow:var(--shadow);order:-1;width:auto;padding:0 14px 0 10px;border-radius:22px;font-size:15px;white-space:nowrap}
+  .lsTop{justify-content:flex-start}
+  .sheetHead .xBtn{order:0;width:44px;padding:0;border-radius:50%;margin-left:auto;font-size:18px}
+  .quiz .gTop .gMeta, .lsTop .gMeta{margin-left:auto}
   .lsTop .gMeta{flex:1;min-width:0}
   .quiz .gTop{gap:10px}
   /* 홈 */
@@ -1115,6 +1117,18 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   .stStep b{font-size:21px;color:var(--ink);min-width:28px;text-align:right}
   .stStep small{font-size:12px;color:var(--ink-3)}
   .stStep button{font:inherit;font-size:16px;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--raise);color:var(--ink);cursor:pointer;touch-action:manipulation}
+  .stEditBox{display:flex;flex-direction:column;gap:10px;margin:6px 0 12px;padding:14px;border-radius:18px;background:var(--raise);border:1px solid var(--line)}
+  .stEditRow{display:flex;flex-direction:column;gap:8px}
+  .stEditRow + .stEditRow{border-top:1px dashed var(--line-2);padding-top:10px}
+  .stEditTop{display:flex;justify-content:space-between;align-items:center}
+  .stEditTop > b{font-size:15px}
+  .stEditBox .stStep{gap:8px}
+  .stEditBox .stStep button{width:44px;height:44px;font-size:22px;font-weight:700}
+  .stEditBox .stStep button:disabled{opacity:.35}
+  .stEditBox .stStep b{font-size:22px;min-width:30px;text-align:center}
+  .stQuick{display:flex;gap:6px}
+  .stQuick button{flex:1;font:inherit;font-size:13.5px;font-weight:700;min-height:38px;border-radius:12px;border:1.5px solid var(--line);background:var(--raise-2);color:var(--ink);cursor:pointer;touch-action:manipulation}
+  .stQuick button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
   .stEdit{min-height:36px;padding:0 14px;border-radius:18px;margin-top:4px;font-size:13px}
   .stMs{position:absolute;left:-2%;bottom:2%}
   .stDone{position:absolute;right:16%;bottom:6%;margin:0;font-size:16px;color:var(--ink-3)}
@@ -1407,13 +1421,13 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
       <div class="gProg"><i id="qBar"></i></div>
       <span class="clock" id="qClock" hidden>10.0</span>
       <span class="gMeta" id="qCount"></span>
-      <button class="xBtn" id="qX" type="button" aria-label="닫기">✕</button>
+      <button class="xBtn" id="qX" type="button" aria-label="뒤로">‹ 뒤로</button>
     </div>
     <div id="qBody"></div>
   </div>
 </div>
 
-<script src="ipa.js?v=66"></script>
+<script src="ipa.js?v=67"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -8947,6 +8961,7 @@ function qSubmit(){
 }
 /* ── 어휘 학습 시작 창 ── 코스 · 새로운 단어 / 복습할 단어 / 재도전 단어 개수 · 오늘 진행 → '오늘의 학습'
    개수는 vb.studyN = {n, r, m} (이 기기에만, 없으면 새 단어 = 하루 목표 남은 만큼, 복습 = 전부(최대 30), 재도전 = 최대 10) */
+const STUDY_NEW_MAX = 50;                         // 새 단어는 한 번에 최대 50개
 let studyOpen = "", studyN = store.get("vb.studyN", null, x => x && typeof x === "object");
 function studyParts(){
   todayParts();                                            // freshAllCache 채움
@@ -8954,8 +8969,8 @@ function studyParts(){
   const rev = reviewWords().filter(x => !isMissed(keyOf(x)));
   const freshLeft = Math.max(0, goalW() - (+todayLog().n || 0));
   const want = studyN || { n: freshLeft, r: Math.min(30, rev.length), m: Math.min(10, miss.length) };
-  const n = Math.min(want.n, freshAllCache.length), r = Math.min(want.r, rev.length), m = Math.min(want.m, miss.length);
-  return { fresh: freshAllCache.slice(0, n), rev: rev.slice(0, r), miss: miss.slice(0, m), max: { n: freshAllCache.length, r: rev.length, m: miss.length }, n, r, m };
+  const n = Math.min(want.n, freshAllCache.length, STUDY_NEW_MAX), r = Math.min(want.r, rev.length), m = Math.min(want.m, miss.length);
+  return { fresh: freshAllCache.slice(0, n), rev: rev.slice(0, r), miss: miss.slice(0, m), max: { n: Math.min(STUDY_NEW_MAX, freshAllCache.length), r: rev.length, m: miss.length }, n, r, m };
 }
 function openStudy(from){
   studyFrom = from || "home"; studyOpen = "";
@@ -8968,10 +8983,13 @@ function drawStudy(){
   const p = studyParts(), total = p.n + p.r + p.m, done = +todayLog().w || 0, goalAll = Math.max(total + done, 1);
   const pct = Math.min(1, done / goalAll), c = COURSES.find(x => x[0] === course);
   const R0 = 84, L = 2 * Math.PI * R0 * 0.75;                 // 3/4 원 진행 고리
-  const stepRow = (k, nm, v, max) => `<div class="stRowN"><span>${nm}</span><span class="stStep">
-      ${studyOpen === "n" ? `<button type="button" data-sn="${k}" data-d="-5" aria-label="5개 빼기">−</button>` : ""}
-      <b>${v}</b><small>개</small>
-      ${studyOpen === "n" ? `<button type="button" data-sn="${k}" data-d="5" aria-label="5개 더하기">＋</button>` : ""}</span></div>`;
+  const stepRow = (k, nm, v) => `<div class="stRowN"><span>${nm}</span><span class="stStep"><b>${v}</b><small>개</small></span></div>`;
+  /* 개수 조절 칸: ＋/－는 1개씩, 아래 빠른 선택 (0·5·10·20·전부) */
+  const editRow = (k, nm, v, max) => `<div class="stEditRow"><div class="stEditTop"><b>${nm}</b><span class="stStep">
+      <button type="button" data-sn="${k}" data-d="-1" aria-label="${nm} 1개 빼기"${v <= 0 ? " disabled" : ""}>−</button>
+      <b>${v}</b><small>/ ${max}개</small>
+      <button type="button" data-sn="${k}" data-d="1" aria-label="${nm} 1개 더하기"${v >= max ? " disabled" : ""}>＋</button></span></div>
+    <div class="stQuick">${[0, 5, 10, 20].filter(n => n < max).concat(max).map(n => `<button type="button" data-sv="${k}" data-v="${n}" aria-pressed="${n === v}">${n === max && n ? "전부" : n}</button>`).join("")}</div></div>`;
   $("#qBody").innerHTML = `<div class="study">
     <div class="stCourse"><div><span class="tag">학습 코스</span><b>${c[1]}</b><small>${esc(c[2])} · 난이도 ${diffName()}</small></div>
       <button class="btn" type="button" data-study="course">↻ 변경</button></div>
@@ -8988,15 +9006,21 @@ function drawStudy(){
       <span class="stMs">${mascot(done ? "happy" : "base", 76)}</span>
       <p class="stDone"><b>${done}</b>/${goalAll}</p>
     </div>
+    ${studyOpen === "n" ? `<div class="stEditBox">${editRow("n", "새로운 단어", p.n, p.max.n)}${editRow("r", "복습할 단어", p.r, p.max.r)}${editRow("m", "재도전 단어", p.m, p.max.m)}</div>` : ""}
     <p class="qPickD" style="text-align:center">재도전 = 전에 틀린 단어 · 복습 = 잊을 때쯤 된 단어 · 새로운 단어 = 처음 보는 단어</p>
     <button class="btn go qGo" type="button" data-study="go"${total ? "" : " disabled"}>📖 오늘의 학습${total ? ` (${total}개)` : " — 볼 단어가 없어요"}</button>
   </div>`;
 }
 $("#qBody").addEventListener("click", e => {
-  const s = e.target.closest("[data-study]"), cb = e.target.closest("[data-course]"), sn = e.target.closest("[data-sn]");
-  if (!s && !cb && !sn) return;
+  const s = e.target.closest("[data-study]"), cb = e.target.closest("[data-course]"), sn = e.target.closest("[data-sn]"), sv = e.target.closest("[data-sv]");
+  if (!s && !cb && !sn && !sv) return;
+  if (sv){
+    const p = studyParts(), cur = { n: p.n, r: p.r, m: p.m };
+    cur[sv.dataset.sv] = Math.max(0, Math.min(p.max[sv.dataset.sv], +sv.dataset.v));
+    studyN = cur; store.set("vb.studyN", studyN); drawStudy(); return;
+  }
   if (cb){ course = cb.dataset.course; store.set("vb.course", course); lessonWordSet = null; studyOpen = ""; drawStudy(); try{ renderHome(); }catch(err){} return; }
-  if (sn){
+  if (sn){ if (sn.disabled) return;
     const p = studyParts(), cur = { n: p.n, r: p.r, m: p.m }, k = sn.dataset.sn;
     cur[k] = Math.max(0, Math.min(p.max[k], cur[k] + (+sn.dataset.d)));
     studyN = cur; store.set("vb.studyN", studyN); drawStudy(); return;
@@ -9543,7 +9567,10 @@ $("#bkLoad").addEventListener("click", ()=>{
   }catch(e){ $("#bkMsg").textContent = "복원하지 못했습니다. 백업한 글자 전체를 붙여넣었는지 확인해 주세요."; }
 });
 /* 퀴즈·레벨 테스트는 언제든 ✕(또는 Esc)로 닫을 수 있음 */
-$("#qX").addEventListener("click", endQuiz);
+$("#qX").addEventListener("click", () => {
+  if (studyRun && $("#qBody [data-qshell]")){ studyRun = false; openStudy(studyFrom); return; }   // 어휘 학습 문제 중이면 시작 창으로
+  endQuiz();
+});
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && document.body.classList.contains("quizOn")) endQuiz(); });
 
 /* ══ 듣기·말하기 ══ '말하기'를 누르고 영어로 말하면 음성 인식으로 단어마다 맞았는지 보여줍니다.
@@ -9982,7 +10009,7 @@ $("#lsBody").addEventListener("click", e => {
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeLesson(); });
 /* 전체 화면을 덮는 창(레슨·퀴즈·시험·메모·목표)은 모두 오른쪽 위 ✕로 닫음 */
-function xBtn(id){ return `<button class="xBtn" id="${id}" type="button" aria-label="닫기">✕</button>`; }
+function xBtn(id){ return `<button class="xBtn" id="${id}" type="button" aria-label="뒤로">‹ 뒤로</button>`; }   // 왼쪽 위 뒤로 (주인 요청)
 
 /* ══ 레슨 시험 ══ 그날 단어(최대 8개) → 그날 문장(최대 8개). 맞혀야만 다음 문제로 넘어갑니다 */
 let examDay = 0, examDeck = [], examIdx = 0, examWrong = 0, examHinted = 0, examLocked = false;
@@ -10920,7 +10947,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=66"></script>
-<script src="sync.js?v=66"></script>
+<script src="firebase-config.js?v=67"></script>
+<script src="sync.js?v=67"></script>
 
 </body></html>

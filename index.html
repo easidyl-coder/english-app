@@ -275,6 +275,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
 
   .quiz{display:none;position:fixed;inset:0;z-index:50;background:var(--ground);padding-block:24px;overflow-y:auto}
   body.quizOn .quiz{display:block}
+  .quiz, #exam{padding-bottom:calc(24px + var(--kb, 0px)) !important}
   body.quizOn{overflow:hidden}
   .qWord{font-family:"Gothic A1",sans-serif;font-size:44px;font-weight:600;line-height:1.15;margin:24px 0 0;text-align:center;letter-spacing:-.02em}
   .qPron{font-size:13px;color:var(--ink-3);margin:7px 0 0;text-align:center}
@@ -1412,7 +1413,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   </div>
 </div>
 
-<script src="ipa.js?v=65"></script>
+<script src="ipa.js?v=66"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -8904,7 +8905,7 @@ function drawQ(){
   drawBoxes();
   if (document.activeElement !== inp) inp.focus({ preventScroll: true });   // 이미 입력 중이면 그대로 → 키보드가 안 내려감
 }
-/* 빈칸 상자: 정답 낱말 수만큼 상자, 친 글자를 상자에 비춰 보여 줌. '길이 보기'를 켜면 글자 수만큼 칸(•) */
+/* 빈칸 상자: 정답 낱말 수만큼 상자, 친 글자를 상자에 비춰 보여 줌. '길이 보기'를 켜면 상자 너비가 글자 수에 맞춰짐 */
 let qLenOn = !!store.get("vb.qlen", false);
 function drawBoxes(){
   const bx = document.getElementById("qBx"), x = qDeck[qi]; if (!bx || !x) return;
@@ -8913,7 +8914,7 @@ function drawBoxes(){
   const lb = $("#qLen"); if (lb) lb.setAttribute("aria-pressed", qLenOn);
   bx.innerHTML = parts.map((w, i) => {
     const v = typed[i] || "", cur = focus && !qSt.passed && i === Math.min(typed.length - 1, parts.length - 1);
-    const len = qLenOn ? `<span class="qDots">${"•".repeat(Math.max(0, w.length - v.length))}</span>` : "";
+    const len = "";                                // 빈칸 안 점(•)은 없앰 — 길이 보기는 상자 너비로만 보여 줌
     return `<span class="qBox${qSt.passed ? " ok" : ""}" style="min-width:${qLenOn ? Math.max(2, w.length) * 0.62 + 0.6 : 4.2}em">${esc(v)}${cur ? '<i class="qCaret"></i>' : ""}${len}</span>`;
   }).join(" ");
 }
@@ -8932,6 +8933,10 @@ function qSubmit(){
     $("#qA").className = "qAns";
     $("#qJ").innerHTML = '<span class="good">맞았습니다 · 엔터를 누르면 다음 문제</span>';
     $("#qWhy").innerHTML = whyHtml(x, qSt.cloze); $("#qWhy").hidden = false;
+    $("#qJ").innerHTML = '<span class="good">맞았습니다 · 다음을 누르세요</span>';
+    inp.blur();                                   // 키보드를 내려 아래 설명이 보이게 (다음 문제에서 다시 올라옴)
+    setTimeout(() => { const w = $("#qWhy"); if (w && !w.hidden) w.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, 350);
+    return;
   } else {
     qSt.wrong++;
     shakeEl($("#qT"));
@@ -10152,7 +10157,8 @@ function examCheckWord(x){
     speak(x.w, 1);
     const btn = $("#exCheck");
     if (btn){ btn.textContent = "다음"; btn.dataset.next = "1"; }
-    $("#exIn").focus();                      // 입력칸을 그대로 두어야 키보드가 안 내려갑니다
+    $("#exJ").innerHTML = '<span class="good">정답입니다! · 다음을 누르세요</span>';
+    $("#exIn").blur();                       // 맞히면 키보드를 내려 결과가 보이게 (다음 문제에서 다시 올라옴)
   } else {
     examWrong++;
     if (examWrong === 1) setBox(keyOf(x), boxOf(keyOf(x)), true, repOf(keyOf(x)));    // 헷갈린 단어로 표시 → 다음 퀴즈에 다시 나옴
@@ -10254,6 +10260,8 @@ new MutationObserver(() => {
   if (open && !ovOpen) ovY = window.scrollY;
   ovOpen = open;
 }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+if (window.visualViewport){ const kbVar = () => { const kb = Math.max(0, window.innerHeight - visualViewport.height - visualViewport.offsetTop); document.documentElement.style.setProperty("--kb", kb > 80 ? kb + "px" : "0px"); };
+  visualViewport.addEventListener("resize", kbVar); visualViewport.addEventListener("scroll", kbVar); }
 function unshift(){ if (ovOpen && Math.abs(window.scrollY - ovY) > 1) window.scrollTo(0, ovY); }
 /* 키보드가 내려간 뒤 아이폰이 화면을 어긋난 채로 두면, 손가락이 닿는 자리와 버튼 그림이 달라짐 → 조금 움직였다 되돌려 다시 맞춤 */
 function settleView(){
@@ -10912,7 +10920,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=65"></script>
-<script src="sync.js?v=65"></script>
+<script src="firebase-config.js?v=66"></script>
+<script src="sync.js?v=66"></script>
 
 </body></html>

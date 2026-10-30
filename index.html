@@ -717,6 +717,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b && !b.getA
   .lsDay.on{ background:var(--honey); border-color:var(--honey); color:var(--on-honey) }
   .lsDay.cur{ background:var(--accent); border-color:var(--accent); color:#fff }
   .lsDay.cur small{ color:var(--tint) }
+  .lsDay.later{ opacity:.55 }
   /* ═══ 홈 ═══ */
   header{display:none}
   .hTop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-top:22px;flex-wrap:wrap}
@@ -1431,8 +1432,8 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b && !b.getA
   </div>
 </div>
 
-<script src="ipa.js?v=71"></script>
-<script src="words.js?v=71"></script>
+<script src="ipa.js?v=72"></script>
+<script src="words.js?v=72"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -4989,8 +4990,8 @@ function renderLesson(day){
   $("#lsBody").innerHTML = `
     <div class="lsTop"><button class="lsDayBtn" id="lsAll" type="button">Day ${day} <span aria-hidden="true">▾</span>${isToday ? " <small>오늘</small>" : ""}</button>${xBtn("lsX")}</div>
     <div id="lsPick" hidden><div class="lsList">${
-      Array.from({length: today}, (_, i) => today - i).map(n =>
-        `<button class="lsDay ${n === day ? "cur" : ""}" data-day="${n}">${n}<small>${n === today ? "오늘" : (GRAM[n] ? GRAM[n].t.slice(0,4) : "")}</small></button>`
+      Array.from({length: LASTDAY}, (_, i) => i + 1).map(n =>             // Day 1부터 준비된 모든 레슨 (앞으로 할 레슨은 미리 보기)
+        `<button class="lsDay ${n === day ? "cur" : n > today ? "later" : ""}" data-day="${n}">${n}<small>${n === today ? "오늘" : (GRAM[n] ? GRAM[n].t.slice(0,4) : "")}</small></button>`
       ).join("")}</div></div>
 
     <div class="lsHero">
@@ -4998,6 +4999,7 @@ function renderLesson(day){
       <span class="t">${g ? esc(g.t) : (isToday ? "오늘의 레슨" : day + "일차 레슨")}</span>
       <span class="d">문장 ${todayS.length}개 · 단어 ${tw.length}개</span>
     </div>
+    ${day > today ? `<p class="allHint">아직 차례가 안 된 레슨이에요. 미리 볼 수 있고, 시험은 Day ${today}부터 차례로 봐요.</p>` : ""}
 
     ${g ? `<section class="lsSec"><h2>${N()}. 오늘의 문법</h2>
       <div class="gram">
@@ -5039,7 +5041,7 @@ function renderLesson(day){
     </section>
     <div class="lsNav">
       <button class="btn" id="lsPrev" type="button" ${day <= 1 ? "disabled" : ""}>◀ 이전 레슨</button>
-      <button class="btn" id="lsNext" type="button" ${day >= today ? "disabled" : ""}>다음 레슨 ▶</button>
+      <button class="btn" id="lsNext" type="button" ${day >= LASTDAY ? "disabled" : ""}>다음 레슨 ▶</button>
     </div>`;
 }
 /* 클릭 처리는 한 번만 연결 — 매번 다시 붙이면 눌렀을 때 점점 느려집니다 */
@@ -5048,7 +5050,7 @@ $("#lsBody").addEventListener("click", e => {
   const today = dayNo();
   if (e.target.closest("#lsX")){ closeLesson(); return; }
   if (e.target.closest("#lsPrev")){ LSDAY = Math.max(1, LSDAY - 1); renderLesson(LSDAY); lsTop0(); return; }
-  if (e.target.closest("#lsNext")){ LSDAY = Math.min(today, LSDAY + 1); renderLesson(LSDAY); lsTop0(); return; }
+  if (e.target.closest("#lsNext")){ LSDAY = Math.min(LASTDAY, LSDAY + 1); renderLesson(LSDAY); lsTop0(); return; }
   if (e.target.closest("#lsAll")){ const b = $("#lsPick"); b.hidden = !b.hidden; return; }
   if (e.target.closest("#lsExam")){
     openExam(today); return;
@@ -5928,9 +5930,7 @@ function obClick(e){
     goal = { w: p.w, s: p.s, q: p.q }; store.set("vb.goal", goal);
     obStep++; renderOnboard();
   }
-  else if (k === "diff"){                         // 고른 난이도의 가장 쉬운 쪽에 맞춰 레슨 시작 Day를 정함 (앞으로만)
-    const lo = Math.min(...[...diffLv]);
-    if (diffLv.size && Number.isFinite(lo)){ const want = placeDay(lo); if (want > curDay){ curDay = want; } }
+  else if (k === "diff"){                         // 레슨은 난이도와 상관없이 Day 1부터 (2026-10-30 CEO 요청)
     store.set("vb.day", curDay); obFinish();
   }
 }
@@ -6008,7 +6008,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=71"></script>
-<script src="sync.js?v=71"></script>
+<script src="firebase-config.js?v=72"></script>
+<script src="sync.js?v=72"></script>
 
 </body></html>

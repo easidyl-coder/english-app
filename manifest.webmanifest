@@ -2,7 +2,7 @@
   "id": "./",
   "name": "톡톡 잉글리시",
   "short_name": "톡톡 잉글리시",
-  "description": "레벨에 맞춘 여행 영어 단어·문장·말하기 연습",
+  "description": "난이도에 맞춘 영어 단어·문장·말하기 연습",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

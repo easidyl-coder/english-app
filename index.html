@@ -1213,7 +1213,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
 <div id="busy" role="status" aria-live="polite" hidden><i class="spin"></i><span></span></div>
 <div class="shell">
   <header>
-    <p class="eyebrow">여행 영어 연습</p>
+    <p class="eyebrow">매일 영어 연습</p>
     <h1>톡톡 잉글리시</h1>
     <div class="stats">
       <div class="stat"><span class="n" id="sTotal">0</span><span class="l">누적 단어</span></div>
@@ -1431,7 +1431,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b) b.remove(
   </div>
 </div>
 
-<script src="ipa.js?v=69"></script>
+<script src="ipa.js?v=70"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -7972,7 +7972,7 @@ const isDue = k => { const b = boxOf(k); return b >= 2 && Date.now() - stampOf(k
 
 /* ── 어휘 학습 코스 ── vb.course (이 기기에만): all 통합 · lesson 지금까지 레슨 단어 · travel 여행 단어 · expr 표현·숙어 */
 const COURSES = [["all", "통합 코스", "고른 난이도의 모든 단어"], ["lesson", "레슨 코스", "지금까지 배운 레슨(Day)의 단어"],
-                 ["travel", "여행 코스", "여행·음식·숙소·쇼핑 단어"], ["expr", "표현·숙어 코스", "여러 단어로 된 덩어리 표현"]];
+                 ["travel", "생활 코스", "교통·음식·숙소·쇼핑 단어"], ["expr", "표현·숙어 코스", "여러 단어로 된 덩어리 표현"]];
 let course = (v => COURSES.some(c => c[0] === v) ? v : "all")(store.get("vb.course", "all"));
 const TRAVEL_C = new Set(["여행·교통", "음식·식당", "숙소·생활", "쇼핑·돈"]);
 let lessonWordSet = null;
@@ -8080,14 +8080,14 @@ const GRAM = {
   6:{t:"~인가요?",f:"Are you ~? / Is it ~?",d:"be동사 문장은 그 동사를 맨 앞으로 옮기면 질문이 됩니다.",x:"You are ready? 도 통하지만, 정식은 Are you ready? 입니다."},
   7:{t:"~아니에요 + 짧은 대답",f:"I'm not / It's not · Yes, I am. / No, I'm not.",d:"be동사 뒤에 not 만 붙이면 부정. 대답은 주어+be로 짧게.",x:"Yes 만 하고 끝내지 마세요. Yes, I am. 까지 해야 자연스럽습니다."},
   8:{t:"나는 ~해요",f:"I + 동사",d:"be동사 말고 진짜 동작을 말할 때. 그대로 씁니다.",x:"I am live in Seoul (X) — be동사와 일반동사는 같이 못 씁니다."},
-  9:{t:"원해요 / 필요해요 / 좋아해요",f:"I want / need / like + 명사 (또는 to + 동사)",d:"여행에서 가장 많이 쓰는 세 동사입니다.",x:"I want go (X) → I want to go. 동사가 오면 to 를 넣으세요."},
+  9:{t:"원해요 / 필요해요 / 좋아해요",f:"I want / need / like + 명사 (또는 to + 동사)",d:"말할 때 가장 많이 쓰는 세 동사입니다.",x:"I want go (X) → I want to go. 동사가 오면 to 를 넣으세요."},
   10:{t:"그는 ~해요",f:"He / She / It + 동사 + s",d:"주어가 3인칭 하나일 때만 동사에 s 를 붙입니다.",x:"He work (X) → He works. 이 s 를 빠뜨리는 실수가 가장 흔합니다."},
   11:{t:"안 해요",f:"don't / doesn't + 동사",d:"일반동사 부정은 don't. 주어가 he/she/it 이면 doesn't.",x:"He doesn't works (X) → doesn't 뒤 동사는 원형으로 돌아갑니다."},
   12:{t:"~하세요?",f:"Do you ~? / Does he ~?",d:"일반동사 질문은 맨 앞에 Do, 3인칭이면 Does.",x:"Do you have 뒤에 물건을 넣으면 가게에서 거의 다 통합니다."},
   13:{t:"뭐 / 어디",f:"What / Where + do you + 동사",d:"의문사를 맨 앞에 두고 뒤는 질문 순서 그대로.",x:"Where you live? (X) → Where do you live?"},
   14:{t:"언제 / 어떻게 / 왜",f:"When / How / Why / Which / Who",d:"나머지 의문사. 쓰는 자리는 What, Where와 똑같습니다.",x:"How much(얼마) 와 How long(얼마나 오래) 를 헷갈리지 마세요."},
   15:{t:"할 수 있어요 / 못해요",f:"can / can't + 동사원형",d:"능력이나 가능 여부. can 뒤에는 무조건 동사원형.",x:"I can to swim (X) — can 뒤에 to 는 넣지 않습니다."},
-  16:{t:"해주실래요? / 해도 될까요?",f:"Can you ~? (부탁) / Can I ~? (허락)",d:"여행 회화의 절반이 이 두 개입니다.",x:"더 정중하게는 Could you ~? — 뒤는 똑같이 동사원형입니다."},
+  16:{t:"해주실래요? / 해도 될까요?",f:"Can you ~? (부탁) / Can I ~? (허락)",d:"부탁하고 허락받는 말은 거의 이 두 개로 해결돼요.",x:"더 정중하게는 Could you ~? — 뒤는 똑같이 동사원형입니다."},
   17:{t:"~할 거예요",f:"I'll + 동사 / I'm going to + 동사",d:"지금 정한 건 I'll, 이미 정해둔 계획은 I'm going to.",x:"식당에서 주문할 땐 I'll take / I'll have 가 가장 자연스럽습니다."},
   18:{t:"지금 ~하는 중이에요",f:"I'm + 동사ing",d:"말하는 그 순간 하고 있는 일.",x:"I looking (X) → I'm looking. am/is/are 를 빠뜨리지 마세요."},
   19:{t:"~가 있어요",f:"There is / There are + 명사",d:"무언가의 존재를 말할 때. 하나면 is, 여럿이면 are.",x:"Have a problem (X) → There's a problem. 문제를 알릴 때 이 표현을 씁니다."},
@@ -8101,13 +8101,13 @@ const GRAM = {
   27:{t:"더 ~한 / 가장 ~한",f:"-er / more ~ · the -est / the most ~",d:"짧은 단어는 er, 긴 단어는 more 를 앞에 붙입니다.",x:"more cheaper (X) — 둘 중 하나만 씁니다."},
   28:{t:"22~27 복습",f:"과거와 비교 섞어 쓰기",d:"겪은 일을 말하고, 더 나은 걸 고르는 연습.",x:"어제 한 일을 세 문장으로 말해 보세요."},
   29:{t:"1~28 총정리",f:"배운 패턴 전부",d:"속사포로 뱉어 보며 굳히는 날.",x:"막히는 문장은 그 날짜 레슨으로 돌아가 다시 보세요."},
-  30:{t:"실전 - 입국 심사",f:"묻는 말에 한 문장으로 답하기",d:"여행지 공항에서 실제로 받게 될 질문들입니다.",x:"길게 말할 필요 없어요. 짧고 분명하게 한 문장이면 충분합니다."},
+  30:{t:"실전 - 입국 심사",f:"묻는 말에 한 문장으로 답하기",d:"해외 공항에서 실제로 받게 되는 질문들입니다.",x:"길게 말할 필요 없어요. 짧고 분명하게 한 문장이면 충분합니다."},
   31:{t:"and / but / so 로 잇기",f:"문장 + , and / but / so + 문장",d:"짧은 문장 두 개를 그냥 이어 붙입니다. and(그리고), but(그런데), so(그래서).",x:"한 번에 긴 문장을 만들려 하지 마세요. 짧게 뱉고 나서 뒤에 덧붙이는 게 실제 말하는 방식입니다."},
   32:{t:"because / when",f:"문장 + because(왜냐면) / when(~할 때) + 문장",d:"이유와 시점을 붙이면 문장이 자연스럽게 두 배가 됩니다.",x:"because 뒤에는 주어+동사가 꼭 옵니다. because tired (X) → because I was tired."},
   33:{t:"I think / I know + 문장",f:"I think (that) + 주어 + 동사",d:"앞에 I think 만 붙여도 문장이 길어지고, 단정을 피할 수 있어 훨씬 부드러워집니다.",x:"that 은 생략해도 됩니다. I think it's closed. 가 가장 흔한 형태예요."},
   34:{t:"얼마나 자주 / 언제",f:"빈도부사(usually, always, often, never) + 동사",d:"동사 앞에 한 단어만 끼워도 정보가 늘어납니다. be동사일 때만 뒤에 옵니다.",x:"I get usually up (X) → I usually get up. 빈도부사는 일반동사 바로 앞입니다."},
   35:{t:"전치사구로 늘리기",f:"동사 + 어디서 + 누구와 + 언제",d:"한 문장 뒤에 장소·사람·시간을 순서대로 붙여 나갑니다.",x:"한국어 순서(어제 해변에서)와 반대입니다. 영어는 장소 → 시간 순서로 붙이세요."},
-  36:{t:"~하려고 (이유)",f:"to + 동사원형",d:"행동의 목적을 뒤에 붙입니다. 여행에서 이유를 설명할 때 계속 씁니다.",x:"for see (X) → to see. 동사가 오면 for 가 아니라 to 입니다."},
+  36:{t:"~하려고 (이유)",f:"to + 동사원형",d:"행동의 목적을 뒤에 붙입니다. 이유를 설명할 때 계속 씁니다.",x:"for see (X) → to see. 동사가 오면 for 가 아니라 to 입니다."},
   37:{t:"who / that 으로 설명 붙이기",f:"명사 + who(사람) / that(사물) + 동사",d:"명사 뒤에 설명을 매다는 방법. 이게 되면 문장 길이가 확 늘어납니다.",x:"설명은 꾸미는 명사 바로 뒤에 붙입니다. 멀리 떨어지면 무슨 말인지 모릅니다."},
   38:{t:"만약 ~라면",f:"If + 주어 + 동사, 주어 + will/can + 동사",d:"조건을 앞에 붙입니다. 부탁이나 제안을 부드럽게 만들 때도 좋습니다.",x:"If it will rain (X) → If it rains. if 절 안에서는 미래도 현재형으로 씁니다."},
   39:{t:"대화 이어가기",f:"Actually / By the way / Anyway / How about you?",d:"할 말을 고르는 시간을 벌어주고, 대화를 끊기지 않게 해주는 연결어들입니다.",x:"침묵보다 Let me think for a second. 가 훨씬 낫습니다. 채워 넣을 말을 미리 외워두세요."},
@@ -8139,9 +8139,9 @@ const GRAM = {
   65:{t:"렌터카 · 운전",f:"I'd like to rent ~ / Is ~ included? / Where can I ~?",d:"차를 빌리고 길을 다닐 때.",x:"주유소는 gas station이에요. (영국은 petrol station)"},
   66:{t:"약국 · 병원에서",f:"I need something for ~ / I think I got ~ / How many times ~?",d:"증상을 짧고 정확하게 말해요.",x:"약을 '먹다'는 eat이 아니라 take예요."},
   67:{t:"투어 예약하기",f:"Are there any ~? / Does the price include ~? / Can you pick us up ~?",d:"포함·시간·준비물을 꼭 확인해요.",x:"pick up us (X) → pick us up. 대명사는 가운데."},
-  68:{t:"사진 부탁하기",f:"Could you take ~? / Do you want me to ~?",d:"여행에서 하루에도 몇 번씩 쓰는 말.",x:"Take a photo for me보다 Could you take a photo of us?가 자연스러워요."},
+  68:{t:"사진 부탁하기",f:"Could you take ~? / Do you want me to ~?",d:"사진을 부탁하거나 찍어 줄 때 쓰는 말.",x:"Take a photo for me보다 Could you take a photo of us?가 자연스러워요."},
   69:{t:"전화로 예약하기",f:"I'd like to make a reservation for ~ / It's under ~",d:"얼굴이 안 보이니 짧고 분명하게.",x:"Reservation please만 하면 부족해요. 언제·몇 명인지 꼭 붙여요."},
-  70:{t:"61~69 복습",f:"여행 실전 표현 총정리",d:"공항부터 병원까지 상황을 떠올리며 말해 봐요.",x:"실제 상황이라고 생각하고 소리 내서 말해 보세요."},
+  70:{t:"61~69 복습",f:"실전 상황 표현 총정리",d:"공항부터 병원까지 상황을 떠올리며 말해 봐요.",x:"실제 상황이라고 생각하고 소리 내서 말해 보세요."},
   71:{t:"예전엔 ~했어요",f:"used to + 동사 (지금은 안 함)",d:"예전 습관·상태를 지금과 비교할 때.",x:"Did you used to (X) → Did you use to. 질문·부정에선 d가 빠져요."},
   72:{t:"너무 ~해요 / 충분히 ~해요",f:"too + 형용사 (+ to 동사) / 형용사 + enough",d:"too는 '지나쳐서 안 된다', enough는 '충분하다'.",x:"enough big (X) → big enough. 형용사 뒤에 enough."},
   73:{t:"너무 ~해서 …했어요",f:"so + 형용사 (that) ~ / such a + 형용사 + 명사",d:"감탄하거나, 이유와 결과를 한 번에 말할 때.",x:"so a beautiful day (X) → such a beautiful day. 명사가 있으면 such."},
@@ -8164,7 +8164,7 @@ function finishDay(){
   renderHome();
 }
 const lessonDoneToday = () => store.get("vb.dayDone", "") === dkey();
-function stageOf(w){ return w<=5?"1단계 문장의 뼈대":w<=11?"2단계 여행에서 살아남기":w<=17?"3단계 대화 이어가기":"4단계 자연스럽게"; }
+function stageOf(w){ return w<=5?"1단계 문장의 뼈대":w<=11?"2단계 일상에서 살아남기":w<=17?"3단계 대화 이어가기":"4단계 자연스럽게"; }
 /* 오늘 목표 동그라미 — 누르면 이어서 공부 */
 function ringHtml(val, max, color, label, act){
   const p = Math.min(1, val / Math.max(1, max)), C = 2 * Math.PI * 34, ok = val >= max;
@@ -10515,7 +10515,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeNote();
 
 /* ══ 전체 학습 ══ 오늘의 레슨과 별개로 단어·문법·실전 회화·듣기를 골라서 봅니다 */
 let allCat = "word", allOpen = 0;                 // allOpen: 펼쳐서 보여줄 상황(101~) 번호
-const TALK = [111, 101, 102, 103, 104, 112, 105, 113, 109, 110].filter(d => DAYS[d]);   // 여행 순서대로 (공항 → 카페 → … → 스몰토크)
+const TALK = [111, 101, 102, 103, 104, 112, 105, 113, 109, 110].filter(d => DAYS[d]);   // 상황 순서 (공항 → 카페 → … → 스몰토크)
 const CHEV = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 6 6 6-6 6"></path></svg>';
 const ico = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 
@@ -10527,7 +10527,7 @@ function allSentHtml(x){
 /* 문법 80개를 9단계로 묶고, 내 레벨(없으면 지금 레슨)에 맞는 단계만 펼쳐 둔다 — 아래로 덜 내려가게 */
 const GSTAGE = [[1, 7, "be동사 — 나는 ~이에요"], [8, 14, "일반동사·질문하기"], [15, 21, "조동사·미래·진행·있어요"],
                 [22, 30, "과거·전치사·비교"], [31, 40, "문장 길게 말하기"],
-                [41, 50, "해 본 적 있어요·공손한 질문"], [51, 60, "제안·조언·추측·의견"], [61, 70, "여행 실전 표현"], [71, 80, "이야기 길게 하기"]];
+                [41, 50, "해 본 적 있어요·공손한 질문"], [51, 60, "제안·조언·추측·의견"], [61, 70, "실전 상황 표현"], [71, 80, "이야기 길게 하기"]];
 /* ── 어휘: 표현·숙어 ── 여러 단어가 한 덩어리로 쓰이는 말 (take a picture, How about …). 내 레벨에 맞는 것부터 8개씩 */
 let vocabSeed = 0;
 const isExpr = x => x.c === "표현·숙어" || / /.test(x.w);
@@ -10562,7 +10562,7 @@ function allGramHtml(){
     }).join("");
 }
 function allTalkHtml(){
-  return `<p class="allHint">여행에서 바로 쓰는 상황별 문장이에요. 레슨 순서와 상관없이 골라서 연습하세요.</p>` + TALK.map(d => {
+  return `<p class="allHint">밖에서 바로 쓰는 상황별 문장이에요. 레슨 순서와 상관없이 골라서 연습하세요.</p>` + TALK.map(d => {
     const ss = SENTS.filter(x => x.d === d), ws = wordsOfDay(d);
     return `<details class="allCard" data-sit="${d}"${d === allOpen ? " open" : ""}><summary><span class="tx">
       <b>${esc(DAYS[d])}</b><small>문장 ${ss.length}개 · 단어 ${ws.length}개</small></span></summary>
@@ -10588,7 +10588,7 @@ function learnDesc(k){
   if (k === "sent") return `한 판 ${goalS()}문장`;
   if (k === "wquiz") return "오늘의 어휘 학습";
   if (k === "listen") return "듣고 따라 말하기";
-  if (k === "talk") return `여행 상황 ${TALK.length}가지`;
+  if (k === "talk") return `상황별 회화 ${TALK.length}가지`;
   if (k === "vocab") return `표현·숙어 ${vocabPool().length}개`;
   if (k === "gram") return `레슨 문법 ${Object.keys(GRAM).length}개`;
   if (k === "words") return `단어 ${WORDS.length.toLocaleString()}개`;
@@ -10748,7 +10748,7 @@ document.addEventListener("click", e => {
   }
 });
 /* ── 매일 알림 ── 앱 알림(푸시) 대신, 매일 반복되는 캘린더 일정(.ics)을 만들어 줌. 고른 시간은 vb.remind (이 기기에만)
-   시간대 없이(floating) 적어서 여행지에 가도 그곳 시각으로 울림 */
+   시간대 없이(floating) 적어서 다른 나라에 가도 그곳 시각으로 울림 */
 const remindTime = () => { const v = store.get("vb.remind", ""); return /^\d\d:\d\d$/.test(v) ? v : ""; };
 function icsFold(line){                          // .ics는 한 줄 75바이트까지 — 넘으면 다음 줄을 공백으로 시작
   const enc = new TextEncoder(), out = []; let cur = "", n = 0;
@@ -11077,7 +11077,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=69"></script>
-<script src="sync.js?v=69"></script>
+<script src="firebase-config.js?v=70"></script>
+<script src="sync.js?v=70"></script>
 
 </body></html>

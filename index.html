@@ -1380,11 +1380,12 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b && !b.getA
         <div id="micOut"></div>
       </div>
       <h4 class="advH">진도 백업 · 복원</h4>
-      <p class="lead" style="margin-top:4px">아래 글자를 통째로 복사해 메모장에 보관해 두세요. 기기를 바꾸거나 기록이 지워졌을 때 여기에 붙여넣고 복원하면 단어 단계가 되살아납니다.</p>
+      <p class="lead" style="margin-top:4px">아래 글자를 통째로 복사해 메모장에 보관해 두세요. 레슨 진도·단어 단계·출석·XP·메모·설정이 모두 들어 있어요. 기기를 바꾸거나 기록이 지워졌을 때 여기에 붙여넣고 복원하면 되살아납니다.</p>
       <textarea id="bkText" spellcheck="false"></textarea>
       <div class="lbtns">
         <button class="btn" id="bkCopy" type="button">복사</button>
         <button class="btn" id="bkLoad" type="button">붙여넣은 내용으로 복원</button>
+        <button class="btn" id="bkUndo" type="button" hidden>복원 전으로 되돌리기</button>
       </div>
       <p class="bmsg" id="bkMsg"></p>
     </details>
@@ -1432,8 +1433,8 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b && !b.getA
   </div>
 </div>
 
-<script src="ipa.js?v=72"></script>
-<script src="words.js?v=72"></script>
+<script src="ipa.js?v=73"></script>
+<script src="words.js?v=73"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -3187,8 +3188,12 @@ $("#hStreak").addEventListener("click", () => { go(7); attMonth = null; mineView
 
 /* ── 소리 ── */
 const hasTTS = "speechSynthesis" in window;
+let ttsWarned = false;
 function speak(text, rate){
-  if (!hasTTS) return;
+  if (!hasTTS){                                   // 소리 재생이 안 되는 기기 — 조용히 넘기지 말고 한 번 알려 줌
+    if (!ttsWarned){ ttsWarned = true; window.appBusy && appBusy("이 기기는 소리 재생이 안 돼요. 영어 글자를 보며 공부해 주세요."); setTimeout(() => window.appBusy && appBusy(false), 3500); }
+    return;
+  }
   try{
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
@@ -4608,7 +4613,23 @@ function bindPlan(){
 $("#goQuiz").addEventListener("click", ()=>startQuiz());
 
 /* 진도 백업·복원 */
-function fillBackup(){ $("#bkText").value = JSON.stringify(boxes); }
+/* 형식: {app:"talktalk", v:2, at:날짜, data:{vb.키: 저장된 글자 그대로}} — 예전 백업(단어 단계 boxes만)도 그대로 복원됨.
+   복원하기 전 지금 기록은 vb.bkPrev(이 기기에만)에 남겨 두어 '복원 전으로 되돌리기'가 가능 */
+const BK_SKIP = k => k === "vb.bkPrev";
+function bkSnapshot(){
+  const data = {};
+  Object.keys(localStorage).filter(k => k.startsWith("vb.") && !BK_SKIP(k)).sort().forEach(k => { data[k] = localStorage.getItem(k); });
+  return { app: "talktalk", v: 2, at: new Date().toISOString().slice(0, 10), data };
+}
+function bkApply(data){
+  Object.keys(localStorage).filter(k => k.startsWith("vb.") && !BK_SKIP(k)).forEach(k => localStorage.removeItem(k));
+  Object.entries(data).forEach(([k, v]) => { if (k.startsWith("vb.") && !BK_SKIP(k) && typeof v === "string") localStorage.setItem(k, v); });
+}
+function fillBackup(){
+  $("#bkText").value = JSON.stringify(bkSnapshot());
+  $("#bkUndo").hidden = localStorage.getItem("vb.bkPrev") === null;
+}
+let bkArmed = 0;                                  // 복원은 두 번 눌러야 실행 (실수로 덮어쓰기 방지)
 $("#bkCopy").addEventListener("click", async ()=>{
   fillBackup();
   const t = $("#bkText");
@@ -4616,12 +4637,33 @@ $("#bkCopy").addEventListener("click", async ()=>{
   catch(e){ t.select(); $("#bkMsg").textContent = "직접 복사해 주세요 (Ctrl+C)."; }
 });
 $("#bkLoad").addEventListener("click", ()=>{
+  let v;
+  try{ v = JSON.parse($("#bkText").value); }catch(e){ v = null; }
+  const full = v && v.app === "talktalk" && v.data && typeof v.data === "object";
+  const old = v && !full && typeof v === "object" && !Array.isArray(v) && Object.values(v).every(x => x && typeof x === "object" && "b" in x);
+  if (!full && !old){ bkArmed = 0; $("#bkMsg").textContent = "복원하지 못했습니다. 백업한 글자 전체를 붙여넣었는지 확인해 주세요."; return; }
+  if (Date.now() - bkArmed > 15000){            // 첫 번째 누름: 무엇이 바뀌는지 보여 주고 한 번 더 누르게
+    bkArmed = Date.now();
+    let what = "단어 단계만 담긴 예전 백업이에요. 단어 단계만 바뀌어요.";
+    if (full){ let day = "?"; try{ day = JSON.parse(v.data["vb.day"]); }catch(e){}
+      what = `${v.at || "날짜 모름"} 백업 · 레슨 Day ${day} · 항목 ${Object.keys(v.data).length}개. 지금 기록이 이 내용으로 바뀌어요.`; }
+    $("#bkMsg").textContent = what + " 지금 기록은 따로 남겨 둬요. 복원하려면 15초 안에 한 번 더 누르세요.";
+    return;
+  }
+  bkArmed = 0;
   try{
-    const v = JSON.parse($("#bkText").value);
-    if (!v || typeof v !== "object") throw new Error("형식이 맞지 않습니다");
-    boxes = v; saveBoxes(); renderWords();
-    $("#bkMsg").textContent = "복원했습니다.";
-  }catch(e){ $("#bkMsg").textContent = "복원하지 못했습니다. 백업한 글자 전체를 붙여넣었는지 확인해 주세요."; }
+    localStorage.setItem("vb.bkPrev", JSON.stringify(bkSnapshot()));
+    if (full){ bkApply(v.data); location.reload(); return; }
+    boxes = v; saveBoxes(); renderWords(); fillBackup();
+    $("#bkMsg").textContent = "단어 단계를 복원했습니다.";
+  }catch(e){ $("#bkMsg").textContent = "복원하지 못했습니다. 휴대폰 저장 공간이 부족할 수 있어요."; }
+});
+$("#bkUndo").addEventListener("click", ()=>{
+  try{
+    const p = JSON.parse(localStorage.getItem("vb.bkPrev") || "null");
+    if (!p || !p.data) return;
+    bkApply(p.data); localStorage.removeItem("vb.bkPrev"); location.reload();
+  }catch(e){ $("#bkMsg").textContent = "되돌리지 못했습니다."; }
 });
 /* 퀴즈·레벨 테스트는 언제든 ✕(또는 Esc)로 닫을 수 있음 */
 $("#qX").addEventListener("click", () => {
@@ -4645,9 +4687,9 @@ try{
   if (spoke.d !== today0()) spoke = {d: today0(), n: 0};
 }catch(e){ spoke = {d: today0(), n: 0}; }
 function drawCount(){
-  const how = !hasTTS ? "이 브라우저는 소리 재생이 안 돼요."
+  const how = !hasTTS ? "이 브라우저는 소리 재생이 안 돼요. 영어를 보며 소리 내어 읽어 주세요."
     : SR && !srBlocked ? "뜻을 보고 '말하기'를 누른 뒤 영어로 말해 보세요." : "뜻을 보고 먼저 소리 내어 말한 뒤 영어를 확인하세요.";
-  $("#lCount").textContent = how + (spoke.n ? ` 오늘 ${spoke.n}문장 말했어요.` : "");
+  $("#lCount").textContent = how + (spoke.n ? ` 오늘 ${spoke.n}문장 말했어요.` : "") + (hasTTS ? " (소리는 휴대폰의 AI 합성 음성이에요)" : "");
 }
 
 const LISTEN_N = 5;                               // 한 번에 5문장 — 아래로 덜 내려가게, '다른 문장 5개'로 바꿔 가며
@@ -5013,7 +5055,7 @@ function renderLesson(day){
       ${yw.map(wCard).join("")}${yestS.map(sCard).join("")}</section>` : ""}
 
     <section class="lsSec"><h2>${N()}. 오늘의 문장 ${todayS.length}개</h2>
-      <p class="hint">공식에 맞춰 하나씩 소리 내어 말해 보세요.</p>
+      <p class="hint">공식에 맞춰 하나씩 소리 내어 말해 보세요.${hasTTS ? " 소리는 휴대폰의 AI 합성 음성(미국 영어)이에요." : " 이 기기는 소리 재생이 안 돼요."}</p>
       ${todayS.map(sCard).join("")}</section>
 
     <section class="lsSec"><h2>${N()}. 오늘의 단어 ${tw.length}개</h2>
@@ -6008,7 +6050,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=72"></script>
-<script src="sync.js?v=72"></script>
+<script src="firebase-config.js?v=73"></script>
+<script src="sync.js?v=73"></script>
 
 </body></html>

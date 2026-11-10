@@ -634,6 +634,13 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b && !b.getA
   .lsDo .btn{ min-height:54px; font-size:16px; border-radius:18px }
   body.noteOn #note{ display:block } body.noteOn{ overflow:hidden }
   body.examOn #exam{ display:block } body.examOn{ overflow:hidden }
+  body.writeOn #write{ display:block } body.writeOn{ overflow:hidden }
+  .wrIn{ width:100%; box-sizing:border-box; font:inherit; font-size:18px; padding:14px 16px; border:2px solid var(--line); border-radius:16px; background:var(--raise); color:var(--ink); outline:none }
+  .wrIn:focus{ border-color:var(--accent) }
+  .wrAns{ margin:12px 0 0; padding:12px 14px; border-radius:14px; background:var(--tint); font-size:16px; line-height:1.6 }
+  .wrAns b{ display:block; font-size:12px; color:var(--accent); margin-bottom:2px } .wrAns small{ display:block; font-size:12.5px; color:var(--ink-2); margin-top:6px }
+  .wrAns span.hit{ color:var(--ok) } .wrAns span.mis{ background:var(--bad-soft); color:var(--bad); border-radius:6px; padding:0 3px }
+  .wrBtns{ display:grid; gap:10px; margin-top:14px } .wrBtns .btn{ min-height:50px }
   .ntAdd{ display:flex; gap:8px; margin:14px 0 6px }
   .ntAdd input{ flex:1; min-width:0; font:inherit; font-size:16px; padding:0 14px; min-height:50px;
     border:1px solid var(--line); border-radius:16px; background:var(--raise); color:var(--ink) }
@@ -1436,6 +1443,7 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b && !b.getA
 <div class="lesson" id="lesson"><div class="shell" id="lsBody"></div></div>
 <div class="lesson" id="note"><div class="shell" id="ntBody"></div></div>
 <div class="lesson" id="exam"><div class="shell" id="exBody"></div></div>
+<div class="lesson" id="write"><div class="shell" id="wrBody"></div></div>
 <div class="lesson" id="setup"><div class="shell" id="suBody"></div></div>
 <div class="quiz" id="quiz">
   <div class="shell">
@@ -1449,8 +1457,8 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b && !b.getA
   </div>
 </div>
 
-<script src="ipa.js?v=79"></script>
-<script src="words.js?v=79"></script>
+<script src="ipa.js?v=80"></script>
+<script src="words.js?v=80"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -3787,7 +3795,7 @@ const ALT_ANS = { yes: "yeah yep yup", okay: "ok", ok: "okay", "thank you": "tha
   movie: "film", film: "movie", check: "bill", bill: "check", "cell phone": "phone cellphone", phone: "cellphone", "wi-fi": "wifi", wifi: "wi-fi",
   "to-go": "togo", "check-in": "checkin", "check-out": "checkout", sofa: "couch", couch: "sofa", luggage: "baggage bags", baggage: "luggage",
   vacation: "holiday", holiday: "vacation", fall: "autumn", autumn: "fall",
-  so: "very really", very: "so really", right: "correct", it: "that this" };
+  so: "very really", very: "so really", right: "correct", it: "that this", finish: "end", study: "learn" };
 function judgeEn(input, w, token){
   const norm = s => String(s).toLowerCase().replace(/[^a-z0-9']/g, "");
   const a = norm(input);
@@ -3795,6 +3803,10 @@ function judgeEn(input, w, token){
   if (a === norm(w)) return true;
   const alt = ALT_ANS[String(w).toLowerCase()];
   if (alt && alt.split(" ").some(x => norm(x) === a)) return true;
+  if (alt && token && norm(token).startsWith(norm(w))){             // finishes 자리에 ends
+    const suf = norm(token).slice(norm(w).length);
+    if (suf && alt.split(" ").some(x => norm(x) + suf === a || (suf === "es" && norm(x) + "s" === a))) return true;
+  }
   if (token && a === norm(token)) return true;
   if (token){                                  // You're 자리에 you 를 적어도 인정
     const bare = norm(token).split("'")[0];
@@ -4995,7 +5007,9 @@ function wordsOfDay(d){                          // 그날 배우는 단어 — 
   const good = hit.filter(x => x.lv >= 2 && !BASICW.has(key(x)) && !uniq.has(key(x)) && uniq.add(key(x)))
     .sort((a, b) => (/ /.test(b.w) - / /.test(a.w)) || b.lv - a.lv).slice(0, 12);
   const p = WORDS.filter(x => (myLevel ? inMyLevel(x) : x.lv >= 2 && x.lv <= 4) && !uniq.has(key(x)));
-  return good.concat(pickBy(p, Math.max(0, 8 - good.length), d * 7 + 3));
+  const easy = hit.filter(x => !BASICW.has(key(x)) && !uniq.has(key(x)) && uniq.add(key(x))).slice(0, Math.max(0, 8 - good.length));   // 그날 문장에 나오는 쉬운 단어
+  const own2 = good.concat(easy);
+  return own2.length >= 4 ? own2 : own2.concat(pickBy(p.filter(x => !uniq.has(key(x))), 4 - own2.length, d * 7 + 3));
 }
 function openLesson(d){
   LSDAY = d || dayNo();
@@ -5085,7 +5099,7 @@ function renderLesson(day){
     ${g ? `<details class="lsPlan"><summary>오늘 공부 순서 · 약 30분</summary>
       <ol><li>문법 읽기 <small>약 5분</small></li><li>문장 ${todayS.length}개 듣고 따라 말하기 <small>약 8분</small></li>
       <li>${isRev ? "앞에서 배운 단어 다시 보기" : "기본 단어 " + tw.length + "개"} <small>약 7분</small></li>
-      <li>연습 — 문장 조립 · 빈칸 퀴즈 · 말하기 <small>약 7분</small></li><li>레슨 시험 <small>약 3분</small></li></ol>
+      <li>연습 — 문장 조립 · 직접 쓰기 · 빈칸 퀴즈 · 말하기 <small>약 7분</small></li><li>레슨 시험 <small>약 3분</small></li></ol>
       <p>시간은 어림한 값이에요. 확장 단어와 확장 예문은 시간이 남을 때만 해도 돼요.</p></details>` : ""}
     ${day > today ? `<p class="allHint">아직 차례가 안 된 레슨이에요. 미리 볼 수 있고, 시험은 Day ${today}부터 차례로 봐요.</p>` : ""}
 
@@ -5108,13 +5122,14 @@ function renderLesson(day){
       ${xw.length ? `<details class="lsMore"><summary>더 배우기 · 확장 단어 ${xw.length}개 (선택)</summary>
         <p class="hint">시간이 남을 때 보세요. 레슨 시험에는 나오지 않아요.</p>${xw.map(wCard).join("")}</details>` : ""}</section>
 
-    ${challenge.length ? `<section class="lsSec"><h2>${N()}. 난이도 도전 문장</h2>
-      <p class="hint">고른 난이도(${diffName()})에 맞춘 문장이에요. 오늘 배운 문법을 떠올리며 소리 내어 읽어 보세요.</p>
+    ${challenge.length ? `<section class="lsSec"><h2>${N()}. 난이도 도전 문장 (선택)</h2>
+      <p class="hint">오늘 레슨과는 별개로, 고른 난이도(${diffName()})에서 뽑은 문장이에요. 뜻을 떠올리며 소리 내어 읽어 보세요.</p>
       ${challenge.map(sCard).join("")}</section>` : ""}
 
     ${isToday ? `<section class="lsSec"><h2>${N()}. 오늘의 연습</h2>
       <div class="lsDo">
         <button class="btn go" data-go2="sent">이 레슨 문장으로 조립하기</button>
+        <button class="btn" data-go2="write">한국어 보고 영어로 직접 쓰기</button>
         <button class="btn" data-go2="quiz">이 레슨 단어로 빈칸 퀴즈</button>
         <button class="btn" data-go2="listen">듣고 소리 내어 말하기</button>
       </div></section>` : ""}
@@ -5149,7 +5164,8 @@ $("#lsBody").addEventListener("click", e => {
   if (say){ speak(say.dataset.say, say.dataset.slow ? 0.65 : 1); return; }
   const g = e.target.closest("[data-go2]"); if (!g) return;
   closeLesson();
-  if (g.dataset.go2 === "sent"){ newRound(LSDAY || dayNo()); go(0); }
+  if (g.dataset.go2 === "write"){ openWrite(LSDAY || dayNo()); }
+  else if (g.dataset.go2 === "sent"){ newRound(LSDAY || dayNo()); go(0); }
   else if (g.dataset.go2 === "quiz"){ go(1); renderWords(); startQuiz(coreWords(LSDAY || dayNo()), LSDAY || dayNo()); }
   else { LPOOL = renderListen(); go(2); }
 });
@@ -5190,6 +5206,105 @@ function openExam(d){
   renderExamSafe();
 }
 function closeExam(){ document.body.classList.remove("examOn"); }
+
+/* ══ 직접 쓰기 ══ 한국어 뜻을 보고 영어 문장을 처음부터 직접 써 보는 연습 (조각을 고르는 문장 조립보다 한 단계 위).
+   - 채점은 '예시 답과 같은가'만 봄: 대소문자·문장부호는 무시, I am = I'm 같은 줄임말은 같은 것으로 침
+   - 뜻이 같은 다른 표현도 맞을 수 있으므로 하나만 정답으로 강제하지 않음 → 두 번 다르면 예시 답을 보여 주고 '뜻이 같으면 맞은 걸로' 버튼을 줌
+   - 입력칸은 한 번만 만들고 문제마다 글자만 바꿈 (아이폰 키보드가 내려갔다 올라오지 않게) */
+const WR_SHORT = [["i am","i'm"],["you are","you're"],["he is","he's"],["she is","she's"],["it is","it's"],["we are","we're"],["they are","they're"],
+  ["that is","that's"],["there is","there's"],["what is","what's"],["where is","where's"],["who is","who's"],["how is","how's"],["is not","isn't"],["are not","aren't"],
+  ["do not","don't"],["does not","doesn't"],["did not","didn't"],["cannot","can't"],["can not","can't"],["will not","won't"],["was not","wasn't"],["were not","weren't"],
+  ["i will","i'll"],["we will","we'll"],["you will","you'll"],["it will","it'll"],["i would","i'd"],["i have","i've"],["we have","we've"],["let us","let's"],["ok","okay"]];
+function wrNorm(s){
+  let x = " " + String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/[^a-z0-9' ]/g, " ").replace(/ +/g, " ").trim() + " ";
+  WR_SHORT.forEach(p => { x = x.split(" " + p[0] + " ").join(" " + p[1] + " "); });
+  x = x.replace(/([a-z]+)'s not /g, "$1 isn't ").replace(/([a-z]+)'re not /g, "$1 aren't ");   // it's not = it isn't
+  return x.trim();
+}
+/* 예시 답의 단어마다 내 답에 (순서대로) 들어 있는지 — 가장 긴 공통 순서(LCS)로 표시 */
+function wrMarks(model, mine){
+  const a = model.split(" "), an = a.map(w => wrNorm(w)), b = wrNorm(mine).split(" ").filter(Boolean);
+  const m = an.length, n = b.length, L = Array.from({length: m + 1}, () => new Array(n + 1).fill(0));
+  for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) L[i][j] = an[i] === b[j] ? L[i+1][j+1] + 1 : Math.max(L[i+1][j], L[i][j+1]);
+  const ok = new Array(m).fill(false); let i = 0, j = 0;
+  while (i < m && j < n){ if (an[i] === b[j]){ ok[i] = true; i++; j++; } else if (L[i+1][j] >= L[i][j+1]) i++; else j++; }
+  return a.map((w, k) => ({ w, ok: ok[k] }));
+}
+let wrDeck = [], wrIdx = 0, wrFirst = 0, wrTry = 0, wrLocked = false, wrDay = 0;
+function openWrite(day){
+  wrDay = day; wrDeck = shuffle(sentsOfDay(day)).slice(0, 5); wrIdx = 0; wrFirst = 0;
+  $("#wrBody").innerHTML = `<div class="lsTop"><span class="gMeta" id="wrMeta"></span>${xBtn("wrX")}</div>
+    <div class="gProg" style="margin-bottom:16px"><i id="wrProg" style="width:0%"></i></div>
+    <div id="wrMain">
+      <div class="prompt"><p class="day">한국어를 보고 영어로 써 보세요</p><p class="ko" id="wrKo"></p></div>
+      <input class="wrIn" id="wrIn" type="text" aria-label="영어 문장 쓰기" placeholder="여기에 영어로 써요" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" enterkeyhint="done">
+      <p class="qJudge" id="wrJ"></p>
+      <div id="wrOut"></div>
+      <div class="wrBtns" id="wrBtns"></div>
+    </div>
+    <div id="wrEnd" hidden></div>`;
+  document.body.classList.add("writeOn");
+  document.getElementById("write").scrollTop = 0;
+  wrDraw();
+}
+function closeWrite(){ const i = $("#wrIn"); if (i) i.blur(); document.body.classList.remove("writeOn"); settleView(); }
+function wrDraw(){
+  if (wrIdx >= wrDeck.length){ wrFinish(); return; }
+  const x = wrDeck[wrIdx]; wrTry = 0; wrLocked = false;
+  $("#wrMeta").textContent = `직접 쓰기 · ${wrIdx + 1} / ${wrDeck.length}`;
+  $("#wrProg").style.width = (wrIdx / wrDeck.length * 100) + "%";
+  $("#wrKo").textContent = x.ko;
+  const inp = $("#wrIn"); inp.value = ""; inp.readOnly = false;
+  $("#wrJ").textContent = ""; $("#wrOut").innerHTML = "";
+  $("#wrBtns").innerHTML = `<button class="btn go" id="wrCheck" type="button">확인</button><button class="btn" id="wrHint" type="button">힌트 (첫 단어)</button>`;
+}
+function wrShow(x, mine, note){
+  $("#wrOut").innerHTML = `<div class="wrAns"><b>예시 답</b>${wrMarks(x.en, mine).map(k => `<span class="${k.ok ? "hit" : "mis"}">${esc(k.w)}</span>`).join(" ")}${note ? `<small>${note}</small>` : ""}</div>${tipHtml(x)}`;
+}
+function wrCheck(){
+  if (wrLocked){ wrIdx++; wrDraw(); const i = $("#wrIn"); if (i && wrIdx < wrDeck.length) i.focus(); return; }
+  const x = wrDeck[wrIdx], inp = $("#wrIn"), mine = inp.value.trim();
+  if (!mine){ $("#wrJ").innerHTML = '<span class="err">영어로 한 번 써 보세요. 틀려도 괜찮아요.</span>'; return; }
+  if (wrNorm(mine) === wrNorm(x.en)){ wrPass(wrTry === 0, "맞았어요!"); return; }
+  wrTry++;
+  if (wrTry === 1){
+    const mk = wrMarks(x.en, mine), got = mk.filter(k => k.ok).length;
+    $("#wrJ").innerHTML = `<span class="err">조금 달라요. 한 번 더 써 보세요.</span>`;
+    $("#wrOut").innerHTML = `<div class="wrAns"><b>맞은 단어 ${got} / ${mk.length}</b>${mk.map(k => k.ok ? `<span class="hit">${esc(k.w)}</span>` : '<span class="mis">＿＿</span>').join(" ")}</div>`;
+    return;
+  }
+  wrLocked = true; inp.readOnly = true;
+  $("#wrJ").innerHTML = `<span class="err">예시 답과 달라요.</span>`;
+  wrShow(x, mine, "빨간 단어가 내 답과 다른 곳이에요. 뜻이 같은 다른 표현이면 맞은 걸로 해도 돼요.");
+  $("#wrBtns").innerHTML = `<button class="btn go" id="wrCheck" type="button">다음</button><button class="btn" id="wrSame" type="button">뜻이 같아요 · 맞은 걸로</button><button class="btn" id="wrSay" type="button">예시 답 들어보기</button>`;
+}
+function wrPass(first, msg){
+  const x = wrDeck[wrIdx]; wrLocked = true; $("#wrIn").readOnly = true;
+  if (first) wrFirst++;
+  logAct("s"); ding();
+  $("#wrJ").innerHTML = `<span style="color:var(--ok);font-weight:800">${msg}</span>`;
+  wrShow(x, x.en, "");
+  $("#wrBtns").innerHTML = `<button class="btn go" id="wrCheck" type="button">다음</button><button class="btn" id="wrSay" type="button">들어보기</button>`;
+}
+function wrFinish(){
+  const i = $("#wrIn"); if (i) i.blur();
+  $("#wrMeta").textContent = "직접 쓰기 · 끝"; $("#wrProg").style.width = "100%";
+  $("#wrMain").hidden = true; const e = $("#wrEnd"); e.hidden = false;
+  e.innerHTML = `<div class="prompt"><p class="day">직접 쓰기 끝</p><p class="ko">한 번에 쓴 문장 ${wrFirst} / ${wrDeck.length}</p></div>
+    <p class="lead" style="text-align:center">${wrFirst === wrDeck.length ? "모두 한 번에 썼어요. 대단해요!" : "틀린 문장은 예시 답을 소리 내어 읽고, 다시 한 번 써 보면 오래 남아요."}</p>
+    <div class="wrBtns"><button class="btn go" id="wrAgain" type="button">다시 하기</button><button class="btn" id="wrBack" type="button">레슨으로 돌아가기</button></div>`;
+  settleView();
+}
+$("#wrBody").addEventListener("click", e => {
+  if (e.target.closest("#wrX") || e.target.closest("#wrBack")){ closeWrite(); openLesson(wrDay); return; }
+  if (e.target.closest("#wrAgain")){ openWrite(wrDay); return; }
+  if (e.target.closest("#wrCheck")){ wrCheck(); return; }
+  if (e.target.closest("#wrSame")){ if (wrLocked && $("#wrSame")){ logAct("s"); wrIdx++; wrDraw(); $("#wrIn").focus(); } return; }
+  if (e.target.closest("#wrSay")){ speak(wrDeck[wrIdx].en); return; }
+  if (e.target.closest("#wrHint")){ const x = wrDeck[wrIdx], ws = x.en.split(" "); $("#wrJ").textContent = `첫 단어는 ${ws[0]} · 모두 ${ws.length}단어예요.`; wrTry = Math.max(wrTry, 1); return; }
+});
+$("#wrBody").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "wrIn"){ e.preventDefault(); wrCheck(); } });
+$("#wrBody").addEventListener("mousedown", e => { if (e.target.closest("#wrCheck, #wrHint, #wrSame, #wrSay")) e.preventDefault(); });   // 버튼을 눌러도 키보드가 안 내려가게
 function renderExamSafe(){
   try{ renderExam(); }
   catch(e){
@@ -5429,7 +5544,7 @@ $("#exBody").addEventListener("mousedown", e => {                // 버튼을 �
    창이 열릴 때의 스크롤 위치를 기억해 두고, 키보드 때문에 움직이면 그 자리로 되돌린다 */
 let ovOpen = false, ovY = 0;
 new MutationObserver(() => {
-  const open = document.body.classList.contains("quizOn") || document.body.classList.contains("examOn");
+  const open = document.body.classList.contains("quizOn") || document.body.classList.contains("examOn") || document.body.classList.contains("writeOn");
   if (open && !ovOpen) ovY = window.scrollY;
   ovOpen = open;
 }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
@@ -5952,7 +6067,7 @@ function isReturning(){
   }catch(e){ return true; }                       // 저장소를 못 읽으면 처음 화면을 띄우지 않음 (기존 사용자를 귀찮게 하지 않게)
 }
 const OB_SLIDES = [
-  { t: "하루 10분 레슨", d: "오늘 할 일은 딱 하나. 짧은 레슨을 보고 시험을 통과하면 다음 날 레슨이 열려요." },
+  { t: "하루 한 레슨", d: "오늘 할 일은 딱 하나. 레슨을 보고 시험을 통과하면 다음 날 레슨이 열려요. 빠르면 10분, 연습까지 다 하면 30분쯤이에요." },
   { t: "잊을 때쯤 다시 나와요", d: "외운 단어는 다음 날 → 3일 → 일주일 뒤… 잊을 때쯤 복습으로 다시 만나요." },
   { t: "소리 내어 말하기", d: "듣고 따라 말하면 음성 인식이 알아들은 단어는 초록, 못 알아들은 단어는 빨강으로 보여 줘요." }
 ];
@@ -6095,7 +6210,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=79"></script>
-<script src="sync.js?v=79"></script>
+<script src="firebase-config.js?v=80"></script>
+<script src="sync.js?v=80"></script>
 
 </body></html>

@@ -658,6 +658,15 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b && !b.getA
   .gram .miss{ margin-top:12px; background:var(--pink); border-radius:12px; padding:11px 13px;
     font-size:13.5px; line-height:1.6; color:var(--bad-ink) }
   .gram .miss b{ display:block; font-size:12.5px; margin-bottom:3px }
+  .gram .miss p{ margin:6px 0 0; font-size:13.5px } .gram .miss s{ opacity:.8 } .gram .miss .g2ok{ display:inline; font-size:inherit; margin:0; color:var(--ok) }
+  .g2goal{ font-size:13.5px; line-height:1.55; margin-bottom:10px; color:var(--ink-2) } .g2goal b{ display:block; font-size:12px; color:var(--accent); margin-bottom:2px }
+  .gram p.g2core{ font-weight:600 }
+  .g2how{ margin:10px 0 0; padding-left:20px; font-size:14px; line-height:1.65; display:flex; flex-direction:column; gap:4px }
+  .g2more{ margin-top:12px; border-top:1px dashed var(--line); padding-top:10px }
+  .g2more summary{ cursor:pointer; font-size:13.5px; font-weight:800; color:var(--accent); min-height:32px; display:flex; align-items:center }
+  .g2vs{ margin-top:10px; font-size:13.5px } .g2vs b{ display:block; font-size:12.5px; margin-bottom:2px }
+  .gram .g2vs p{ margin:4px 0 0; font-size:14px } .g2vs span{ color:var(--ink-2); font-size:13px } .gram .g2vs .g2why{ color:var(--ink-2); font-size:13px }
+  .g2say{ margin-top:10px; font-size:13.5px; line-height:1.6; color:var(--ink-2) } .g2say b{ display:block; font-size:12.5px; color:var(--ink); margin-bottom:2px }
   .btn.done{ width:100%; margin-top:14px; min-height:54px; font-size:16px; border-radius:18px;
     background:var(--accent); border-color:var(--accent); color:#fff }
   .lsEnd{ background:var(--mint); border-radius:18px; padding:16px; font-size:14.5px; line-height:1.6; color:var(--ok-ink) }
@@ -1433,8 +1442,8 @@ setTimeout(function(){ var b = document.getElementById("boot"); if (b && !b.getA
   </div>
 </div>
 
-<script src="ipa.js?v=73"></script>
-<script src="words.js?v=73"></script>
+<script src="ipa.js?v=74"></script>
+<script src="words.js?v=74"></script>
 <!-- 앱 코드 — 바로 실행하지 않고, 로딩 화면을 한 번 그린 뒤 아래 작은 스크립트가 실행함 -->
 <script type="text/plain" id="appMain">
 /* ── 단어 데이터 ── 새 단어는 이 배열 끝에 한 줄씩 추가됩니다 ── */
@@ -1496,7 +1505,7 @@ const SENTS = [
   {d:4,lv:2,c:"성질·정도",en:"This isn't my bag.",ko:"이거 제 가방 아니에요.",t:"말할 땐 is not을 거의 항상 isn't로 줄여요."},
   {d:5,lv:2,c:"사람·관계",en:"We're together.",ko:"저희 같이 왔어요."},
   {d:5,lv:1,c:"사람·관계",en:"We're from Korea.",ko:"저희는 한국에서 왔어요."},
-  {d:5,lv:3,c:"사람·관계",en:"We're on our honeymoon.",ko:"저희 신혼여행 중이에요."},
+  {d:5,lv:2,c:"사람·관계",en:"We're classmates.",ko:"우리는 반 친구예요."},
   {d:5,lv:2,c:"사람·관계",en:"We're both hungry.",ko:"저희 둘 다 배고파요."},
   {d:5,lv:2,c:"사람·관계",en:"They're super nice.",ko:"그분들 엄청 친절해요.",t:"super는 '엄청, 완전'이라는 구어 표현이에요."},
   {d:5,lv:3,c:"사람·관계",en:"They're not open yet.",ko:"아직 안 열었어요."},
@@ -1509,7 +1518,7 @@ const SENTS = [
   {d:6,lv:3,c:"말·표현",en:"Is breakfast included?",ko:"아침식사 포함인가요?"},
   {d:6,lv:2,c:"말·표현",en:"Is it safe here?",ko:"여기 안전해요?"},
   {d:6,lv:2,c:"말·표현",en:"Are they open?",ko:"거기 문 열었어요?"},
-  {d:6,lv:2,c:"말·표현",en:"We're not American.",ko:"저희 미국인 아니에요."},
+  {d:6,lv:2,c:"말·표현",en:"Are we late?",ko:"우리 늦었어요?"},
   {d:101,lv:2,c:"음식·식당",en:"Can I get an iced latte?",ko:"아이스 라떼 하나 주세요.",t:"주문할 땐 'I want'보다 'Can I get ~?'이 자연스러워요."},
   {d:101,lv:2,c:"음식·식당",en:"Can I get a large?",ko:"라지로 주세요.",t:"사이즈는 'large size'라고 안 하고 그냥 'a large'라고 해요."},
   {d:101,lv:1,c:"음식·식당",en:"Can I get a hot tea?",ko:"따뜻한 차 주세요.",t:"'I want ~'는 아이처럼 들릴 수 있어요. 'Can I get ~?'을 쓰세요."},
@@ -1661,7 +1670,7 @@ const SENTS = [
   {d:10,lv:2,c:"동작·행동",en:"She finishes at five.",ko:"그녀는 5시에 끝나요."},
   {d:10,lv:2,c:"동작·행동",en:"He wears sunscreen every day.",ko:"그는 매일 선크림을 발라요.",t:"선크림은 '바르다'도 wear를 써요."},
   {d:10,lv:2,c:"동작·행동",en:"The restaurant opens at noon.",ko:"그 식당은 정오에 열어요."},
-  {d:10,lv:2,c:"동작·행동",en:"They sell tickets here.",ko:"여기서 표를 팔아요."},
+  {d:10,lv:2,c:"동작·행동",en:"He sells tickets here.",ko:"그는 여기서 표를 팔아요."},
   {d:7,lv:1,c:"사람·관계",en:"I'm not hungry yet.",ko:"아직 배 안 고파요."},
   {d:7,lv:1,c:"사람·관계",en:"It's not far.",ko:"멀지 않아요."},
   {d:7,lv:1,c:"사람·관계",en:"He's not here.",ko:"그는 여기 없어요."},
@@ -2999,6 +3008,9 @@ TABS.forEach(i => $("#t"+i).addEventListener("click", () => go(i)));
 
 /* ── 홈 ── */
 /* 날짜별 오늘의 문법 */
+/* 새 문법 카드 (2026-11 2.0) — Day별 {goal 목표, core 핵심, how 만드는 법[], vs 비교{a,b,why}, wrong 틀린 문장[[틀림,바름,이유]], say 말투 팁, sum 한 줄 정리}.
+   없는 Day는 GRAM의 예전 카드(f·d·x) 그대로 */
+const GRAM2 = {"1":{"goal":"나를 소개하고 지금 내 상태를 영어로 말할 수 있어요.","core":"한국어는 ‘배고파요’처럼 ‘나는’이나 ‘이다’ 없이도 말이 되지만, 영어는 꼭 I'm(= I am)을 넣어요. 빼면 틀린 문장이에요.","how":["I'm 뒤에는 두 가지가 올 수 있어요. 나를 소개하는 말(I'm from Korea.)과 지금 내 상태(I'm hungry. / I'm ready.)예요.","I'm은 I am을 줄인 말이에요. 말할 때는 ‘아임’ 하고 한 덩어리로 해요.","아니라고 할 땐 뒤에 not을 붙여요. I'm not busy. (안 바빠요.)","직업 같은 명사 앞에는 a를 붙여요. 아·에·이·오·우 소리로 시작하면 an이에요. I'm a teacher. / I'm an office worker."],"vs":{"a":["I'm hungry.","저 배고파요."],"b":["I'm not hungry.","저 배 안 고파요."],"why":"같은 모양에 not만 붙이면 반대 뜻이 돼요."},"wrong":[["I hungry.","I'm hungry.","상태를 말할 때도 am이 꼭 필요해요. 한국어에는 이 자리가 비어 있어서 빠뜨리기 쉬워요."],["I'm teacher.","I'm a teacher.","직업 앞에는 a가 있어야 해요."]],"say":"I am을 또박또박 읽으면 ‘나는 정말로 ~야!’ 하고 강조하는 느낌이 나요. 평소엔 I'm이 자연스러워요.","sum":"I'm 뒤에 내 이름표(명사)나 지금 상태(형용사)를 붙이면 ‘나는 ~예요’가 돼요."},"2":{"goal":"상대방의 상태나 특징을 영어로 말할 수 있어요.","core":"상대를 가리킬 때는 You're(= You are)를 써요. 한국어는 ‘너’를 자주 빼지만 영어는 You를 꼭 넣어요. 칭찬하거나 맞장구칠 때 아주 많이 써요.","how":["You're는 You are를 줄인 말이에요. 뒤에 상태나 이름표가 와요. You're early. / You're the best.","so를 넣으면 ‘정말, 아주’라는 뜻이 돼요. You're so kind. (정말 친절하세요.)","아니라고 할 땐 not을 붙여요. You're not wrong. (틀리지 않았어요 = 맞아요.)","정해진 인사말도 있어요. You're right. (맞아요.) / You're welcome. (천만에요.)"],"vs":{"a":["You're kind.","당신은 친절해요."],"b":["You're so kind.","당신은 정말 친절해요."],"why":"so를 넣으면 ‘정말’이라는 느낌이 더해져요."},"wrong":[["You welcome.","You're welcome.","‘당신은 ~예요’에는 are가 꼭 필요해요. 인사말에서도 마찬가지예요."],["Your early.","You're early.","Your는 ‘당신의’, You're는 ‘당신은 ~예요’예요. 소리가 비슷해서 글로 쓸 때 자주 헷갈려요."]],"say":"You're와 your는 소리가 거의 같아요. 말할 땐 괜찮지만 글로 쓸 땐 뜻을 보고 골라요.","sum":"상대를 말할 땐 You're 뒤에 상태나 이름표를 붙여요."},"3":{"goal":"내 앞에 없는 한 사람을 소개하고 어떤 사람인지 말할 수 있어요.","core":"남자 한 명은 He's, 여자 한 명은 She's(He is / She is)로 말해요. 한국어의 ‘그는/그녀는’에 해당하지만, 영어는 남녀를 꼭 나눠 불러요.","how":["남자는 He's, 여자는 She's예요. 뒤에는 관계나 특징이 와요. He's my friend. / She's my sister.","very, so, really를 넣으면 ‘정말’ 느낌이에요. He's very tall. / She's so smart.","이름을 말할 땐 his(그의), her(그녀의)를 써요. His name is Tom. / Her name is Mina.","아니라고 할 땐 not을 붙여요. He's not here."],"vs":{"a":["He's my friend.","그는 제 친구예요."],"b":["His name is Tom.","그의 이름은 톰이에요."],"why":"He's는 ‘그는 ~예요’, His는 ‘그의’라서 뒤에 오는 말이 달라요."},"wrong":[["He tall.","He's tall.","He 뒤에도 is가 필요해요. 한국어에는 없어서 빠뜨리기 쉬워요."],["She name is Mina.","Her name is Mina.","‘그녀의’는 She가 아니라 her예요."]],"say":"He's는 ‘히즈’, She's는 ‘쉬즈’처럼 한 덩어리로 말해요.","sum":"남자는 He's, 여자는 She's. ‘그의/그녀의’는 his/her예요."},"4":{"goal":"눈앞의 물건이 무엇인지, 누구 것인지 영어로 말할 수 있어요.","core":"가까운 물건은 This is, 먼 물건은 That's로 말해요. 이미 말한 물건이나 날씨·상황은 It's로 말해요. 한국어의 ‘이것/저것’과 비슷해요.","how":["가까이 있는 것은 This is ~. 예: This is my bag.","멀리 있는 것은 That's ~. That's는 That is를 줄인 말이에요. 예: That's my seat.","It's는 이미 말한 물건(It's not free. 그거 무료 아니에요)이나 날씨·상황(It's very hot.)에 써요.","아니라고 할 땐 not을 붙여요. This isn't my bag. / That's not mine. (mine은 내 것)"],"vs":{"a":["This is my room.","이건 제 방이에요. (가까이)"],"b":["That's my seat.","저건 제 자리예요. (멀리)"],"why":"손이 닿을 만큼 가까우면 this, 떨어져 있으면 that이에요."},"wrong":[["This my bag.","This is my bag.","This 뒤에도 is가 있어야 해요."],["That not mine.","That's not mine.","That 뒤에 is(그리고 줄인 's)를 빠뜨리지 마세요."]],"say":"That's는 ‘댓츠’로 한 덩어리로 읽어요. isn't는 ‘이즌트’처럼 가운데 ‘즌’을 짧게 해요.","sum":"가까운 건 This is, 먼 건 That's, 이미 말한 것·날씨는 It's."},"5":{"goal":"‘우리’나 ‘그들’이 어떤지 영어로 말할 수 있어요.","core":"우리는 We're(We are), 그들은 They're(They are)로 말해요. 여러 명일 때도 be동사(am·is·are 같은 ‘~이다’ 말)가 꼭 필요해요.","how":["나를 포함한 여러 명은 We're ~. 예: We're from Korea.","나를 뺀 여러 명(또는 여러 개)은 They're ~. 예: They're super nice.","뒤에는 상태나 이름표가 와요. We're both hungry. (우리 둘 다 배고파요.) / We're classmates. (우리는 반 친구예요.)","아니라고 할 땐 not을 붙여요. We're not late. / They're not open yet."],"vs":{"a":["We're guests here.","우리는 여기 손님이에요."],"b":["They're super nice.","그들은 정말 친절해요."],"why":"나도 들어 있으면 We, 나는 빠지면 They예요."},"wrong":[["We hungry.","We're hungry.","We 뒤에도 are가 필요해요. 줄여서 We're로 말해요."],["They not open yet.","They're not open yet.","not 앞에 are가 있어야 해요. They aren't open yet.으로 말해도 돼요."]],"say":"We're는 ‘위어’, They're는 ‘데어’처럼 들려요. their(그들의)와 소리가 같아서 글로 쓸 땐 조심해요.","sum":"우리는 We're, 그들은 They're. 뒤에 상태나 이름표를 붙여요."},"6":{"goal":"‘~인가요?’ 하고 영어로 물어볼 수 있어요.","core":"영어는 ‘~예요’ 문장의 순서만 뒤집으면 질문이 돼요. 한국어는 끝에 ‘~요?’만 붙이지만 영어는 be동사(Are·Is)를 앞으로 보내요.","how":["You're ready.의 순서를 뒤집어요. Are you ready? (준비됐어요?)","It's far.도 뒤집어요. Is it far? (멀어요?)","여러 명이나 여러 개는 Are로 물어요. Are they open? 한 개는 Is예요. Is breakfast included?","묻는 말끝은 올려서 말해요. 대답은 Yes, it is. / No, it's not.처럼 해요."],"vs":{"a":["You're ready.","당신은 준비됐어요."],"b":["Are you ready?","준비됐어요?"],"why":"같은 낱말이지만 are가 앞으로 가면 질문이 돼요."},"wrong":[["Do you ready?","Are you ready?","‘~예요’ 문장에는 do를 쓰지 않아요. be동사를 앞으로 보내요."],["Is far?","Is it far?","주어(it)를 빠뜨리면 안 돼요. 영어는 주어가 꼭 필요해요."]],"say":"질문은 끝을 올려요. Are you ready?의 ready에서 목소리를 올려 주세요.","sum":"‘~예요’ 문장에서 Are/Is를 앞으로 보내면 ‘~인가요?’가 돼요."},"7":{"goal":"‘아니에요’라고 말하고, Yes/No로 짧게 대답할 수 있어요.","core":"아니라고 할 땐 be동사 뒤에 not을 붙여요. 대답할 땐 Yes/No 뒤에 주어와 be동사만 짧게 말해요. 한국어의 ‘네, 맞아요 / 아니요’와 같지만 am·is·are를 꼭 붙여요.","how":["I'm not ~, It's not ~처럼 not을 붙여요. I'm not hungry yet. / It's not far.","not은 줄여서 isn't, aren't로도 써요. It isn't ready yet. (= It's not ready yet.) 단 I am not은 I'm not으로만 줄여요.","질문에는 짧게 대답해요. Are you hungry? → Yes, I am. / No, I'm not.","Yes, I am.은 am까지 말해요. Yes, I'm.이라고는 하지 않아요."],"vs":{"a":["It's not far.","멀지 않아요."],"b":["It isn't ready yet.","아직 준비 안 됐어요."],"why":"’s not과 isn't는 줄이는 방법만 다르고 뜻은 같아요."},"wrong":[["Yes, I'm.","Yes, I am.","맞다고 대답할 땐 줄이지 않고 am을 그대로 써요."],["No, I not.","No, I'm not.","not 앞에 am이 있어야 해요."]],"say":"Yes, I am.에서는 am을 또렷하게 읽어요. It's not a big deal.은 ‘별일 아니에요’라는 뜻으로 자주 써요.","sum":"be동사 뒤에 not을 붙이면 ‘아니에요’, 대답은 Yes, I am. / No, I'm not."},"8":{"goal":"내가 하는 일, 사는 곳, 습관을 영어로 말할 수 있어요.","core":"‘나는 ~해요’는 I 바로 뒤에 동사가 와요. 한국어는 동사가 문장 맨 끝에 가지만, 영어는 주어 바로 뒤예요.","how":["순서는 누가 + 동사 + 나머지예요. I live in Seoul. (나는 + 살아요 + 서울에)","동사는 사전에 나온 그대로 써요. I drink coffee every day.","I, you, we, they가 주어일 때는 모두 같은 모양이에요. We work together.","every day(매일) 같은 말은 보통 문장 끝에 붙여요. I study English every day."],"vs":{"a":["I speak English.","저는 영어를 해요."],"b":["I speak a little English.","저는 영어를 조금 해요."],"why":"a little을 넣으면 ‘조금’이라는 뜻이 돼요."},"wrong":[["I coffee drink every day.","I drink coffee every day.","영어는 동사가 I 바로 뒤에 와요. 한국어처럼 맨 끝으로 보내지 않아요."],["I live Seoul.","I live in Seoul.","장소 앞에는 in이 필요해요. 한국어의 ‘에’ 자리예요."]],"say":"동사 live는 ‘리브’처럼 짧게 읽어요. ‘라이브’는 생방송 같은 다른 뜻이에요.","sum":"I 바로 뒤에 동사를 놓으면 ‘나는 ~해요’가 돼요."},"9":{"goal":"원하는 것, 필요한 것, 좋아하는 것을 영어로 말할 수 있어요.","core":"want(원해요), need(필요해요), like(좋아해요)는 한국어처럼 뒤에 물건이 오거나, ‘to + 동사’로 ‘~하고 싶어요’를 말해요. 세 말은 뜻이 조금씩 달라요.","how":["물건은 바로 뒤에 붙여요. I like tacos. / I need a towel. / I want a coffee.","하고 싶은 일은 to + 동사예요. I want to go now. (to 뒤 동사는 그대로 써요.)","개수나 양을 더할 수 있어요. We need two tickets. / I need more water.","need는 꼭 있어야 할 때, want는 지금 갖고 싶을 때, like는 평소 좋아할 때 써요."],"vs":{"a":["I like tacos.","타코를 좋아해요. (늘 좋아함)"],"b":["I want tacos.","타코가 먹고 싶어요. (지금 원함)"],"why":"like는 평소 좋아하는 마음, want는 지금 갖고 싶은 마음이에요."},"wrong":[["I want go now.","I want to go now.","동사 앞에는 to가 필요해요."],["I want to a beer.","I want a beer.","물건(명사) 앞에는 to를 쓰지 않아요."]],"say":"가게에서 주문할 때 I want ~는 조금 딱딱하게 들릴 수 있어서, Can I get ~?(~ 주실 수 있나요?)를 많이 써요.","sum":"want·need·like 뒤에는 물건을 바로 붙이고, 동작이면 to + 동사를 붙여요."},"10":{"goal":"한 사람이나 한 개가 하는 일을 영어로 말할 수 있어요.","core":"나·너가 아닌 한 사람이나 한 개(3인칭 단수)가 주어이면 동사 끝에 s를 붙여요. 한국어에는 없는 규칙이라 일부러 기억해야 해요.","how":["he, she, it(또는 한 사람·한 개)이 주어이면 동사에 s를 붙여요. He works at a restaurant.","my brother, the restaurant처럼 한 명·한 개도 같아요. The restaurant opens at noon.","s, sh, ch, x, o로 끝나는 동사는 es를 붙여요. She finishes at five. / He goes to work.","I, you, we, they는 s를 붙이지 않아요. They work here."],"vs":{"a":["She speaks Spanish.","그녀는 스페인어를 해요."],"b":["They speak Spanish.","그들은 스페인어를 해요."],"why":"한 명이면 speaks, 여러 명이면 speak이에요."},"wrong":[["He work at a restaurant.","He works at a restaurant.","he가 주어이면 동사 끝에 s가 필요해요."],["She finishs at five.","She finishes at five.","sh로 끝나는 동사는 s가 아니라 es를 붙여요."]],"say":"sh, ch, x, s 뒤의 -es는 ‘이즈’ 소리가 붙어 한 음절이 늘어요. finishes는 ‘피니쉬즈’처럼 읽어요. goes는 늘지 않고 ‘고우즈’예요.","sum":"한 명·한 개가 주어이면 동사 끝에 s(또는 es)를 붙여요."}};
 const GRAM = {
   1:{t:"나는 ~이에요",f:"I'm + 명사/형용사",d:"나를 소개하거나 내 상태를 말할 때. I am을 줄인 게 I'm이에요.",x:"‘I am ready’도 맞지만, 말할 땐 거의 항상 I'm 으로 붙여 말합니다."},
   2:{t:"당신은 ~예요",f:"You're + 명사/형용사",d:"상대를 가리킬 때. You are를 줄인 게 You're.",x:"한 명이든 여러 명이든 전부 you 입니다. 복수형이 따로 없어요."},
@@ -5011,6 +5023,21 @@ function levelChallenge(day, own){
   const pool = SENTS.filter(x => x.lv != null && x.lv >= 4 && Math.abs(x.lv - L) <= 1 && !skip.has(x.en));
   return pickBy(pool, 4, day * 31 + L);
 }
+/* 문법 카드 속 — GRAM2(새 카드)가 있으면 목표·핵심·만드는 법 + 접어 둔 비교·틀린 문장·말투, 없으면 예전 한 줄 설명 */
+function gramCardHtml(day, noF){
+  const g = GRAM[day], n = GRAM2[day];
+  if (!g) return "";
+  const f = noF ? "" : `<div class="f">${esc(g.f)}</div>`;
+  if (!n) return f + `<p${noF ? ' style="margin-top:0"' : ""}>${esc(g.d)}</p><div class="miss"><b>자주 하는 실수</b>${esc(g.x)}</div>`;
+  const more = [
+    n.vs ? `<div class="g2vs"><b>비교</b><p>${esc(n.vs.a[0])} <span>${esc(n.vs.a[1])}</span></p><p>${esc(n.vs.b[0])} <span>${esc(n.vs.b[1])}</span></p><p class="g2why">${esc(n.vs.why)}</p></div>` : "",
+    (n.wrong || []).length ? `<div class="miss"><b>자주 하는 실수</b>${n.wrong.map(w => `<p><s>${esc(w[0])}</s> → <b class="g2ok">${esc(w[1])}</b><br>${esc(w[2])}</p>`).join("")}</div>` : "",
+    n.say ? `<div class="g2say"><b>말투 팁</b>${esc(n.say)}</div>` : ""].join("");
+  return (n.goal ? `<div class="g2goal"><b>오늘의 목표</b>${esc(n.goal)}</div>` : "") + f
+    + `<p class="g2core"${noF ? ' style="margin-top:0"' : ""}>${esc(n.core)}</p>`
+    + `<ol class="g2how">${n.how.map(h => `<li>${esc(h)}</li>`).join("")}</ol>`
+    + (more ? `<details class="g2more"><summary>비교 · 자주 하는 실수 보기</summary>${more}</details>` : "");
+}
 function renderLesson(day){
   const today = dayNo(), isToday = day === today, g = GRAM[day];
   const todayS = sentsOfDay(day);
@@ -5045,9 +5072,7 @@ function renderLesson(day){
 
     ${g ? `<section class="lsSec"><h2>${N()}. 오늘의 문법</h2>
       <div class="gram">
-        <div class="f">${esc(g.f)}</div>
-        <p>${esc(g.d)}</p>
-        <div class="miss"><b>자주 하는 실수</b>${esc(g.x)}</div>
+        ${gramCardHtml(day)}
       </div></section>` : ""}
 
     ${(yw.length || yestS.length) ? `<section class="lsSec"><h2>${N()}. 지난 레슨 복습</h2>
@@ -5074,7 +5099,7 @@ function renderLesson(day){
       </div></section>` : ""}
 
     <section class="lsSec"><h2>${N()}. 한 줄 정리</h2>
-      <div class="lsEnd">${g ? `오늘은 <b>${esc(g.f)}</b> 하나만 확실히 하면 됩니다.<br>
+      <div class="lsEnd">${GRAM2[day] && GRAM2[day].sum ? `<b>${esc(GRAM2[day].sum)}</b><br>오늘 본 문장 중 하나를 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요.` : g ? `오늘은 <b>${esc(g.f)}</b> 하나만 확실히 하면 됩니다.<br>
         오늘 본 문장 중 하나를 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요.`
         : "오늘 본 문장 중 하나를 골라, 자기 상황으로 바꿔 소리 내어 말해 보세요."}</div>
       ${isToday ? (day < LASTDAY || isUnitDay(day)
@@ -5519,8 +5544,7 @@ function allGramHtml(){
   const card = d => { const g = GRAM[d], done = d <= today;
     return `<details class="allCard"><summary><span class="tx"><b>Day ${d} · ${esc(g.t)}</b><small>${esc(g.f)}</small></span>
       <span class="tag${done ? "" : " later"}">${d === today ? "오늘" : done ? "배움" : "예정"}</span></summary>
-      <div class="allIn"><div class="gram"><p style="margin-top:0">${esc(g.d)}</p>
-        <div class="miss"><b>자주 하는 실수</b>${esc(g.x)}</div></div>
+      <div class="allIn"><div class="gram">${gramCardHtml(d, true)}</div>
         ${done ? `<div class="row2"><button class="btn" data-alllesson="${d}">Day ${d} 레슨 보기</button></div>` : ""}</div></details>`; };
   return `<p class="allHint">${myLevel ? `고른 난이도(${diffName()})에 맞는 단계를 펼쳐 뒀어요.` : "지금 레슨 단계를 펼쳐 뒀어요."} 다른 단계는 눌러서 보세요.</p>`
     + GSTAGE.map(([a, b, name], i) => {
@@ -6050,7 +6074,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
   setTimeout(run, 400);                           // 화면이 숨겨져 있어 그리기가 안 일어나도 늦어도 0.4초 뒤 실행
 })();
 </script>
-<script src="firebase-config.js?v=73"></script>
-<script src="sync.js?v=73"></script>
+<script src="firebase-config.js?v=74"></script>
+<script src="sync.js?v=74"></script>
 
 </body></html>
